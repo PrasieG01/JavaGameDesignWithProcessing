@@ -1,4 +1,5 @@
-out
-test.txt
 .DS_Store
+out
 *.class
+out/source
+out/*.class
