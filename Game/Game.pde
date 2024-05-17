@@ -1,5 +1,5 @@
 /* Game Class Starter File
- * Authors: Joel A. Bianchi
+ * Authors: Carey & Prasie
  * Last Edit: 5/13/2024
  */
 
