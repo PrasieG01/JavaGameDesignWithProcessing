@@ -1,5 +1,2 @@
-.DS_Store
 out
-*.class
-out/source
-out/*.class
+test.txt
