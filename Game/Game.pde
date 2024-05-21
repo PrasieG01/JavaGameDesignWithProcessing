@@ -25,6 +25,8 @@ Grid mainGrid;
 String mainBgFile = "images/chess.jpg";
 PImage mainBg;
 
+
+
 PImage player1;
 String player1File = "images/x_wood.png";
 int player1Row = 3;
@@ -66,6 +68,7 @@ void setup() {
   //setup the screens/worlds/grids in the Game
   splashScreen = new Screen("splash", splashBg);
   mainGrid = new Grid("chessBoard", mainBg, 6, 8);
+
   endScreen = new World("end", endBg);
   currentScreen = splashScreen;
 
