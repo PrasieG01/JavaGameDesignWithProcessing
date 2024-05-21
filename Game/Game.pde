@@ -1,6 +1,6 @@
 /* Game Class Starter File
- * Authors: Joel A. Bianchi
- * Last Edit: 5/13/2024
+ * Authors: PRASIE G
+ * Last Edit: 5/20/2024
  */
 
 //import processing.sound.*;
@@ -36,6 +36,19 @@ AnimatedSprite enemySprite;
 AnimatedSprite exampleSprite;
 boolean doAnimation;
 
+
+
+//Lvl2 Screens
+Screen lvlscreen2;
+PImage cookieBg;
+Sprites needle;
+PImage star;
+PImage rectangle;
+PImage circle;
+PImage umbrella;
+PImage cookies;
+
+
 //EndScreen variables
 World endScreen;
 PImage endBg;
@@ -60,21 +73,33 @@ void setup() {
   splashBg.resize(800,600);
   mainBg = loadImage(mainBgFile);
   mainBg.resize(800,600);
+  cookieBg.loadImage("images/cookieBg.jpg");
+
   endBg = loadImage(endBgFile);
   endBg.resize(800,600);
 
   //setup the screens/worlds/grids in the Game
   splashScreen = new Screen("splash", splashBg);
   mainGrid = new Grid("chessBoard", mainBg, 6, 8);
+  lvlscreen2 = new Screen("Lvl2", cookieBg);
   endScreen = new World("end", endBg);
   currentScreen = splashScreen;
+
+
 
   //setup the sprites  
   player1 = loadImage(player1File);
   player1.resize(mainGrid.getTileWidthPixels(),mainGrid.getTileHeightPixels());
   // enemy = loadImage("images/articuno.png");
   // enemy.resize(100,100);
+  needle.loadImage("images/needle.png");
+  cookies.loadImage("images/cookies.png");
+  PImage image(PImage cookies, 100, 100);
+
   exampleAnimationSetup();
+
+  
+
 
   //Adding pixel-based Sprites to the world
   // mainGrid.addSpriteCopyTo(exampleSprite);
@@ -206,10 +231,18 @@ public void updateScreen(){
     mainGrid.showGridSprites();
 
     checkExampleAnimation();
-    
+    currentScreen == lvlscreen2;
   }
 
   //Other screens?
+
+  //skyGrid Screen Updates
+  if(currentScreen == lvlscreen2){
+
+    image()
+
+
+  }
 
 
 }
