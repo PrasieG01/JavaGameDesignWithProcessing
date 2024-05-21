@@ -1,6 +1,6 @@
 /* Game Class Starter File
- * Authors: PRASIE G
- * Last Edit: 5/20/2024
+ * Authors: Carey & Prasie
+ * Last Edit: 5/21/2024
  */
 
 //import processing.sound.*;
@@ -24,6 +24,8 @@ PImage splashBg;
 Grid mainGrid;
 String mainBgFile = "images/chess.jpg";
 PImage mainBg;
+
+
 
 PImage player1;
 String player1File = "images/x_wood.png";
@@ -94,8 +96,7 @@ void setup() {
   // enemy.resize(100,100);
   needle.loadImage("images/needle.png");
   cookies.loadImage("images/cookies.png");
-  PImage image(PImage cookies, 100, 100);
-
+  
   exampleAnimationSetup();
 
   
@@ -239,7 +240,8 @@ public void updateScreen(){
   //skyGrid Screen Updates
   if(currentScreen == lvlscreen2){
 
-    image()
+    image(cookies, 100, 100);
+
 
 
   }
