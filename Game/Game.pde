@@ -43,7 +43,7 @@ boolean doAnimation;
 //Lvl2 Screens
 Screen lvlscreen2;
 PImage cookieBg;
-Sprites needle;
+Sprite needle;
 PImage star;
 PImage rectangle;
 PImage circle;
@@ -75,7 +75,8 @@ void setup() {
   splashBg.resize(800,600);
   mainBg = loadImage(mainBgFile);
   mainBg.resize(800,600);
-  cookieBg.loadImage("images/cookieBg.jpg");
+  cookieBg = loadImage("images/cookiebg.jpg");
+  cookieBg.resize(800,600);
 
   endBg = loadImage(endBgFile);
   endBg.resize(800,600);
@@ -94,8 +95,10 @@ void setup() {
   player1.resize(mainGrid.getTileWidthPixels(),mainGrid.getTileHeightPixels());
   // enemy = loadImage("images/articuno.png");
   // enemy.resize(100,100);
-  needle.loadImage("images/needle.png");
-  cookies.loadImage("images/cookies.png");
+  needle = new Sprite("images/needle.png");
+  //needle.resize(100,100);
+  cookies = loadImage("images/cookies.png");
+  cookies.resize(400,400);
   
   exampleAnimationSetup();
 
@@ -176,6 +179,7 @@ void mouseClicked(){
     System.out.println("Grid location: " + currentGrid.getGridLocation());
   }
 
+  System.out.println( get(mouseX, mouseY));
   //what to do if clicked? (Make player1 jump back?)
   
 
@@ -232,7 +236,7 @@ public void updateScreen(){
     mainGrid.showGridSprites();
 
     checkExampleAnimation();
-    currentScreen == lvlscreen2;
+    currentScreen = lvlscreen2;
   }
 
   //Other screens?
@@ -241,6 +245,9 @@ public void updateScreen(){
   if(currentScreen == lvlscreen2){
 
     image(cookies, 100, 100);
+    int needleHeight = 277;
+    needle.moveTo(mouseX, mouseY - needleHeight);
+    needle.show();
 
 
 

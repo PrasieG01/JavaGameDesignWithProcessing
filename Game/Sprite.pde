@@ -211,4 +211,9 @@ public class Sprite {
     return spriteImgFile + "\t" + getLeft() + "\t" + getTop() + "\t" + speedX + "\t" + speedY + "\t" + w + "\t" + h + "\t" + isAnimated;
   }
 
+
+  public void resize(int width, int height){
+    spriteImg.resize(width, height);
+  }
+
 }
