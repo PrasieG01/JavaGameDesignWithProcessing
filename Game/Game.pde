@@ -3,14 +3,16 @@
  * Last Edit: 5/21/2024
  */
 
-//import processing.sound.*;
+import processing.sound.*;
 
-//GAME VARIABLES
+//------------------ GAME VARIABLES --------------------//
+
+//Title Bar
 private int msElapsed = 0;
 String titleText = "HorseChess";
 String extraText = "Who's Turn?";
 
-//Screens
+//Current Screens
 Screen currentScreen;
 World currentWorld;
 Grid currentGrid;
@@ -20,9 +22,9 @@ Screen splashScreen;
 String splashBgFile = "images/apcsa.png";
 PImage splashBg;
 
-//Sky Screen Variables
+//Level1 Screen Variables
 Grid mainGrid;
-String mainBgFile = "images/chess.jpg";
+String mainBgFile = "images/SquidGame01.jpg";
 PImage mainBg;
 
 
@@ -58,41 +60,38 @@ String endBgFile = "images/youwin.png";
 
 //Example Variables
 //HexGrid hGrid = new HexGrid(3);
-//SoundFile song;
+  SoundFile song;
 
+//------------------ REQUIRED PROCESSING METHODS --------------------//
 
 //Required Processing method that gets run once
 void setup() {
 
   //Match the screen size to the background image size
-  size(800,600);
+  size(1500,800);
   
   //Set the title on the title bar
   surface.setTitle(titleText);
 
   //Load BG images used
   splashBg = loadImage(splashBgFile);
-  splashBg.resize(800,600);
+  splashBg.resize(1500,800);
   mainBg = loadImage(mainBgFile);
   mainBg.resize(800,600);
-  cookieBg = loadImage("images/cookiebg.jpg");
-  cookieBg.resize(800,600);
-
   endBg = loadImage(endBgFile);
-  endBg.resize(800,600);
+  endBg.resize(1500,800);
 
   //setup the screens/worlds/grids in the Game
   splashScreen = new Screen("splash", splashBg);
   mainGrid = new Grid("chessBoard", mainBg, 6, 8);
-  lvlscreen2 = new Screen("Lvl2", cookieBg);
   endScreen = new World("end", endBg);
   currentScreen = splashScreen;
 
 
 
   //setup the sprites  
-  player1 = loadImage(player1File);
-  player1.resize(mainGrid.getTileWidthPixels(),mainGrid.getTileHeightPixels());
+  // player1 = loadImage(player1File);
+  // player1.resize(mainGrid.getTileWidthPixels(),mainGrid.getTileHeightPixels());
   // enemy = loadImage("images/articuno.png");
   // enemy.resize(100,100);
   needle = new Sprite("images/needle.png");
@@ -112,8 +111,8 @@ void setup() {
   
   //Other Setup
   // Load a soundfile from the /data folder of the sketch and play it back
-  // song = new SoundFile(this, "sounds/Lenny_Kravitz_Fly_Away.mp3");
-  // song.play();
+  song = new SoundFile(this, "sounds/Magnetic.mp3");
+  song.play();
   
   imageMode(CORNER);    //Set Images to read coordinates at corners
   //fullScreen();   //only use if not using a specfic bg image
@@ -126,47 +125,76 @@ void setup() {
 void draw() {
 
   updateTitleBar();
+  updateScreen();
 
-  //handle sprites on screen
+  //simple timing handling
   if (msElapsed % 300 == 0) {
+    //sprite handling
     populateSprites();
     moveSprites();
   }
-  updateScreen();
-  
+  msElapsed +=100;
+  currentScreen.pause(100);
+
   //check for end of game
   if(isGameOver()){
     endGame();
   }
-  
-  //handle timing
-  msElapsed +=100;
-  currentScreen.pause(100);
 
 } //end draw()
+
+//------------------ USER INPUT METHODS --------------------//
 
 
 //Known Processing method that automatically will run whenever a key is pressed
 void keyPressed(){
 
+
   //check what key was pressed
   System.out.println("Key pressed: " + key); //keyCode gives you an integer for the key
 
   //What to do when a key is pressed?
+
   
   //set [W] key to move the player1 up & avoid Out-of-Bounds errors
   if(keyCode == 87){
    
-    //Store old GridLocation
-    GridLocation oldLoc = new GridLocation(player1Row, 0);
+  //   //Store old GridLocation
+  //   GridLocation oldLoc = new GridLocation(player1Row, 0);
+
+    //Erase image from previous location
+    
+  // exampleSprite.moveTo()
+  }
+  if(keyCode == 65){
+   
+  //   //Store old GridLocation
+  //   GridLocation oldLoc = new GridLocation(player1Row, 0);
 
     //Erase image from previous location
     
 
-    //change the field for player1Row
-    player1Row--;
   }
 
+  if(keyCode == 83){
+   
+  //   //Store old GridLocation
+  //   GridLocation oldLoc = new GridLocation(player1Row, 0);
+
+    //Erase image from previous location
+    
+
+  }
+
+   if(keyCode == 68){
+   
+  //   //Store old GridLocation
+  //   GridLocation oldLoc = new GridLocation(player1Row, 0);
+
+    //Erase image from previous location
+    
+
+  }
 
 }
 
@@ -181,12 +209,10 @@ void mouseClicked(){
 
   System.out.println( get(mouseX, mouseY));
   //what to do if clicked? (Make player1 jump back?)
-  
-
 
   //Toggle the animation on & off
-  doAnimation = !doAnimation;
-  System.out.println("doAnimation: " + doAnimation);
+  // doAnimation = !doAnimation;
+  // System.out.println("doAnimation: " + doAnimation);
   if(currentGrid != null){
     currentGrid.setMark("X",currentGrid.getGridLocation());
   }
@@ -196,7 +222,7 @@ void mouseClicked(){
 
 
 
-//------------------ CUSTOM  METHODS --------------------//
+//------------------ CUSTOM  GAME METHODS --------------------//
 
 //method to update the Title Bar of the Game
 public void updateTitleBar(){
@@ -220,6 +246,10 @@ public void updateScreen(){
   //splashScreen update
   if(splashScreen.getScreenTime() > 3000 && splashScreen.getScreenTime() < 5000){
     currentScreen = mainGrid;
+      // if(song.isPlaying())
+      // {
+      //   song.pause();
+      // }
   }
 
   //skyGrid Screen Updates
@@ -346,14 +376,14 @@ public void endGame(){
 //example method that creates 1 horse run along the screen
 public void exampleAnimationSetup(){  
   int i = 2;
-  exampleSprite = new AnimatedSprite("sprites/horse_run.png", "sprites/horse_run.json", 50.0, i*75.0);
-  //exampleSprite.resize(200,200);
+  exampleSprite = new AnimatedSprite("sprites/cat.png", "sprites/testCat.json", 50.0, i*75.0);
+  exampleSprite.resize(200,200);
 }
 
 //example method that animates the horse Sprites
 public void checkExampleAnimation(){
   if(doAnimation){
-    exampleSprite.animateHorizontal(5.0, 1.0, true);
-    //System.out.println("animating!");
+    exampleSprite.animateHorizontal(1.0, 20.0, true);
+    System.out.println("animating!");
   }
 }
