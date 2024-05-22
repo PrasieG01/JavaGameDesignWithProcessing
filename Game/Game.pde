@@ -1,6 +1,6 @@
 /* Game Class Starter File
  * Authors: Carey & Prasie
- * Last Edit: 5/13/2024
+ * Last Edit: 5/21/2024
  */
 
 import processing.sound.*;
@@ -25,6 +25,8 @@ Grid mainGrid;
 String mainBgFile = "images/SquidGame01.jpg";
 PImage mainBg;
 
+
+
 PImage player1;
 String player1File = "images/x_wood.png";
 int player1Row = 3;
@@ -35,6 +37,19 @@ AnimatedSprite enemySprite;
 
 AnimatedSprite exampleSprite;
 boolean doAnimation;
+
+
+
+//Lvl2 Screens
+Screen lvlscreen2;
+PImage cookieBg;
+Sprite needle;
+PImage star;
+PImage rectangle;
+PImage circle;
+PImage umbrella;
+PImage cookies;
+
 
 //EndScreen variables
 World endScreen;
@@ -59,22 +74,32 @@ void setup() {
   splashBg = loadImage(splashBgFile);
   splashBg.resize(1500,800);
   mainBg = loadImage(mainBgFile);
-  mainBg.resize(1500,800);
+  mainBg.resize(800,600);
   endBg = loadImage(endBgFile);
   endBg.resize(1500,800);
 
   //setup the screens/worlds/grids in the Game
   splashScreen = new Screen("splash", splashBg);
-  mainGrid = new Grid("chessBoard", mainBg, 8, 8);
+  mainGrid = new Grid("chessBoard", mainBg, 6, 8);
   endScreen = new World("end", endBg);
   currentScreen = splashScreen;
+
+
 
   //setup the sprites  
   // player1 = loadImage(player1File);
   // player1.resize(mainGrid.getTileWidthPixels(),mainGrid.getTileHeightPixels());
   // enemy = loadImage("images/articuno.png");
   // enemy.resize(100,100);
+  needle = new Sprite("images/needle.png");
+  //needle.resize(100,100);
+  cookies = loadImage("images/cookies.png");
+  cookies.resize(400,400);
+  
   exampleAnimationSetup();
+
+  
+
 
   //Adding pixel-based Sprites to the world
   // mainGrid.addSpriteCopyTo(exampleSprite);
@@ -178,6 +203,7 @@ void mouseClicked(){
     System.out.println("Grid location: " + currentGrid.getGridLocation());
   }
 
+  System.out.println( get(mouseX, mouseY));
   //what to do if clicked? (Make player1 jump back?)
 
   //Toggle the animation on & off
@@ -236,10 +262,22 @@ public void updateScreen(){
     mainGrid.showGridSprites();
 
     checkExampleAnimation();
-    
+    currentScreen = lvlscreen2;
   }
 
   //Other screens?
+
+  //skyGrid Screen Updates
+  if(currentScreen == lvlscreen2){
+
+    image(cookies, 100, 100);
+    int needleHeight = 277;
+    needle.moveTo(mouseX, mouseY - needleHeight);
+    needle.show();
+
+
+
+  }
 
 
 }
