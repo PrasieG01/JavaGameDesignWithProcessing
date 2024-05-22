@@ -3,7 +3,7 @@
  * Last Edit: 5/21/2024
  */
 
-import processing.sound.*;
+// import processing.sound.*;
 
 //------------------ GAME VARIABLES --------------------//
 
@@ -44,7 +44,10 @@ boolean doAnimation;
 
 //Lvl2 Screens
 Screen lvlscreen2;
+String cookieFile = "images/cookiebg.jpg";
 PImage cookieBg;
+
+
 Sprite needle;
 PImage star;
 PImage rectangle;
@@ -60,7 +63,7 @@ String endBgFile = "images/youwin.png";
 
 //Example Variables
 //HexGrid hGrid = new HexGrid(3);
-  SoundFile song;
+  // SoundFile song;
 
 //------------------ REQUIRED PROCESSING METHODS --------------------//
 
@@ -81,14 +84,19 @@ void setup() {
   endBg = loadImage(endBgFile);
   endBg.resize(1500,800);
 
+
+  ///load screen2
+  cookieBg = loadImage(cookieFile);
+  cookieBg.resize(1500,800);
+
+
   //setup the screens/worlds/grids in the Game
-  splashScreen = new Screen("splash", splashBg);
-  mainGrid = new Grid("chessBoard", mainBg, 6, 8);
+  splashScreen = new Screen("splash", mainBg);
+  mainGrid = new Grid("chessBoard", cookieBg , 6, 8);
   endScreen = new World("end", endBg);
+  lvlscreen2 = new Screen("level2", cookieBg, 6, 8);
   currentScreen = splashScreen;
-
-
-
+  // next screen
   //setup the sprites  
   // player1 = loadImage(player1File);
   // player1.resize(mainGrid.getTileWidthPixels(),mainGrid.getTileHeightPixels());
@@ -111,8 +119,8 @@ void setup() {
   
   //Other Setup
   // Load a soundfile from the /data folder of the sketch and play it back
-  song = new SoundFile(this, "sounds/Magnetic.mp3");
-  song.play();
+  // song = new SoundFile(this, "sounds/Magnetic.mp3");
+  // song.play();
   
   imageMode(CORNER);    //Set Images to read coordinates at corners
   //fullScreen();   //only use if not using a specfic bg image
@@ -125,6 +133,7 @@ void setup() {
 void draw() {
 
   updateTitleBar();
+  currentScreen = lvlscreen2;
   updateScreen();
 
   //simple timing handling
@@ -135,6 +144,13 @@ void draw() {
   }
   msElapsed +=100;
   currentScreen.pause(100);
+
+  if(currentScreen == lvlscreen2)
+  {
+    needle.show();
+    image(cookies,0,0);
+  }
+
 
   //check for end of game
   if(isGameOver()){
@@ -200,6 +216,7 @@ void keyPressed(){
 
 //Known Processing method that automatically will run when a mouse click triggers it
 void mouseClicked(){
+
   
   //check if click was successful
   System.out.println("Mouse was clicked at (" + mouseX + "," + mouseY + ")");
@@ -216,6 +233,7 @@ void mouseClicked(){
   if(currentGrid != null){
     currentGrid.setMark("X",currentGrid.getGridLocation());
   }
+
 
 }
 
@@ -241,7 +259,9 @@ public void updateTitleBar(){
 public void updateScreen(){
 
   //Update the Background
+  currentScreen.getBg().resize(1500,800);
   background(currentScreen.getBg());
+
 
   //splashScreen update
   if(splashScreen.getScreenTime() > 3000 && splashScreen.getScreenTime() < 5000){
@@ -266,7 +286,6 @@ public void updateScreen(){
     mainGrid.showGridSprites();
 
     checkExampleAnimation();
-    currentScreen = lvlscreen2;
   }
 
   //Other screens?
