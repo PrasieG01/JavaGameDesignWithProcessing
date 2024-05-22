@@ -150,7 +150,7 @@ void draw() {
 void keyPressed(){
 
   //check what key was pressed
-  System.out.println("Key pressed: " + keyCode); //keyCode gives you an integer for the key
+  System.out.println("Key pressed: " + key); //keyCode gives you an integer for the key
 
   //What to do when a key is pressed?
   
