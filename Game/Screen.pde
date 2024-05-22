@@ -61,10 +61,11 @@ public class Screen {
         return y;
     }
 
-    //???
-    public void setScreenSize(int w, int h){
-
-    }
+    //??? test 
+    // public void setScreenSize(int w, int h){
+    //     x = (float)w;
+    //     y = (float)h;
+    // }
 
     public String toString(){
         return "Screen: " + screenName + " at " + x + "," + y;
