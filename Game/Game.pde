@@ -4,7 +4,9 @@
  */
 
 import processing.sound.*;
+PGraphics pg;
 import java.util.Scanner;
+
 
 //------------------ GAME VARIABLES --------------------//
 
@@ -50,6 +52,8 @@ String lvlWorld2File = "images/SquidGame02.jpg";
 PImage lvlWorld2Bg;
 Grid worldTwoGrid;
 
+PImage candydrawing;
+
 Sprite needle;
 // PImage star;
 // PImage rectangle;
@@ -90,6 +94,7 @@ void setup() {
 
   //Match the screen size to the background image size
   size(1500,800);
+
   
   //Set the title on the title bar
   surface.setTitle(titleText);
@@ -104,6 +109,7 @@ void setup() {
   splashTwoBg = loadImage(twoBgFile);
   splashTwoBg.resize(1500,800);
   lvlWorld2Bg = loadImage(lvlWorld2File);
+  lvlWorld2Bg.resize(1500,800);
   endBg = loadImage(endBgFile);
   endBg.resize(1500,800);
 
@@ -123,14 +129,18 @@ void setup() {
 
 
   ///setup level2 screen
-  lvlWorld2 = new World("levelTwo", lvlWorld2Bg);
-  worldTwoGrid = new Grid("levelTwoGrid", lvlWorld2Bg , 6, 8);
+  candydrawing = loadImage("images/dalgona.png");
+  candydrawing.resize(1500,800);
+  lvlWorld2 = new World("levelTwo", candydrawing);
+  worldTwoGrid = new Grid("levelTwoGrid", candydrawing , 6, 8);
   ///sprites
   needle = new Sprite("images/needle.png");
   needle.resize(100,100);
   cookies = loadImage("images/cookies.png");
-  cookies.resize(400,400);
-
+  cookies.resize(800,800);
+  pg = createGraphics(1500, 800);
+  pg.beginDraw();
+  pg.background(candydrawing);
 
 
   
@@ -170,6 +180,7 @@ void setup() {
 void draw() {
 
   currentScreen = lvlWorld2;
+  System.out.println(currentScreen.getTotalTime());
   updateScreen();
 
   updateTitleBar();
@@ -181,8 +192,22 @@ void draw() {
   }
   msElapsed +=100;
 
-    stroke(1);
-      mouseDragged();
+  image(pg, 0, 0); 
+  int needleHeight = 277;
+  needle.moveTo(mouseX, mouseY - needleHeight);
+  if(mousePressed)
+  {
+    pg.beginDraw();
+    pg.stroke(0,255,0);
+    pg.strokeWeight(16);
+    pg.line(mouseX, mouseY, pmouseX, pmouseY);
+    pg.endDraw();
+    needle.show();
+  }
+
+
+
+
 
 
 
@@ -193,17 +218,20 @@ void draw() {
     endGame();
   }
 
+  currentScreen.pause(100);
+
 } //end draw()
 
 //------------------ USER INPUT METHODS --------------------//
 
 
+
 //Known Processing method that automatically will run whenever a key is pressed
-void mouseDragged() {
-    line(mouseX, mouseY, pmouseX, pmouseY);
-    line(120, 80, 340, 300);
-    System.out.println("drawing");
-}
+// void mouseDragged() {
+//     line(mouseX, mouseY, pmouseX, pmouseY);
+//     line(120, 80, 340, 300);
+//     System.out.println("drawing");
+// }
 
 
 
@@ -310,9 +338,10 @@ public void updateScreen(){
   background(currentScreen.getBg());
 
 
+
   //splashScreen update
   if(currentScreen.getScreenTime() > 3000 && currentScreen.getScreenTime() < 5000){
-    currentScreen = currentGrid;
+    currentScreen = lvlWorld2;
       // if(song.isPlaying())
       // {
       //   song.pause();
@@ -341,10 +370,9 @@ public void updateScreen(){
   //skyGrid Screen Updates
   if(currentScreen == lvlWorld2){
 
-    needle.show();
-    image(cookies, 100, 100);
     int needleHeight = 277;
     needle.moveTo(mouseX, mouseY - needleHeight);
+    // needle.removeSprite(needle,mouseX, mouseY - needleHeight);
 
 
 
