@@ -12,10 +12,15 @@ import java.util.Scanner;
 
 //Title Bar
 private int msElapsed = 0;
-String titleText = "HorseChess";
-String extraText = "Who's Turn?";
-Scanner scan;
+String titleText = "Squid Game Simulator";
+String extraText = "Squid Character";
+//Scanner scan;
 
+
+//scores
+int lvl1Score = 0;
+int lvl2Score = 0;
+String progressBar = "Null";
 
 //Current Screens
 Screen currentScreen;
@@ -33,10 +38,19 @@ String oneBgFile = "images/SplashOne.png";
 PImage splashOneBg;
 
 ///Level 1 Screen Variables
-World lvlWorld1;
-String lvlWorld1File = "images/SquidGame01.jpg";
-PImage lvlWorld1Bg;
-Grid worldOneGrid;
+String lvl1File = "images/SquidGame01.jpg";
+PImage lvl1Bg;
+Grid lvl1Grid;
+
+AnimatedSprite player1;
+String player1File = "sprites/squid.png";
+String player1Json = "sprites/squid.json";
+int player1Row = 0;
+int player1Col = 0;
+
+PImage enemy;
+// AnimatedSprite enemySprite;
+
 
 AnimatedSprite exampleSprite;
 boolean doAnimation;
@@ -66,26 +80,10 @@ Screen endScreen;
 PImage endBg;
 String endBgFile = "images/apcsa.png";
 
-
-
-// PImage player1;
-// String player1File = "images/x_wood.png";
-// int player1Row = 3;
-// int health = 3;
-
-// PImage enemy;
-// AnimatedSprite enemySprite;
-
-
-// String 
-// float s = 0.0;
-
-
-
-
 //Example Variables
 //HexGrid hGrid = new HexGrid(3);
   // SoundFile song;
+  
 
 //------------------ REQUIRED PROCESSING METHODS --------------------//
 
@@ -104,8 +102,8 @@ void setup() {
   introBg.resize(1500,800);
   splashOneBg = loadImage(oneBgFile);
   splashOneBg.resize(1500,800);
-  lvlWorld1Bg = loadImage(lvlWorld1File);
-  lvlWorld1Bg.resize(1500,800);
+  lvl1Bg = loadImage(lvl1File);
+  lvl1Bg.resize(1500,800);
   splashTwoBg = loadImage(twoBgFile);
   splashTwoBg.resize(1500,800);
   lvlWorld2Bg = loadImage(lvlWorld2File);
@@ -120,10 +118,15 @@ void setup() {
   splashOne = new Screen("splashOne", splashOneBg);
   splashTwo = new Screen("splashTwo", splashTwoBg);
   endScreen = new Screen("end", endBg);
+  currentScreen = introScreen;
 
   ///setup level1 screen
-  lvlWorld1 = new World("levelOne", lvlWorld1Bg);
-  worldOneGrid = new Grid("levelOneGrid", lvlWorld1Bg , 6, 8);
+  lvl1Grid = new Grid("levelOneGrid", lvl1Bg , 6, 8);
+  player1 = new AnimatedSprite(player1File, player1Json);
+  lvl1Grid.setTileSprite(new GridLocation(0, 0),player1 );
+  player1.resize(200,200);
+  enemy = loadImage("images/x_wood.png");
+  enemy.resize(100,100);
 
 
 
@@ -146,17 +149,11 @@ void setup() {
   
 
   //setup the sprites  
-  // player1 = loadImage(player1File);
-  // player1.resize(mainGrid.getTileWidthPixels(),mainGrid.getTileHeightPixels());
-  // enemy = loadImage("images/articuno.png");
-  // enemy.resize(100,100);
+ 
 
   
   exampleAnimationSetup();
 
-
-
-  
 
 
   //Adding pixel-based Sprites to the world
@@ -166,8 +163,9 @@ void setup() {
   
   //Other Setup
   // Load a soundfile from the /data folder of the sketch and play it back
-  // song = new SoundFile(this, "sounds/Magnetic.mp3");
-  // song.play();
+   // song = new SoundFile(this, "sounds/Magnetic.mp3");
+    //song.play();
+
   
   imageMode(CORNER);    //Set Images to read coordinates at corners
   //fullScreen();   //only use if not using a specfic bg image
@@ -179,8 +177,7 @@ void setup() {
 //(Anything drawn on the screen should be called from here)
 void draw() {
 
-  currentScreen = lvlWorld2;
-  System.out.println(currentScreen.getTotalTime());
+  //currentScreen = lvlWorld2;
   updateScreen();
 
   updateTitleBar();
@@ -204,10 +201,6 @@ void draw() {
     pg.endDraw();
     needle.show();
   }
-
-
-
-
 
 
 
@@ -339,42 +332,37 @@ public void updateScreen(){
 
 
 
-  //splashScreen update
+  // Intro Screen update
   if(currentScreen.getScreenTime() > 3000 && currentScreen.getScreenTime() < 5000){
-    currentScreen = lvlWorld2;
+    currentScreen = lvl1Grid;
       // if(song.isPlaying())
       // {
       //   song.pause();
-      // }
   }
 
-  //skyGrid Screen Updates
-  // if(currentScreen == currentGrid){
-  //   currentGrid = currentGrid;
+  //level1 Screen Updates
+  if(currentScreen == lvl1Grid){
 
-  //   //Display the Player1 image
-  //   GridLocation player1Loc = new GridLocation(player1Row,0);
-  //   currentGrid.setTileImage(player1Loc, player1);
+    //Display the Player1 image
+    GridLocation player1Loc = new GridLocation(player1Row , player1Col);
+    lvl1Grid.setTileSprite(player1Loc, player1);
       
-  //   //update other screen elements
-  //   currentGrid.showSprites();
-  //   currentGrid.showImages();
-  //   currentGrid.showGridSprites();
+    //update other screen elements
+    lvl1Grid.showSprites();
+    lvl1Grid.showImages();
+    lvl1Grid.showGridSprites();
 
   //   s+=0.1;
   //   checkExampleAnimation(s);
-  // }
+  }
 
   //Other screens?
 
-  //skyGrid Screen Updates
+  //Dalgona Level 2 Screen Updates
   if(currentScreen == lvlWorld2){
 
     int needleHeight = 277;
     needle.moveTo(mouseX, mouseY - needleHeight);
-    // needle.removeSprite(needle,mouseX, mouseY - needleHeight);
-
-
 
   }
 
@@ -471,7 +459,7 @@ public void endGame(){
 //example method that creates 1 horse run along the screen
 public void exampleAnimationSetup(){  
   int i = 2;
-  exampleSprite = new AnimatedSprite("sprites/cat.png", "sprites/testCat.json", 50.0, i*75.0);
+  exampleSprite = new AnimatedSprite(player1File, player1Json , 50.0, i*75.0);
   exampleSprite.resize(200,200);
 }
 
