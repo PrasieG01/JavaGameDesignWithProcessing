@@ -3,7 +3,8 @@
  * Last Edit: 5/21/2024
  */
 
-// import processing.sound.*;
+import processing.sound.*;
+import java.util.Scanner;
 
 //------------------ GAME VARIABLES --------------------//
 
@@ -11,55 +12,72 @@
 private int msElapsed = 0;
 String titleText = "HorseChess";
 String extraText = "Who's Turn?";
+Scanner scan;
+
 
 //Current Screens
 Screen currentScreen;
 World currentWorld;
 Grid currentGrid;
 
-//Splash Screen Variables
-Screen splashScreen;
-String splashBgFile = "images/apcsa.png";
-PImage splashBg;
+//Intro screen Variables
+Screen introScreen;
+String introBgFile = "images/SquidGameIntro.jpg";
+PImage introBg;
 
-//Level1 Screen Variables
-Grid mainGrid;
-String mainBgFile = "images/SquidGame01.jpg";
-PImage mainBg;
+//Splash 1 Screen Variables
+Screen splashOne;
+String oneBgFile = "images/SplashOne.png";
+PImage splashOneBg;
 
-
-
-PImage player1;
-String player1File = "images/x_wood.png";
-int player1Row = 3;
-int health = 3;
-
-PImage enemy;
-AnimatedSprite enemySprite;
+///Level 1 Screen Variables
+World lvlWorld1;
+String lvlWorld1File = "images/SquidGame01.jpg";
+PImage lvlWorld1Bg;
+Grid worldOneGrid;
 
 AnimatedSprite exampleSprite;
 boolean doAnimation;
 
+//Splash 2 Screen Variables
+Screen splashTwo;
+String twoBgFile = "images/SplashTwo.png";
+PImage splashTwoBg;
 
-
-//Lvl2 Screens
-Screen lvlscreen2;
-String cookieFile = "images/cookiebg.jpg";
-PImage cookieBg;
-
+//Level 2 Screen Variables
+World lvlWorld2;
+String lvlWorld2File = "images/SquidGame02.jpg";
+PImage lvlWorld2Bg;
+Grid worldTwoGrid;
 
 Sprite needle;
-PImage star;
-PImage rectangle;
-PImage circle;
-PImage umbrella;
+// PImage star;
+// PImage rectangle;
+// PImage circle;
+// PImage umbrella;
 PImage cookies;
 
-
 //EndScreen variables
-World endScreen;
+Screen endScreen;
 PImage endBg;
-String endBgFile = "images/youwin.png";
+String endBgFile = "images/apcsa.png";
+
+
+
+// PImage player1;
+// String player1File = "images/x_wood.png";
+// int player1Row = 3;
+// int health = 3;
+
+// PImage enemy;
+// AnimatedSprite enemySprite;
+
+
+// String 
+// float s = 0.0;
+
+
+
 
 //Example Variables
 //HexGrid hGrid = new HexGrid(3);
@@ -77,44 +95,63 @@ void setup() {
   surface.setTitle(titleText);
 
   //Load BG images used
-  splashBg = loadImage(splashBgFile);
-  splashBg.resize(1500,800);
-  mainBg = loadImage(mainBgFile);
-  mainBg.resize(800,600);
+  introBg = loadImage(introBgFile);
+  introBg.resize(1500,800);
+  splashOneBg = loadImage(oneBgFile);
+  splashOneBg.resize(1500,800);
+  lvlWorld1Bg = loadImage(lvlWorld1File);
+  lvlWorld1Bg.resize(1500,800);
+  splashTwoBg = loadImage(twoBgFile);
+  splashTwoBg.resize(1500,800);
+  lvlWorld2Bg = loadImage(lvlWorld2File);
   endBg = loadImage(endBgFile);
   endBg.resize(1500,800);
 
-
-  ///load screen2
-  cookieBg = loadImage(cookieFile);
-  cookieBg.resize(1500,800);
-
-
   //setup the screens/worlds/grids in the Game
-  splashScreen = new Screen("splash", mainBg);
-  mainGrid = new Grid("chessBoard", cookieBg , 6, 8);
-  endScreen = new World("end", endBg);
-  lvlscreen2 = new Screen("level2", cookieBg, 6, 8);
-  currentScreen = splashScreen;
-  // next screen
+
+  ///setup splash & intro & end
+  introScreen = new Screen("intro", introBg);
+  splashOne = new Screen("splashOne", splashOneBg);
+  splashTwo = new Screen("splashTwo", splashTwoBg);
+  endScreen = new Screen("end", endBg);
+
+  ///setup level1 screen
+  lvlWorld1 = new World("levelOne", lvlWorld1Bg);
+  worldOneGrid = new Grid("levelOneGrid", lvlWorld1Bg , 6, 8);
+
+
+
+
+  ///setup level2 screen
+  lvlWorld2 = new World("levelTwo", lvlWorld2Bg);
+  worldTwoGrid = new Grid("levelTwoGrid", lvlWorld2Bg , 6, 8);
+  ///sprites
+  needle = new Sprite("images/needle.png");
+  needle.resize(100,100);
+  cookies = loadImage("images/cookies.png");
+  cookies.resize(400,400);
+
+
+
+  
+
   //setup the sprites  
   // player1 = loadImage(player1File);
   // player1.resize(mainGrid.getTileWidthPixels(),mainGrid.getTileHeightPixels());
   // enemy = loadImage("images/articuno.png");
   // enemy.resize(100,100);
-  needle = new Sprite("images/needle.png");
-  //needle.resize(100,100);
-  cookies = loadImage("images/cookies.png");
-  cookies.resize(400,400);
+
   
   exampleAnimationSetup();
+
+
 
   
 
 
   //Adding pixel-based Sprites to the world
   // mainGrid.addSpriteCopyTo(exampleSprite);
-  mainGrid.printSprites();
+  // mainGrid.printSprites();
   System.out.println("Done adding sprites to main world..");
   
   //Other Setup
@@ -132,10 +169,10 @@ void setup() {
 //(Anything drawn on the screen should be called from here)
 void draw() {
 
-  updateTitleBar();
-  currentScreen = lvlscreen2;
+  currentScreen = lvlWorld2;
   updateScreen();
 
+  updateTitleBar();
   //simple timing handling
   if (msElapsed % 300 == 0) {
     //sprite handling
@@ -143,13 +180,12 @@ void draw() {
     moveSprites();
   }
   msElapsed +=100;
-  currentScreen.pause(100);
 
-  if(currentScreen == lvlscreen2)
-  {
-    needle.show();
-    image(cookies,0,0);
-  }
+    stroke(1);
+      mouseDragged();
+
+
+
 
 
   //check for end of game
@@ -163,6 +199,18 @@ void draw() {
 
 
 //Known Processing method that automatically will run whenever a key is pressed
+void mouseDragged() {
+    line(mouseX, mouseY, pmouseX, pmouseY);
+    line(120, 80, 340, 300);
+    System.out.println("drawing");
+}
+
+
+
+
+
+
+
 void keyPressed(){
 
 
@@ -217,7 +265,6 @@ void keyPressed(){
 //Known Processing method that automatically will run when a mouse click triggers it
 void mouseClicked(){
 
-  
   //check if click was successful
   System.out.println("Mouse was clicked at (" + mouseX + "," + mouseY + ")");
   if(currentGrid != null){
@@ -247,7 +294,7 @@ public void updateTitleBar(){
 
   if(!isGameOver()) {
     //set the title each loop
-    surface.setTitle(titleText + "    " + extraText + " " + health);
+    surface.setTitle(titleText + "    " + extraText + " " );
 
     //adjust the extra text as desired
   
@@ -264,8 +311,8 @@ public void updateScreen(){
 
 
   //splashScreen update
-  if(splashScreen.getScreenTime() > 3000 && splashScreen.getScreenTime() < 5000){
-    currentScreen = mainGrid;
+  if(currentScreen.getScreenTime() > 3000 && currentScreen.getScreenTime() < 5000){
+    currentScreen = currentGrid;
       // if(song.isPlaying())
       // {
       //   song.pause();
@@ -273,30 +320,31 @@ public void updateScreen(){
   }
 
   //skyGrid Screen Updates
-  if(currentScreen == mainGrid){
-    currentGrid = mainGrid;
+  // if(currentScreen == currentGrid){
+  //   currentGrid = currentGrid;
 
-    //Display the Player1 image
-    GridLocation player1Loc = new GridLocation(player1Row,0);
-    mainGrid.setTileImage(player1Loc, player1);
+  //   //Display the Player1 image
+  //   GridLocation player1Loc = new GridLocation(player1Row,0);
+  //   currentGrid.setTileImage(player1Loc, player1);
       
-    //update other screen elements
-    mainGrid.showSprites();
-    mainGrid.showImages();
-    mainGrid.showGridSprites();
+  //   //update other screen elements
+  //   currentGrid.showSprites();
+  //   currentGrid.showImages();
+  //   currentGrid.showGridSprites();
 
-    checkExampleAnimation();
-  }
+  //   s+=0.1;
+  //   checkExampleAnimation(s);
+  // }
 
   //Other screens?
 
   //skyGrid Screen Updates
-  if(currentScreen == lvlscreen2){
+  if(currentScreen == lvlWorld2){
 
+    needle.show();
     image(cookies, 100, 100);
     int needleHeight = 277;
     needle.moveTo(mouseX, mouseY - needleHeight);
-    needle.show();
 
 
 
@@ -400,9 +448,9 @@ public void exampleAnimationSetup(){
 }
 
 //example method that animates the horse Sprites
-public void checkExampleAnimation(){
+public void checkExampleAnimation(float s){
   if(doAnimation){
-    exampleSprite.animateHorizontal(1.0, 20.0, true);
+    exampleSprite.animate(s);
     System.out.println("animating!");
   }
 }
