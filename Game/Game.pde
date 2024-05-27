@@ -17,6 +17,10 @@ String extraText = "Squid Character";
 //Scanner scan;
 
 
+//outline code test
+String outlineImg = "images/dalgona.png";
+PImage ogOutline;
+
 //scores
 int lvl1Score = 0;
 int lvl2Score = 0;
@@ -100,6 +104,9 @@ void setup() {
   //Load BG images used
   introBg = loadImage(introBgFile);
   introBg.resize(1500,800);
+  ogOutline = loadImage(outlineImg);
+  ogOutline.resize(1500,800);
+
   splashOneBg = loadImage(oneBgFile);
   splashOneBg.resize(1500,800);
   lvl1Bg = loadImage(lvl1File);
@@ -145,13 +152,13 @@ void setup() {
   pg.beginDraw();
   pg.background(candydrawing);
 
-
+//outline code originnalOutline : dalgona.png
+  ogOutline = getOutline(candydrawing);
   
 
   //setup the sprites  
  
 
-  
   exampleAnimationSetup();
 
 
@@ -192,6 +199,7 @@ void draw() {
   image(pg, 0, 0); 
   int needleHeight = 277;
   needle.moveTo(mouseX, mouseY - needleHeight);
+
   if(mousePressed)
   {
     pg.beginDraw();
@@ -202,8 +210,10 @@ void draw() {
     needle.show();
   }
 
-
-
+  // Check if the carving is successful when mouse is released
+    if (!mousePressed) {
+        evaluateCarving();
+    }
 
 
   //check for end of game
@@ -214,6 +224,63 @@ void draw() {
   currentScreen.pause(100);
 
 } //end draw()
+
+ //Implement evaluateCarving method
+  void evaluateCarving(){
+    PImage drawnOutline = pg.get();
+
+    //compare drawn and og
+    float similar = compareOutlines(drawnOutline, ogOutline);
+
+    //success threshold 
+    float successfulWhen = 0.5;
+
+    //prints statement
+    if(similar >= successfulWhen){
+     println("You have carved successfully! Level 2 passed!");
+    }else{
+      println("Level 2 Failed! Try again!");
+    }
+  }
+
+
+//test code for getOutline method
+PImage getOutline(PImage ogOutline) {
+    PImage outline = createImage(ogOutline.width, ogOutline.height, RGB); 
+    outline.copy(ogOutline, 0, 0, ogOutline.width, ogOutline.height, 0, 0, ogOutline.width, ogOutline.height); // Copy the original image to the outline
+    
+    outline.filter(GRAY); 
+    outline.filter(THRESHOLD); 
+    outline.filter(ERODE); 
+    outline.filter(DILATE); 
+
+    return outline;
+}
+
+//made a method to compare the drawnOutline with the original outline
+float compareOutlines(PImage drawnOutline, PImage ogOutline) {
+    float matchingPixels = 0;
+    float totalPixels = drawnOutline.width * drawnOutline.height;
+
+    drawnOutline.filter(GRAY); //helps compare 
+    ogOutline.filter(GRAY); //helps compare
+
+    // Compares each pixel
+    for (int x = 0; x < drawnOutline.width; x++) {
+        for (int y = 0; y < drawnOutline.height; y++) {
+            color drawnPixel = drawnOutline.get(x, y);
+            color ogPixel = ogOutline.get(x, y);
+
+            if (drawnPixel == ogPixel) {
+                matchingPixels++;
+            }
+        }
+    }
+
+    // Calculate how similar they are
+     float similar = (matchingPixels / totalPixels) * 100;
+    return similar;
+}
 
 //------------------ USER INPUT METHODS --------------------//
 
