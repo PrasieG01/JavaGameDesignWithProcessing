@@ -5,7 +5,10 @@
 
 import processing.sound.*;
 PGraphics pg;
+PGraphics outlineBuffer;
 import java.util.Scanner;
+//import processing.core.PGraphics;
+
 
 
 //------------------ GAME VARIABLES --------------------//
@@ -20,6 +23,11 @@ String extraText = "Squid Character";
 //outline code test
 String outlineImg = "images/dalgona.png";
 PImage ogOutline;
+
+
+//2D Arrays of Both drawings
+int[][] blackPixelColors; //from ogOutline
+int[][] drawnLineColors;
 
 //scores
 int lvl1Score = 0;
@@ -136,32 +144,52 @@ void setup() {
   enemy.resize(100,100);
 
 
-
-
   ///setup level2 screen
   candydrawing = loadImage("images/dalgona.png");
   candydrawing.resize(1500,800);
   lvlWorld2 = new World("levelTwo", candydrawing);
   worldTwoGrid = new Grid("levelTwoGrid", candydrawing , 6, 8);
-  ///sprites
+
+
+///sprites
   needle = new Sprite("images/needle.png");
   needle.resize(100,100);
   cookies = loadImage("images/cookies.png");
   cookies.resize(800,800);
+
+    // Create a graphics buffer
   pg = createGraphics(1500, 800);
   pg.beginDraw();
   pg.background(candydrawing);
+  pg.endDraw();
+
+  // Create a separate PGraphics buffer for storing the outline
+    outlineBuffer = createGraphics(1500, 800);
+    outlineBuffer.beginDraw();
+    outlineBuffer.background(candydrawing);
+    outlineBuffer.endDraw();
+
 
 //outline code originnalOutline : dalgona.png
-  ogOutline = getOutline(candydrawing);
+  //ogOutline = getOutline(candydrawing);
   
-
-  //setup the sprites  
- 
-
-  exampleAnimationSetup();
+//create a mask of the blackpixelcolors
+blackPixelColors = getBlackPixelColors(ogOutline);
 
 
+    exampleAnimationSetup();
+
+    //get the outline colors from the needle
+    drawnLineColors = getOutlineColors(outlineBuffer);
+
+
+
+  //evaluate the carving
+  if(isCarvingSuccess()){
+    println("Level 2 Passed! Carving done successfully!");
+  } else{
+    println("Level 2 failed! Carving failed!");
+  }
 
   //Adding pixel-based Sprites to the world
   // mainGrid.addSpriteCopyTo(exampleSprite);
@@ -178,7 +206,81 @@ void setup() {
   //fullScreen();   //only use if not using a specfic bg image
   println("Game started...");
 
-} //end setup()
+
+
+} 
+
+//end setup()
+
+
+int[][] getOutlineColors(PGraphics outlineBuffer){
+    int[][] colors = new int[outlineBuffer.width][outlineBuffer.height];
+    outlineBuffer.loadPixels();
+    for(int x = 0; x < outlineBuffer.width; x++){
+    for(int y = 0; y < outlineBuffer.height; y++){
+     colors[x][y] = outlineBuffer.pixels[y * outlineBuffer.width + x];
+    }
+  }
+  return colors;
+
+}
+
+int[][] getBlackPixelColors(PImage ogOutline){
+  int[][] colors = new int[ogOutline.width][ogOutline.height];
+  ogOutline.loadPixels();
+  for(int x = 0; x < ogOutline.width; x++){
+    for(int y = 0; y < ogOutline.height; y++){
+      int pixelColor = ogOutline.pixels[y * ogOutline.width + x];
+      if(isBlack(pixelColor)){
+        colors[x][y] = pixelColor;
+      }
+    }
+  }
+  return colors;
+}
+
+boolean isCarvingSuccess(){
+
+  int matchingPixels = 0;
+  int totalPixels = blackPixelColors.length * blackPixelColors[0].length;
+
+  for(int x = 0; x < blackPixelColors.length; x++){
+    for(int y = 0; y < blackPixelColors[x].length; y++){
+      if(blackPixelColors[x][y] != 0 && blackPixelColors[x][y] == drawnLineColors[x][y]){
+        matchingPixels++;
+      }
+    }
+    
+  }
+
+  println("Matching pixels: " + matchingPixels);
+println("Total pixels: " + totalPixels);
+
+  float similar = (float) matchingPixels / totalPixels;
+  return similar >= 0.3; // Return true if at least 80% of pixels match
+
+}
+
+
+//what is black?
+boolean isBlack(int colores){  //for some reason couldn't use just "color"
+  float[] hsb = rgbToHSB(colores);
+  return hsb[2] < 100; //assume brightness less than 50 is black
+
+}
+
+float[] rgbToHSB(int colores){
+  int r = (colores >> 16) & 0xFF;
+    int g = (colores >> 8) & 0xFF;
+    int b = colores & 0xFF;
+
+return java.awt.Color.RGBtoHSB(r, g, b, null);
+
+
+
+
+}
+
 
 //Required Processing method that automatically loops
 //(Anything drawn on the screen should be called from here)
@@ -210,10 +312,18 @@ void draw() {
     needle.show();
   }
 
-  // Check if the carving is successful when mouse is released
-    if (!mousePressed) {
-        evaluateCarving();
+  if (mousePressed) {
+        outlineBuffer.beginDraw();
+        outlineBuffer.stroke(0, 255, 0);
+        outlineBuffer.strokeWeight(16);
+        outlineBuffer.line(mouseX, mouseY, pmouseX, pmouseY);
+        outlineBuffer.endDraw();
     }
+
+  // Check if the carving is successful when mouse is released
+   // if (!mousePressed) {
+      //  evaluateCarving();
+   // }
 
 
   //check for end of game
@@ -226,61 +336,61 @@ void draw() {
 } //end draw()
 
  //Implement evaluateCarving method
-  void evaluateCarving(){
-    PImage drawnOutline = pg.get();
+//   void evaluateCarving(){
+//     PImage drawnOutline = pg.get();
 
-    //compare drawn and og
-    float similar = compareOutlines(drawnOutline, ogOutline);
+//     //compare drawn and og
+//     float similar = compareOutlines(drawnOutline, ogOutline);
 
-    //success threshold 
-    float successfulWhen = 0.5;
+//     //success threshold 
+//     float successfulWhen = 0.5;
 
-    //prints statement
-    if(similar >= successfulWhen){
-     println("You have carved successfully! Level 2 passed!");
-    }else{
-      println("Level 2 Failed! Try again!");
-    }
-  }
+//     //prints statement
+//     if(similar >= successfulWhen){
+//      println("You have carved successfully! Level 2 passed!");
+//     }else{
+//       println("Level 2 Failed! Try again!");
+//     }
+//   }
 
 
-//test code for getOutline method
-PImage getOutline(PImage ogOutline) {
-    PImage outline = createImage(ogOutline.width, ogOutline.height, RGB); 
-    outline.copy(ogOutline, 0, 0, ogOutline.width, ogOutline.height, 0, 0, ogOutline.width, ogOutline.height); // Copy the original image to the outline
+// //test code for getOutline method
+// PImage getOutline(PImage ogOutline) {
+//     PImage outline = createImage(ogOutline.width, ogOutline.height, RGB); 
+//     outline.copy(ogOutline, 0, 0, ogOutline.width, ogOutline.height, 0, 0, ogOutline.width, ogOutline.height); // Copy the original image to the outline
     
-    outline.filter(GRAY); 
-    outline.filter(THRESHOLD); 
-    outline.filter(ERODE); 
-    outline.filter(DILATE); 
+//     outline.filter(GRAY); 
+//     outline.filter(THRESHOLD); 
+//     outline.filter(ERODE); 
+//     outline.filter(DILATE); 
 
-    return outline;
-}
+//     return outline;
+// }
 
-//made a method to compare the drawnOutline with the original outline
-float compareOutlines(PImage drawnOutline, PImage ogOutline) {
-    float matchingPixels = 0;
-    float totalPixels = drawnOutline.width * drawnOutline.height;
+// //made a method to compare the drawnOutline with the original outline
+// float compareOutlines(PImage drawnOutline, PImage ogOutline) {
+//     float matchingPixels = 0;
+//     float totalPixels = drawnOutline.width * drawnOutline.height;
 
-    drawnOutline.filter(GRAY); //helps compare 
-    ogOutline.filter(GRAY); //helps compare
+//     drawnOutline.filter(GRAY); //helps compare 
+//     ogOutline.filter(GRAY); //helps compare
 
-    // Compares each pixel
-    for (int x = 0; x < drawnOutline.width; x++) {
-        for (int y = 0; y < drawnOutline.height; y++) {
-            color drawnPixel = drawnOutline.get(x, y);
-            color ogPixel = ogOutline.get(x, y);
+//     // Compares each pixel
+//     for (int x = 0; x < drawnOutline.width; x++) {
+//         for (int y = 0; y < drawnOutline.height; y++) {
+//             color drawnPixel = drawnOutline.get(x, y);
+//             color ogPixel = ogOutline.get(x, y);
 
-            if (drawnPixel == ogPixel) {
-                matchingPixels++;
-            }
-        }
-    }
+//             if (drawnPixel == ogPixel) {
+//                 matchingPixels++;
+//             }
+//         }
+//     }
 
-    // Calculate how similar they are
-     float similar = (matchingPixels / totalPixels) * 100;
-    return similar;
-}
+//     // Calculate how similar they are
+//      float similar = (matchingPixels / totalPixels) * 100;
+//     return similar;
+// }
 
 //------------------ USER INPUT METHODS --------------------//
 
