@@ -6,6 +6,7 @@
 import processing.sound.*;
 PGraphics pg;
 PGraphics outlineBuffer;
+PImage mask; //extracts the image with darker pixels only
 import java.util.Scanner;
 //import processing.core.PGraphics;
 
@@ -21,7 +22,7 @@ String extraText = "Squid Character";
 
 
 //outline code test
-String outlineImg = "images/dalgona.png";
+String outlineImg = "images/dal2OG.png";
 PImage ogOutline;
 
 
@@ -112,8 +113,12 @@ void setup() {
   //Load BG images used
   introBg = loadImage(introBgFile);
   introBg.resize(1500,800);
+  
   ogOutline = loadImage(outlineImg);
   ogOutline.resize(1500,800);
+
+  mask = loadImage("images/dalgonamask.png");
+  mask.resize(1500, 800);
 
   splashOneBg = loadImage(oneBgFile);
   splashOneBg.resize(1500,800);
@@ -166,7 +171,7 @@ void setup() {
   // Create a separate PGraphics buffer for storing the outline
     outlineBuffer = createGraphics(1500, 800);
     outlineBuffer.beginDraw();
-    outlineBuffer.background(candydrawing);
+    outlineBuffer.background(mask);
     outlineBuffer.endDraw();
 
 
@@ -174,22 +179,16 @@ void setup() {
   //ogOutline = getOutline(candydrawing);
   
 //create a mask of the blackpixelcolors
-blackPixelColors = getBlackPixelColors(ogOutline);
+blackPixelColors = getBlackPixelColors(mask);//ogOutline);
 
+
+ // function to extract darker pixels
+  int[][] darkerPixels = getBlackPixelColors(mask); //ogOutline
 
     exampleAnimationSetup();
 
     //get the outline colors from the needle
     drawnLineColors = getOutlineColors(outlineBuffer);
-
-
-
-  //evaluate the carving
-  if(isCarvingSuccess()){
-    println("Level 2 Passed! Carving done successfully!");
-  } else{
-    println("Level 2 failed! Carving failed!");
-  }
 
   //Adding pixel-based Sprites to the world
   // mainGrid.addSpriteCopyTo(exampleSprite);
@@ -206,79 +205,142 @@ blackPixelColors = getBlackPixelColors(ogOutline);
   //fullScreen();   //only use if not using a specfic bg image
   println("Game started...");
 
-
-
-} 
+}
+ 
 
 //end setup()
-
 
 int[][] getOutlineColors(PGraphics outlineBuffer){
     int[][] colors = new int[outlineBuffer.width][outlineBuffer.height];
     outlineBuffer.loadPixels();
+    outlineBuffer.filter(GRAY);
     for(int x = 0; x < outlineBuffer.width; x++){
     for(int y = 0; y < outlineBuffer.height; y++){
      colors[x][y] = outlineBuffer.pixels[y * outlineBuffer.width + x];
     }
   }
+
+for(int[] c : colors)
+  {
+    for(int m : c)
+    {
+      System.out.print(m + " ");
+    }
+    System.out.println();
+  }
+
+
   return colors;
+
 
 }
 
-int[][] getBlackPixelColors(PImage ogOutline){
-  int[][] colors = new int[ogOutline.width][ogOutline.height];
-  ogOutline.loadPixels();
-  for(int x = 0; x < ogOutline.width; x++){
-    for(int y = 0; y < ogOutline.height; y++){
-      int pixelColor = ogOutline.pixels[y * ogOutline.width + x];
-      if(isBlack(pixelColor)){
+int[][] getBlackPixelColors(PImage mask){ //ogOutline
+  int[][] colors = new int[mask.width][mask.height]; //ogOutline
+  mask.loadPixels(); //ogOutline
+
+  // Define a threshold for darkness
+  float brightLevel = 100; //just playing around with the number
+  for(int x = 0; x < mask.width; x++){ //ogOutline
+    for(int y = 0; y < mask.height; y++){
+      int pixelColor = mask.pixels[y * mask.width + x];
+      if(isDarker(pixelColor, brightLevel)){
         colors[x][y] = pixelColor;
       }
     }
   }
+  
+  // for(int[] c : colors)
+  // {
+  //   for(int m : c)
+  //   {
+  //     System.out.print(m + " ");
+  //   }
+  //   System.out.println();
+  // }
+   //Print number of extracted darker pixels
+  int count = 0;
+  for (int x = 0; x < colors.length; x++) {
+    for (int y = 0; y < colors[x].length; y++) {
+      if (colors[x][y] != 0) {
+        count++;
+      }
+    }
+  }
+  println("Number of extracted darker pixels: " + count);
   return colors;
 }
+  
 
-boolean isCarvingSuccess(){
 
+// boolean isCarvingSuccess(){
+
+//   int matchingPixels = 0;
+//   int totalPixels = blackPixelColors.length * blackPixelColors[0].length;
+
+//   for(int x = 0; x < blackPixelColors.length; x++){
+//     for(int y = 0; y < blackPixelColors[x].length; y++){
+//       if(blackPixelColors[x][y] != 0 && blackPixelColors[x][y] == drawnLineColors[x][y]){
+//         matchingPixels++;
+//       }
+//     }
+    
+//   }
+
+//   println("Matching pixels: " + matchingPixels);
+// println("Total pixels: " + totalPixels);
+
+//   float similar = (float) matchingPixels / totalPixels;
+//   println("Similarity: " + similar);
+//   return similar >= 0.3; // Return true if at least 80% of pixels match
+
+// }
+
+
+
+
+
+//  }
+
+boolean isDarker(int colores, float brightLevel) {
+  int r = (colores >> 16) & 0xFF;
+  int g = (colores >> 8) & 0xFF;
+  int b = colores & 0xFF;
+
+  //stack overflow code used above
+  
+  // Calculate luminance
+  float luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+  return luminance < brightLevel; 
+}
+
+boolean isCarvingSuccess() {
   int matchingPixels = 0;
-  int totalPixels = blackPixelColors.length * blackPixelColors[0].length;
+  int totalPixels = mask.width * mask.height;
 
-  for(int x = 0; x < blackPixelColors.length; x++){
-    for(int y = 0; y < blackPixelColors[x].length; y++){
-      if(blackPixelColors[x][y] != 0 && blackPixelColors[x][y] == drawnLineColors[x][y]){
+
+ // RGB color value to check for (107, 56, 11) (found online)
+  int targetColor = color(107, 56, 11);
+
+  for (int x = 0; x < mask.width; x++) {
+    for (int y = 0; y < mask.height; y++) {
+      int outlineColor = outlineBuffer.get(x, y); // Get color of the drawn outline pixel
+      
+      if (outlineColor == targetColor) {
+        totalPixels++;
+      }
+      int maskColor = mask.get(x, y);              // Get color of the mask pixel
+      if(maskColor == targetColor){
         matchingPixels++;
       }
     }
-    
   }
 
-  println("Matching pixels: " + matchingPixels);
-println("Total pixels: " + totalPixels);
-
   float similar = (float) matchingPixels / totalPixels;
-  return similar >= 0.3; // Return true if at least 80% of pixels match
+  println("Similarity: " + similar); // Print the similarity ratio for debugging
 
-}
-
-
-//what is black?
-boolean isBlack(int colores){  //for some reason couldn't use just "color"
-  float[] hsb = rgbToHSB(colores);
-  return hsb[2] < 100; //assume brightness less than 50 is black
-
-}
-
-float[] rgbToHSB(int colores){
-  int r = (colores >> 16) & 0xFF;
-    int g = (colores >> 8) & 0xFF;
-    int b = colores & 0xFF;
-
-return java.awt.Color.RGBtoHSB(r, g, b, null);
-
-
-
-
+  return similar >= 0.3; // Return true if at least 30% of pixels match
 }
 
 
@@ -306,7 +368,7 @@ void draw() {
   {
     pg.beginDraw();
     pg.stroke(0,255,0);
-    pg.strokeWeight(16);
+    pg.strokeWeight(100);
     pg.line(mouseX, mouseY, pmouseX, pmouseY);
     pg.endDraw();
     needle.show();
@@ -315,15 +377,20 @@ void draw() {
   if (mousePressed) {
         outlineBuffer.beginDraw();
         outlineBuffer.stroke(0, 255, 0);
-        outlineBuffer.strokeWeight(16);
+        outlineBuffer.strokeWeight(100);
         outlineBuffer.line(mouseX, mouseY, pmouseX, pmouseY);
         outlineBuffer.endDraw();
     }
+    else{
+      boolean success = isCarvingSuccess();
+      if (success) {
+      println("Level 2 Passed! Carving done successfully!");
+    } else {
+      println("Level 2 failed! Carving failed!");
+    }
+    }
+// Check for carving success when mouse is released
 
-  // Check if the carving is successful when mouse is released
-   // if (!mousePressed) {
-      //  evaluateCarving();
-   // }
 
 
   //check for end of game
@@ -333,7 +400,9 @@ void draw() {
 
   currentScreen.pause(100);
 
-} //end draw()
+}
+
+ //end draw()
 
  //Implement evaluateCarving method
 //   void evaluateCarving(){
@@ -420,7 +489,24 @@ void keyPressed(){
   
   //set [W] key to move the player1 up & avoid Out-of-Bounds errors
   if(keyCode == 87){
+
+  pg.loadPixels();
+  candydrawing.loadPixels();
+
+  for(int i = 0; i < pg.width()*pg.height(); i++ )
+  {
+    pixel[i] = 
+  }
+
    
+
+
+
+
+
+
+
+
   //   //Store old GridLocation
   //   GridLocation oldLoc = new GridLocation(player1Row, 0);
 
