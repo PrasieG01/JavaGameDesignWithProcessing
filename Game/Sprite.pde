@@ -1,8 +1,9 @@
 /* Sprite class - to create objects that move around with their own properties
  * Inspired by Daniel Shiffman's p5js Animated Sprite tutorial
  * Author: Joel Bianchi
- * Last Edit: 5/22/2024
+ * Last Edit: 5/28/2024
  * Added Sprite constructor with scaling
+ * Updaed for null images (ie. Buttons)
  */
 
 public class Sprite {
@@ -42,9 +43,14 @@ public class Sprite {
     this.speedY = 0;
     this.isAnimated = isAnimated;
     if(!isAnimated){
-      this.spriteImg = loadImage(spriteImgFile);
-      w = spriteImg.width * scale;
-      h = spriteImg.height * scale;
+      if( spriteImgFile != null){
+        this.spriteImg = loadImage(spriteImgFile);
+        w = spriteImg.width * scale;
+        h = spriteImg.height * scale;
+      } else{
+        
+      }
+
     }
   }
 
