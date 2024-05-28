@@ -6,7 +6,7 @@
 
 public class Button {
 
-    //Button fields
+    //------------------ BUTTON FIELDS --------------------//
     private String caption;
     private String shape;
     private float shapeX, shapeY;     //coordinates of CENTER of button shape
@@ -16,7 +16,10 @@ public class Button {
     private color clickColor;
     private color currentColor;
     private boolean visible;
-    
+
+
+    //------------------ BUTTON CONSTRUCTORS --------------------//
+
     //Button Constructor #1
     public Button(String shape, float x, float y, float w, float h, String txt) {
         //super(null,1.0, x, y,false);
@@ -34,6 +37,9 @@ public class Button {
         this.visible = true;
     }
 
+
+    //------------------ BUTTON METHODS --------------------//
+
     //Button method to be called each cycle -- ie. inside draw() or updateScreen() 
     void show() {
         
@@ -42,12 +48,10 @@ public class Button {
         stroke(0);
 
         //Sets color of button based on Mouse hover
-        if (isMouseOverButton()) {
-            if (mousePressed) {
-                currentColor = clickColor;
-            } else{
-                currentColor = highlightColor;
-            }
+        if (isClicked()) {
+            currentColor = clickColor;
+        } else if (isMouseOverButton()){
+            currentColor = highlightColor;
         } else {
             currentColor = baseColor;
         }
@@ -80,6 +84,17 @@ public class Button {
     }
 
 
+    //------------------ BUTTON HOVERING METHODS --------------------//
+
+    public boolean isClicked(){
+        if (isMouseOverButton() && mousePressed) {
+            System.out.println("Button Clicked");
+            return true;
+        } else{
+            return false;
+        }
+    }
+    
     public boolean isMouseOverButton(){ //move to Sprite class eventually
         if(shape.equals("rect")){
             return isOverRect();
@@ -110,7 +125,7 @@ public class Button {
         }
     }
 
-//------------------ MUTATOR METHODS --------------------//
+//------------------ BUTTON MUTATOR METHODS --------------------//
 
     public void setButtonColor(color c){
         this.baseColor = c;

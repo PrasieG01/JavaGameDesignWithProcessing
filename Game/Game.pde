@@ -72,7 +72,7 @@ String outlineImg = "images/dalgona.png"; //outline code test
 PImage ogOutline;
 int[][] blackPixelColors; ////2D Arrays of Both drawings from ogOutline
 int[][] drawnLineColors; //2D Arrays of Both drawings
-Button b = new Button("rectp", 100, 100, 200, 100, "ClickMe");
+Button b = new Button("rect", 100, 100, 200, 100, "ClickMe");
 
 
 //EndScreen variables
@@ -381,7 +381,6 @@ public void updateTitleBar(){
     //adjust the extra text as desired
   
   }
-
 }
 
 //method to update what is drawn on the screen each frame

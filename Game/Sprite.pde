@@ -1,5 +1,6 @@
 /* Sprite class - to create objects that move around with their own properties
  * Inspired by Daniel Shiffman's p5js Animated Sprite tutorial
+ * Note: Picture coordinate origina at top, left corner
  * Author: Joel Bianchi
  * Last Edit: 5/28/2024
  * Added Sprite constructor with scaling
@@ -8,16 +9,19 @@
 
 public class Sprite {
   
-    PImage spriteImg;
-    private String spriteImgFile;
-    private float centerX;
-    private float centerY;
-    private float speedX;
-    private float speedY;
-    private float w;
-    private float h;
-    private boolean isAnimated;
+  //------------------ SPRITE FIELDS --------------------//
+  PImage spriteImg;
+  private String spriteImgFile;
+  private float centerX;
+  private float centerY;
+  private float speedX;
+  private float speedY;
+  private float w;
+  private float h;
+  private boolean isAnimated;
 
+
+  //------------------ SPRITE CONSTRUCTORS --------------------//
 
   // Sprite Constructor #1: Only pass in the image file (Non-animated)
   public Sprite(String spriteImgFile){
@@ -55,6 +59,8 @@ public class Sprite {
   }
 
 
+  //------------------ SPRITE MOTION METHODS --------------------//
+
   // method to display the Sprite image on the screen
   public void show() {
       image(spriteImg, getLeft(), getTop(), w, h);
@@ -80,16 +86,6 @@ public class Sprite {
   }
 
 
-  // method that automatically moves the Sprite based on its velocity
-  public void update(){
-    move(speedX, speedY);
-  }
-  public void update(float deltaTime){
-    speedX += deltaTime/1000;
-    speedY += deltaTime/1000;
-    move(speedX, speedY);
-  }
-
   // method to rotate Sprite image on the screen
   public void rotate(float degrees){
     float rads = radians(degrees);
@@ -99,8 +95,7 @@ public class Sprite {
 
 
 
-
-  /*-- ACCESSOR METHODS --*/
+  //------------------ SPRITE ACCESSOR METHODS --------------------//
 
   public float getW(){
     return w;
@@ -122,7 +117,8 @@ public class Sprite {
   }
   
   
-  /*-- MUTATOR METHODS --*/
+  //------------------ SPRITE MUTATOR METHODS --------------------//
+
   public void setW(float w){
     this.w = w;
   }
@@ -143,10 +139,10 @@ public class Sprite {
   }
 
 
-  /*-- SPRITE BOUNDARY METHODS --
-    -- Used from Long Bao Nguyen
-    -- https://longbaonguyen.github.io/courses/platformer/platformer.html
-  */
+  /*------------------ SPRITE BOUNDARY METHODS  --------------------
+   * -- Used from Long Bao Nguyen
+   *  -- https://longbaonguyen.github.io/courses/platformer/platformer.html
+   */
   void setLeft(float left){
     centerX = left + w/2;
   }
@@ -203,6 +199,23 @@ public class Sprite {
     return sp;
 
   }
+
+  public void resize(int width, int height){
+    spriteImg.resize(width, height);
+  }
+
+
+  // method that automatically moves the Sprite based on its velocity
+  public void update(){
+    move(speedX, speedY);
+  }
+
+  public void update(float deltaTime){
+    speedX += deltaTime/1000;
+    speedY += deltaTime/1000;
+    move(speedX, speedY);
+  }
+
   //Method to copy a Sprite to same location
   public Sprite copy(){
     return copyTo(this.centerX, this.centerY);
@@ -220,9 +233,5 @@ public class Sprite {
     return spriteImgFile + "\t" + getLeft() + "\t" + getTop() + "\t" + speedX + "\t" + speedY + "\t" + w + "\t" + h + "\t" + isAnimated;
   }
 
-
-  public void resize(int width, int height){
-    spriteImg.resize(width, height);
-  }
 
 }
