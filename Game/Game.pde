@@ -10,6 +10,12 @@ import java.util.Scanner;
 //import processing.core.PGraphics;
 
 
+PGraphics pg;
+PGraphics outlineBuffer;
+import java.util.Scanner;
+//import processing.core.PGraphics;
+
+
 
 //------------------ GAME VARIABLES --------------------//
 

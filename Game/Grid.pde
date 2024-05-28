@@ -236,6 +236,13 @@ public class Grid extends World{
     setTileSprite(loc,null);
   }
 
+  //Method that clears the tile image
+  public void animateTileSprite(GridLocation loc){
+    AnimatedSprite aSprite = getTileSprite(loc);
+    aSprite.animate();
+    System.out.println("animating");
+  }
+
   public void showTileSprite(GridLocation loc){
     GridTile tile = getTile(loc);
     if(tile.hasSprite()){
@@ -256,7 +263,8 @@ public class Grid extends World{
           
           //Check if the tile has an image
           if(hasTileSprite(tempLoc)){
-            setTileSprite(tempLoc, getTileSprite(tempLoc));
+            //setTileSprite(tempLoc, getTileSprite(tempLoc));
+            animateTileSprite(tempLoc);
             //showTileSprite(tempLoc);
           }
         }
@@ -277,6 +285,7 @@ public class Grid extends World{
             if(hasTileSprite(tempLoc)){
               setTileSprite(tempLoc, getTileSprite(tempLoc));
               //showTileSprite(tempLoc);
+    
             }
           }
         }
