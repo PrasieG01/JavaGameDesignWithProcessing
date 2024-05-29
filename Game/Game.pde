@@ -11,7 +11,6 @@ import java.util.Scanner;
 //import processing.core.PGraphics;
 
 
-
 //------------------ GAME VARIABLES --------------------//
 
 //Title Bar
@@ -22,7 +21,7 @@ String extraText = "Squid Character";
 
 
 //outline code test
-String outlineImg = "images/dal2OG.png";
+String outlineImg = "images/dalgona.png";
 PImage ogOutline;
 
 
@@ -54,17 +53,12 @@ PImage splashOneBg;
 String lvl1File = "images/SquidGame01.jpg";
 PImage lvl1Bg;
 Grid lvl1Grid;
-
 AnimatedSprite player1;
 String player1File = "sprites/squid.png";
 String player1Json = "sprites/squid.json";
 int player1Row = 0;
 int player1Col = 0;
-
 PImage enemy;
-// AnimatedSprite enemySprite;
-
-
 AnimatedSprite exampleSprite;
 boolean doAnimation;
 
@@ -74,19 +68,23 @@ String twoBgFile = "images/SplashTwo.png";
 PImage splashTwoBg;
 
 //Level 2 Screen Variables
-World lvlWorld2;
-String lvlWorld2File = "images/SquidGame02.jpg";
-PImage lvlWorld2Bg;
+World lvl2World;
+String lvl2WorldFile = "images/SquidGame02.jpg";
+PImage lvl2WorldBg;
 Grid worldTwoGrid;
-
 PImage candydrawing;
-
 Sprite needle;
 // PImage star;
 // PImage rectangle;
 // PImage circle;
 // PImage umbrella;
 PImage cookies;
+String outlineImg = "images/dalgona.png"; //outline code test
+PImage ogOutline;
+int[][] blackPixelColors; ////2D Arrays of Both drawings from ogOutline
+int[][] drawnLineColors; //2D Arrays of Both drawings
+Button b = new Button("rect", 100, 100, 200, 100, "ClickMe");
+
 
 //EndScreen variables
 Screen endScreen;
@@ -106,19 +104,14 @@ void setup() {
   //Match the screen size to the background image size
   size(1500,800);
 
-  
   //Set the title on the title bar
   surface.setTitle(titleText);
 
   //Load BG images used
   introBg = loadImage(introBgFile);
   introBg.resize(1500,800);
-  
   ogOutline = loadImage(outlineImg);
   ogOutline.resize(1500,800);
-
-  mask = loadImage("images/dalgonamask.png");
-  mask.resize(1500, 800);
 
   splashOneBg = loadImage(oneBgFile);
   splashOneBg.resize(1500,800);
@@ -126,8 +119,8 @@ void setup() {
   lvl1Bg.resize(1500,800);
   splashTwoBg = loadImage(twoBgFile);
   splashTwoBg.resize(1500,800);
-  lvlWorld2Bg = loadImage(lvlWorld2File);
-  lvlWorld2Bg.resize(1500,800);
+  lvl2WorldBg = loadImage(lvl2WorldFile);
+  lvl2WorldBg.resize(1500,800);
   endBg = loadImage(endBgFile);
   endBg.resize(1500,800);
 
@@ -148,21 +141,21 @@ void setup() {
   enemy = loadImage("images/x_wood.png");
   enemy.resize(100,100);
 
-
   ///setup level2 screen
+  ogOutline = loadImage(outlineImg);
+  ogOutline.resize(1500,800);
   candydrawing = loadImage("images/dalgona.png");
   candydrawing.resize(1500,800);
-  lvlWorld2 = new World("levelTwo", candydrawing);
+  lvl2World = new World("levelTwo", candydrawing);
   worldTwoGrid = new Grid("levelTwoGrid", candydrawing , 6, 8);
 
-
-///sprites
+  ///lvl2 sprites
   needle = new Sprite("images/needle.png");
   needle.resize(100,100);
   cookies = loadImage("images/cookies.png");
   cookies.resize(800,800);
 
-    // Create a graphics buffer
+  //lvl2 Create a graphics buffer
   pg = createGraphics(1500, 800);
   pg.beginDraw();
   pg.background(candydrawing);
@@ -171,24 +164,30 @@ void setup() {
   // Create a separate PGraphics buffer for storing the outline
     outlineBuffer = createGraphics(1500, 800);
     outlineBuffer.beginDraw();
-    outlineBuffer.background(mask);
+    outlineBuffer.background(candydrawing);
     outlineBuffer.endDraw();
 
 
-//outline code originnalOutline : dalgona.png
+  //outline code originnalOutline : dalgona.png
   //ogOutline = getOutline(candydrawing);
   
 //create a mask of the blackpixelcolors
-blackPixelColors = getBlackPixelColors(mask);//ogOutline);
+blackPixelColors = getBlackPixelColors(ogOutline);
 
-
- // function to extract darker pixels
-  int[][] darkerPixels = getBlackPixelColors(mask); //ogOutline
 
     exampleAnimationSetup();
 
     //get the outline colors from the needle
     drawnLineColors = getOutlineColors(outlineBuffer);
+
+
+
+  //evaluate the carving
+  if(isCarvingSuccess()){
+    println("Level 2 Passed! Carving done successfully!");
+  } else{
+    println("Level 2 failed! Carving failed!");
+  }
 
   //Adding pixel-based Sprites to the world
   // mainGrid.addSpriteCopyTo(exampleSprite);
@@ -197,150 +196,88 @@ blackPixelColors = getBlackPixelColors(mask);//ogOutline);
   
   //Other Setup
   // Load a soundfile from the /data folder of the sketch and play it back
-   // song = new SoundFile(this, "sounds/Magnetic.mp3");
-    //song.play();
+  // song = new SoundFile(this, "sounds/Magnetic.mp3");
+  //song.play();
 
+  exampleAnimationSetup();
   
   imageMode(CORNER);    //Set Images to read coordinates at corners
   //fullScreen();   //only use if not using a specfic bg image
   println("Game started...");
 
-}
- 
+
+
+} 
 
 //end setup()
+
 
 int[][] getOutlineColors(PGraphics outlineBuffer){
     int[][] colors = new int[outlineBuffer.width][outlineBuffer.height];
     outlineBuffer.loadPixels();
-    outlineBuffer.filter(GRAY);
     for(int x = 0; x < outlineBuffer.width; x++){
     for(int y = 0; y < outlineBuffer.height; y++){
      colors[x][y] = outlineBuffer.pixels[y * outlineBuffer.width + x];
     }
   }
-
-for(int[] c : colors)
-  {
-    for(int m : c)
-    {
-      System.out.print(m + " ");
-    }
-    System.out.println();
-  }
-
-
   return colors;
-
 
 }
 
-int[][] getBlackPixelColors(PImage mask){ //ogOutline
-  int[][] colors = new int[mask.width][mask.height]; //ogOutline
-  mask.loadPixels(); //ogOutline
-
-  // Define a threshold for darkness
-  float brightLevel = 100; //just playing around with the number
-  for(int x = 0; x < mask.width; x++){ //ogOutline
-    for(int y = 0; y < mask.height; y++){
-      int pixelColor = mask.pixels[y * mask.width + x];
-      if(isDarker(pixelColor, brightLevel)){
+int[][] getBlackPixelColors(PImage ogOutline){
+  int[][] colors = new int[ogOutline.width][ogOutline.height];
+  ogOutline.loadPixels();
+  for(int x = 0; x < ogOutline.width; x++){
+    for(int y = 0; y < ogOutline.height; y++){
+      int pixelColor = ogOutline.pixels[y * ogOutline.width + x];
+      if(isBlack(pixelColor)){
         colors[x][y] = pixelColor;
       }
     }
   }
-  
-  // for(int[] c : colors)
-  // {
-  //   for(int m : c)
-  //   {
-  //     System.out.print(m + " ");
-  //   }
-  //   System.out.println();
-  // }
-   //Print number of extracted darker pixels
-  int count = 0;
-  for (int x = 0; x < colors.length; x++) {
-    for (int y = 0; y < colors[x].length; y++) {
-      if (colors[x][y] != 0) {
-        count++;
-      }
-    }
-  }
-  println("Number of extracted darker pixels: " + count);
   return colors;
 }
-  
 
+boolean isCarvingSuccess(){
 
-// boolean isCarvingSuccess(){
-
-//   int matchingPixels = 0;
-//   int totalPixels = blackPixelColors.length * blackPixelColors[0].length;
-
-//   for(int x = 0; x < blackPixelColors.length; x++){
-//     for(int y = 0; y < blackPixelColors[x].length; y++){
-//       if(blackPixelColors[x][y] != 0 && blackPixelColors[x][y] == drawnLineColors[x][y]){
-//         matchingPixels++;
-//       }
-//     }
-    
-//   }
-
-//   println("Matching pixels: " + matchingPixels);
-// println("Total pixels: " + totalPixels);
-
-//   float similar = (float) matchingPixels / totalPixels;
-//   println("Similarity: " + similar);
-//   return similar >= 0.3; // Return true if at least 80% of pixels match
-
-// }
-
-
-
-
-
-//  }
-
-boolean isDarker(int colores, float brightLevel) {
-  int r = (colores >> 16) & 0xFF;
-  int g = (colores >> 8) & 0xFF;
-  int b = colores & 0xFF;
-
-  //stack overflow code used above
-  
-  // Calculate luminance
-  float luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-
-  return luminance < brightLevel; 
-}
-
-boolean isCarvingSuccess() {
   int matchingPixels = 0;
-  int totalPixels = mask.width * mask.height;
+  int totalPixels = blackPixelColors.length * blackPixelColors[0].length;
 
-
- // RGB color value to check for (107, 56, 11) (found online)
-  int targetColor = color(107, 56, 11);
-
-  for (int x = 0; x < mask.width; x++) {
-    for (int y = 0; y < mask.height; y++) {
-      int outlineColor = outlineBuffer.get(x, y); // Get color of the drawn outline pixel
-      
-      if (outlineColor == targetColor) {
-        totalPixels++;
-      }
-      int maskColor = mask.get(x, y);              // Get color of the mask pixel
-      if(maskColor == targetColor){
+  for(int x = 0; x < blackPixelColors.length; x++){
+    for(int y = 0; y < blackPixelColors[x].length; y++){
+      if(blackPixelColors[x][y] != 0 && blackPixelColors[x][y] == drawnLineColors[x][y]){
         matchingPixels++;
       }
     }
+    
   }
 
-  float similar = (float) matchingPixels / totalPixels;
-  println("Similarity: " + similar); // Print the similarity ratio for debugging
+  println("Matching pixels: " + matchingPixels);
+println("Total pixels: " + totalPixels);
 
-  return similar >= 0.3; // Return true if at least 30% of pixels match
+  float similar = (float) matchingPixels / totalPixels;
+  return similar >= 0.3; // Return true if at least 80% of pixels match
+
+}
+
+
+//what is black?
+boolean isBlack(int colores){  //for some reason couldn't use just "color"
+  float[] hsb = rgbToHSB(colores);
+  return hsb[2] < 100; //assume brightness less than 50 is black
+
+}
+
+float[] rgbToHSB(int colores){
+  int r = (colores >> 16) & 0xFF;
+    int g = (colores >> 8) & 0xFF;
+    int b = colores & 0xFF;
+
+return java.awt.Color.RGBtoHSB(r, g, b, null);
+
+
+
+
 }
 
 
@@ -348,7 +285,7 @@ boolean isCarvingSuccess() {
 //(Anything drawn on the screen should be called from here)
 void draw() {
 
-  //currentScreen = lvlWorld2;
+  //currentScreen = lvl2World;
   updateScreen();
 
   updateTitleBar();
@@ -368,7 +305,7 @@ void draw() {
   {
     pg.beginDraw();
     pg.stroke(0,255,0);
-    pg.strokeWeight(100);
+    pg.strokeWeight(16);
     pg.line(mouseX, mouseY, pmouseX, pmouseY);
     pg.endDraw();
     needle.show();
@@ -377,20 +314,15 @@ void draw() {
   if (mousePressed) {
         outlineBuffer.beginDraw();
         outlineBuffer.stroke(0, 255, 0);
-        outlineBuffer.strokeWeight(100);
+        outlineBuffer.strokeWeight(16);
         outlineBuffer.line(mouseX, mouseY, pmouseX, pmouseY);
         outlineBuffer.endDraw();
     }
-    else{
-      boolean success = isCarvingSuccess();
-      if (success) {
-      println("Level 2 Passed! Carving done successfully!");
-    } else {
-      println("Level 2 failed! Carving failed!");
-    }
-    }
-// Check for carving success when mouse is released
 
+  // Check if the carving is successful when mouse is released
+   // if (!mousePressed) {
+      //  evaluateCarving();
+   // }
 
 
   //check for end of game
@@ -566,6 +498,11 @@ void mouseClicked(){
   }
 
 
+  //Identify when button is clicked
+  if(currentScreen == lvl2World && b.isMouseOverButton()){
+    System.out.println("Clicked!");
+  }
+
 }
 
 
@@ -583,21 +520,21 @@ public void updateTitleBar(){
     //adjust the extra text as desired
   
   }
-
 }
 
 //method to update what is drawn on the screen each frame
 public void updateScreen(){
 
   //Update the Background
-  currentScreen.getBg().resize(1500,800);
+  //currentScreen.getBg().resize(1500,800);
   background(currentScreen.getBg());
 
 
 
   // Intro Screen update
-  if(currentScreen.getScreenTime() > 3000 && currentScreen.getScreenTime() < 5000){
+  if(introScreen.getScreenTime() > 3000 && introScreen.getScreenTime() < 5000){
     currentScreen = lvl1Grid;
+    lvl1Grid.resetTime();
       // if(song.isPlaying())
       // {
       //   song.pause();
@@ -605,6 +542,7 @@ public void updateScreen(){
 
   //level1 Screen Updates
   if(currentScreen == lvl1Grid){
+    System.out.println("Lvl1: RLGL");
 
     //Display the Player1 image
     GridLocation player1Loc = new GridLocation(player1Row , player1Col);
@@ -617,15 +555,45 @@ public void updateScreen(){
 
   //   s+=0.1;
   //   checkExampleAnimation(s);
+
+    //wait to go to level 2
+    if(currentScreen.getScreenTime() > 1000 && currentScreen.getScreenTime() < 2000){
+      currentScreen = lvl2World;
+      lvl2World.resetTime();
+    }
   }
 
   //Other screens?
 
   //Dalgona Level 2 Screen Updates
-  if(currentScreen == lvlWorld2){
-
+  if(currentScreen == lvl2World){
+    System.out.println("Lvl2: Dalgona");
+     
+    image(pg, 0, 0); 
+    b.show();
     int needleHeight = 277;
     needle.moveTo(mouseX, mouseY - needleHeight);
+    
+    if(mousePressed) {
+      pg.beginDraw();
+      pg.stroke(0,255,0);
+      pg.strokeWeight(16);
+      pg.line(mouseX, mouseY, pmouseX, pmouseY);
+      pg.endDraw();
+      needle.show();
+      
+      outlineBuffer.beginDraw();
+      outlineBuffer.stroke(0, 255, 0);
+      outlineBuffer.strokeWeight(16);
+      outlineBuffer.line(mouseX, mouseY, pmouseX, pmouseY);
+      outlineBuffer.endDraw();
+    }
+
+  // Check if the carving is successful when mouse is released
+   // if (!mousePressed) {
+      //  evaluateCarving();
+   // }
+
 
   }
 
@@ -728,8 +696,75 @@ public void exampleAnimationSetup(){
 
 //example method that animates the horse Sprites
 public void checkExampleAnimation(float s){
-  if(doAnimation){
-    exampleSprite.animate(s);
-    System.out.println("animating!");
+  // if(doAnimation){
+  //   exampleSprite.animate(s);
+  //   //System.out.println("animating!");
+  // }
+}
+
+
+//------------------ LEVEL 2 CUSTOM METHODS --------------------//
+
+int[][] getOutlineColors(PGraphics outlineBuffer){
+    int[][] colors = new int[outlineBuffer.width][outlineBuffer.height];
+    outlineBuffer.loadPixels();
+    for(int x = 0; x < outlineBuffer.width; x++){
+    for(int y = 0; y < outlineBuffer.height; y++){
+     colors[x][y] = outlineBuffer.pixels[y * outlineBuffer.width + x];
+    }
   }
+  return colors;
+
+}
+
+int[][] getBlackPixelColors(PImage ogOutline){
+  int[][] colors = new int[ogOutline.width][ogOutline.height];
+  ogOutline.loadPixels();
+  for(int x = 0; x < ogOutline.width; x++){
+    for(int y = 0; y < ogOutline.height; y++){
+      int pixelColor = ogOutline.pixels[y * ogOutline.width + x];
+      if(isBlack(pixelColor)){
+        colors[x][y] = pixelColor;
+      }
+    }
+  }
+  return colors;
+}
+
+boolean isCarvingSuccess(){
+
+  int matchingPixels = 0;
+  int totalPixels = blackPixelColors.length * blackPixelColors[0].length;
+
+  for(int x = 0; x < blackPixelColors.length; x++){
+    for(int y = 0; y < blackPixelColors[x].length; y++){
+      if(blackPixelColors[x][y] != 0 && blackPixelColors[x][y] == drawnLineColors[x][y]){
+        matchingPixels++;
+      }
+    }
+    
+  }
+
+  System.out.println("Matching pixels: " + matchingPixels);
+  System.out.println("Total pixels: " + totalPixels);
+
+  float similar = (float) matchingPixels / totalPixels;
+  return similar >= 0.3; // Return true if at least 80% of pixels match
+
+}
+
+
+//what is black?
+boolean isBlack(int colores){  //for some reason couldn't use just "color"
+  float[] hsb = rgbToHSB(colores);
+  return hsb[2] < 100; //assume brightness less than 50 is black
+
+}
+
+public float[] rgbToHSB(int colores){
+  int r = (colores >> 16) & 0xFF;
+  int g = (colores >> 8) & 0xFF;
+  int b = colores & 0xFF;
+
+  return java.awt.Color.RGBtoHSB(r, g, b, null);
 }
