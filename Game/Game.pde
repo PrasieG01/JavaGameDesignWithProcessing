@@ -358,6 +358,31 @@ void draw() {
 //Known Processing method that automatically will run whenever a key is pressed
 
 
+//check if it's green
+public boolean isGreen(int g){
+  Color o = new Color(g);
+  if((o.getGreen() == 255) && (o.getRed() == 0) && (o.getBlue() == 0)){
+    return true;
+
+  }
+  return false;
+}
+
+
+//checlk if it's brown
+public boolean isBrown(int b){
+  Color l = new Color(b);
+  if((l.getRed() >= 110 && l.getRed() <= 139) && (l.getGreen() >= 53 && l.getGreen() <= 78) && (l.getBlue() >= 13 && l.getBlue() <= 14)){
+    return true;
+
+  }
+  return false;
+}
+
+
+
+
+
 
 
 void keyPressed(){
@@ -372,6 +397,57 @@ void keyPressed(){
   //set [W] key to move the player1 up & avoid Out-of-Bounds errors
   if(keyCode == 87){
 
+int matchingPixels = 0;
+int totalOPixels = 0;
+
+  for(int i = 0; i < candydrawing.width; i++)
+  {
+    for(int y = 0; y < candydrawing.height; y++)
+    {
+      if((isBrown(candydrawing.get(i,y))) && (isGreen(pg.get(i,y)))){
+  
+  matchingPixels++;
+  
+}
+if(isBrown(candydrawing.get(i,y))){
+  totalOPixels++;
+}
+    }
+  }
+
+  float similar = (float) matchingPixels / totalOPixels;
+
+  if(similar >= 0.5)
+  {
+   println("Level 2 Done! Carving Successful!");
+  }else{
+   println("Level 2 Failed! Carving Failed!");
+  }
+
+
+// for(int x = 0; x < blackPixelColors.length; x++){
+//     for(int y = 0; y < blackPixelColors[x].length; y++){
+//       if(blackPixelColors[x][y] != 0 && blackPixelColors[x][y] == drawnLineColors[x][y]){
+//         matchingPixels++;
+//       }
+//     }
+    
+//   }
+
+//   System.out.println("Matching pixels: " + matchingPixels);
+//   System.out.println("Total pixels: " + totalPixels);
+
+//   float similar = (float) matchingPixels / totalPixels;
+//   return similar >= 0.3; // Return true if at least 80% of pixels match
+
+// }
+
+
+
+
+
+
+
   // pg.loadPixels();
   // candydrawing.loadPixels();
 
@@ -380,6 +456,7 @@ void keyPressed(){
 
    
 
+//test if statement for carving evaluation
 
 
 
@@ -490,7 +567,7 @@ public void updateScreen(){
 
   //level1 Screen Updates
   if(currentScreen == lvl1Grid){
-    System.out.println("Lvl1: RLGL");
+    // System.out.println("Lvl1: RLGL");
 
     //Display the Player1 image
     GridLocation player1Loc = new GridLocation(player1Row , player1Col);
