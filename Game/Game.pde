@@ -350,6 +350,7 @@ public void updateScreen(){
   }
 
   //UPDATE: Dalgona Level 2 Screen
+  
   //wait to go to level 2
   //if(currentScreen.getScreenTime() > 1000 && currentScreen.getScreenTime() < 2000){
   if(currentScreen == lvl2World){
@@ -357,9 +358,6 @@ public void updateScreen(){
     //lvl2World.resetTime();
     // System.out.println("2");
     lvl2mechanics();
-    b2.show();
-    printResult(isPass);
-
     
     // if(mousePressed) {
     //   pg.beginDraw();
@@ -622,7 +620,6 @@ void testDalgona(){
     }
 
 
-
   // for(int x = 0; x < blackPixelColors.length; x++){
   //     for(int y = 0; y < blackPixelColors[x].length; y++){
   //       if(blackPixelColors[x][y] != 0 && blackPixelColors[x][y] == drawnLineColors[x][y]){
@@ -698,6 +695,7 @@ public boolean isGreen(int g){
   }
   return false;
 }
+
 
 //check if it's brown
 public boolean isBrown(int b){
