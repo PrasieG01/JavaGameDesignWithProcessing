@@ -3,6 +3,16 @@
  * Last Edit: 5/29/2024
  */
 
+
+
+ // //outline code test
+// String outlineImg = "images/dalgona.png";
+// PImage ogOutline;
+
+//2D Arrays of Both drawings
+// int[][] blackPixelColors; //from ogOutline
+// int[][] drawnLineColors; //the drawn outline
+
 import processing.sound.*;
 PGraphics pg;
 PGraphics outlineBuffer;
@@ -59,15 +69,9 @@ PImage lvl2WorldBg;
 PImage candydrawing;
 Sprite needle;
 PImage cookies;
+boolean isPass;
+float isSimiliar;
 Button b2 = new Button("rect", 100, 100, 200, 100, "ClickMe");
-
-//outline code test
-String outlineImg = "images/dalgona.png";
-PImage ogOutline;
-
-//2D Arrays of Both drawings
-int[][] blackPixelColors; //from ogOutline
-int[][] drawnLineColors; //the drawn outline
 
 
 //VARIABLES: EndScreen
@@ -129,8 +133,8 @@ void setup() {
   //SETUP: level2 screen - Dalgona
   lvl2World = new World("level2", candydrawing);
   //lvl2Grid = new Grid("level2Grid", candydrawing , 6, 8);
-  ogOutline = loadImage(outlineImg);
-  ogOutline.resize(width, height);
+  // ogOutline = loadImage(outlineImg);
+  // ogOutline.resize(width, height);
   candydrawing = loadImage("images/dalgona.png");
   candydrawing.resize(width, height);
 
@@ -147,16 +151,16 @@ void setup() {
   pg.endDraw();
 
   // Create a separate PGraphics buffer for storing the outline
-    outlineBuffer = createGraphics(1500, 800);
-    outlineBuffer.beginDraw();
-    outlineBuffer.background(candydrawing);
-    outlineBuffer.endDraw();
+    // outlineBuffer = createGraphics(1500, 800);
+    // outlineBuffer.beginDraw();
+    // outlineBuffer.background(candydrawing);
+    // outlineBuffer.endDraw();
   
     //create a mask of the blackpixelcolors
-    blackPixelColors = getBlackPixelColors(ogOutline);
+    // blackPixelColors = getBlackPixelColors(ogOutline);
 
     //get the outline colors from the needle
-    drawnLineColors = getOutlineColors(outlineBuffer);
+    // drawnLineColors = getOutlineColors(outlineBuffer);
 
 
   //SETUP: Other
@@ -176,7 +180,7 @@ void draw() {
 
   updateTitleBar();
   updateScreen();
-
+  populateSprites();
   //simple timing handling
   if (msElapsed % 300 == 0) {
     // populateSprites();
@@ -208,7 +212,7 @@ void keyPressed(){
 
   //set [W] key to move the player1 up & avoid Out-of-Bounds errors
   if(keyCode == 87){
-    testDalgona();
+    // testDalgona();
   }
   else if(keyCode == 65){
     //   //Store old GridLocation
@@ -234,6 +238,10 @@ void keyPressed(){
     currentScreen = lvl2World;
     //System.out.println("Changing to Level2World");
   }
+  else if (key == '3')
+  {
+    currentScreen = introScreen;
+  }
 
 }
 
@@ -256,7 +264,8 @@ void mouseClicked(){
 
   //Identify when button is clicked
   if(currentScreen == lvl2World && b2.isMouseOverButton()){
-    System.out.println("Clicked!");
+    testDalgona();
+    isPass = true;
   }
 
 }
@@ -307,6 +316,8 @@ public void updateScreen(){
     lvl1Grid.showGridImages();
     lvl1Grid.showGridSprites();
     lvl1Grid.showWorldSprites();
+    populateSprites();
+    
   }
 
   //UPDATE: Dalgona Level 2 Screen
@@ -316,16 +327,34 @@ public void updateScreen(){
   if(currentScreen == lvl2World){
     currentGrid = null;
     //lvl2World.resetTime();
-    System.out.println("2");
-     
-    image(pg, 0, 0); 
-    b2.show();
-    int needleHeight = 277;
-    needle.moveTo(mouseX, mouseY - needleHeight);
-
+    // System.out.println("2");
     lvl2mechanics();
+    
+    // if(mousePressed) {
+    //   pg.beginDraw();
+    //   pg.stroke(0,255,0);
+    //   pg.strokeWeight(16);
+    //   pg.line(mouseX, mouseY, pmouseX, pmouseY);
+    //   pg.endDraw();
+    //   needle.show();
+      
+    //   outlineBuffer.beginDraw();
+    //   outlineBuffer.stroke(0, 255, 0);
+    //   outlineBuffer.strokeWeight(16);
+    //   outlineBuffer.line(mouseX, mouseY, pmouseX, pmouseY);
+    //   outlineBuffer.endDraw();
+    // }
+
+    // Check if the carving is successful when mouse is released
+    // if (!mousePressed) {
+    //  evaluateCarving();
+    // }
 
   }
+
+
+
+
 }
 
 //----------------LEVEL 1 GRID METHODS ------------//
@@ -333,8 +362,18 @@ public void updateScreen(){
 //Method to populate enemies or other sprites on the screen
 public void populateSprites(){
 
-  //What is the index for the last column?
-  
+  int numEm = (int)(Math.random()+1*10);
+  float whichRow = (float)(Math.random()+1*6);
+  Sprite popular = new Sprite("images/zapdos.png", 0.5 , width , height-200 );
+  popular.show();
+  currentScreen.pause(100);
+  popular.moveTo(100, 200);
+  popular.show();
+
+
+
+
+
 
   //Loop through all the rows in the last column
 
@@ -425,7 +464,22 @@ public void endGame(){
 //------------------ LEVEL 2 CUSTOM METHODS --------------------//
 
 
-void lvl2mechanics(){
+
+public void printResult(boolean chan)
+{
+  Float percentage = new Float(isSimiliar);
+  String intToStringPER = percentage.toString();
+  if(chan)
+  {
+    textSize(128);
+    fill(0, 0, 0);
+    text(intToStringPER+"%", 48, 180, -120);
+  }
+  chan = !chan;
+}
+
+
+public void lvl2mechanics(){
   image(pg, 0, 0); 
   int needleHeight = 277;
   needle.moveTo(mouseX, mouseY - needleHeight);
@@ -440,39 +494,40 @@ void lvl2mechanics(){
     needle.show();
   }
 
-  if (mousePressed) {
-        outlineBuffer.beginDraw();
-        outlineBuffer.stroke(0, 255, 0);
-        outlineBuffer.strokeWeight(16);
-        outlineBuffer.line(mouseX, mouseY, pmouseX, pmouseY);
-        outlineBuffer.endDraw();
-    }
+
+//   if (mousePressed) {
+//         outlineBuffer.beginDraw();
+//         outlineBuffer.stroke(0, 255, 0);
+//         outlineBuffer.strokeWeight(16);
+//         outlineBuffer.line(mouseX, mouseY, pmouseX, pmouseY);
+//         outlineBuffer.endDraw();
+//     }
+// }
+
+// int[][] getBlackPixelColors(PImage ogOutline){
+//   int[][] colors = new int[ogOutline.width][ogOutline.height];
+//   ogOutline.loadPixels();
+//   for(int x = 0; x < ogOutline.width; x++){
+//     for(int y = 0; y < ogOutline.height; y++){
+//       int pixelColor = ogOutline.pixels[y * ogOutline.width + x];
+//       if(isBlack(pixelColor)){
+//         colors[x][y] = pixelColor;
+//       }
+//     }
+//   }
+//   return colors;
 }
 
-int[][] getBlackPixelColors(PImage ogOutline){
-  int[][] colors = new int[ogOutline.width][ogOutline.height];
-  ogOutline.loadPixels();
-  for(int x = 0; x < ogOutline.width; x++){
-    for(int y = 0; y < ogOutline.height; y++){
-      int pixelColor = ogOutline.pixels[y * ogOutline.width + x];
-      if(isBlack(pixelColor)){
-        colors[x][y] = pixelColor;
-      }
-    }
-  }
-  return colors;
-}
-
-int[][] getOutlineColors(PGraphics outlineBuffer){
-    int[][] colors = new int[outlineBuffer.width][outlineBuffer.height];
-    outlineBuffer.loadPixels();
-    for(int x = 0; x < outlineBuffer.width; x++){
-    for(int y = 0; y < outlineBuffer.height; y++){
-     colors[x][y] = outlineBuffer.pixels[y * outlineBuffer.width + x];
-    }
-  }
-  return colors;
-}
+// int[][] getOutlineColors(PGraphics outlineBuffer){
+//     int[][] colors = new int[outlineBuffer.width][outlineBuffer.height];
+//     outlineBuffer.loadPixels();
+//     for(int x = 0; x < outlineBuffer.width; x++){
+//     for(int y = 0; y < outlineBuffer.height; y++){
+//      colors[x][y] = outlineBuffer.pixels[y * outlineBuffer.width + x];
+//     }
+//   }
+//   return colors;
+// }
 
 // boolean isCarvingSuccess(){
 
@@ -530,15 +585,81 @@ void testDalgona(){
       }
     }
 
-    float similar = (float) matchingPixels / totalOPixels;
+    isSimiliar = (float) matchingPixels / totalOPixels;
 
-    if(similar >= 0.5)
+    if(isSimiliar >= 0.5)
     {
       System.out.println("Level 2 Done! Carving Successful!");
     }else{
       System.out.println("Level 2 Failed! Carving Failed!");
     }
+
+
+  // for(int x = 0; x < blackPixelColors.length; x++){
+  //     for(int y = 0; y < blackPixelColors[x].length; y++){
+  //       if(blackPixelColors[x][y] != 0 && blackPixelColors[x][y] == drawnLineColors[x][y]){
+  //         matchingPixels++;
+  //       }
+  //     }
+      
+  //   }
+
+  //   System.out.println("Matching pixels: " + matchingPixels);
+  //   System.out.println("Total pixels: " + totalPixels);
+
+  //   float similar = (float) matchingPixels / totalPixels;
+  //   return similar >= 0.3; // Return true if at least 80% of pixels match
+
+  // }
+
+  // pg.loadPixels();
+  // candydrawing.loadPixels();
 }
+
+
+//Implement evaluateCarving method
+//   void evaluateCarving(){
+//     PImage drawnOutline = pg.get();
+//     //compare drawn and og
+//     float similar = compareOutlines(drawnOutline, ogOutline);
+
+//     //success threshold 
+//     float successfulWhen = 0.5;
+
+//     //prints statement
+//     if(similar >= successfulWhen){
+//      println("You have carved successfully! Level 2 passed!");
+//     }else{
+//       println("Level 2 Failed! Try again!");
+//     }
+//   }
+
+
+// //made a method to compare the drawnOutline with the original outline
+// float compareOutlines(PImage drawnOutline, PImage ogOutline) {
+//     float matchingPixels = 0;
+//     float totalPixels = drawnOutline.width * drawnOutline.height;
+
+//     drawnOutline.filter(GRAY); //helps compare 
+//     ogOutline.filter(GRAY); //helps compare
+
+//     // Compares each pixel
+//     for (int x = 0; x < drawnOutline.width; x++) {
+//         for (int y = 0; y < drawnOutline.height; y++) {
+//             color drawnPixel = drawnOutline.get(x, y);
+//             color ogPixel = ogOutline.get(x, y);
+
+//             if (drawnPixel == ogPixel) {
+//                 matchingPixels++;
+//             }
+//         }
+//     }
+
+//     // Calculate how similar they are
+//      float similar = (matchingPixels / totalPixels) * 100;
+//     return similar;
+// }
+
 
 //check if it's green
 public boolean isGreen(int g){
