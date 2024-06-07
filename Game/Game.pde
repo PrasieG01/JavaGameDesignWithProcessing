@@ -310,6 +310,7 @@ public void updateScreen(){
   }
 
   //UPDATE: Dalgona Level 2 Screen
+  
   //wait to go to level 2
   //if(currentScreen.getScreenTime() > 1000 && currentScreen.getScreenTime() < 2000){
   if(currentScreen == lvl2World){
@@ -323,26 +324,6 @@ public void updateScreen(){
     needle.moveTo(mouseX, mouseY - needleHeight);
 
     lvl2mechanics();
-    
-    // if(mousePressed) {
-    //   pg.beginDraw();
-    //   pg.stroke(0,255,0);
-    //   pg.strokeWeight(16);
-    //   pg.line(mouseX, mouseY, pmouseX, pmouseY);
-    //   pg.endDraw();
-    //   needle.show();
-      
-    //   outlineBuffer.beginDraw();
-    //   outlineBuffer.stroke(0, 255, 0);
-    //   outlineBuffer.strokeWeight(16);
-    //   outlineBuffer.line(mouseX, mouseY, pmouseX, pmouseY);
-    //   outlineBuffer.endDraw();
-    // }
-
-    // Check if the carving is successful when mouse is released
-    // if (!mousePressed) {
-    //  evaluateCarving();
-    // }
 
   }
 }
@@ -557,73 +538,7 @@ void testDalgona(){
     }else{
       System.out.println("Level 2 Failed! Carving Failed!");
     }
-
-
-  // for(int x = 0; x < blackPixelColors.length; x++){
-  //     for(int y = 0; y < blackPixelColors[x].length; y++){
-  //       if(blackPixelColors[x][y] != 0 && blackPixelColors[x][y] == drawnLineColors[x][y]){
-  //         matchingPixels++;
-  //       }
-  //     }
-      
-  //   }
-
-  //   System.out.println("Matching pixels: " + matchingPixels);
-  //   System.out.println("Total pixels: " + totalPixels);
-
-  //   float similar = (float) matchingPixels / totalPixels;
-  //   return similar >= 0.3; // Return true if at least 80% of pixels match
-
-  // }
-
-  // pg.loadPixels();
-  // candydrawing.loadPixels();
 }
-
-
-//Implement evaluateCarving method
-//   void evaluateCarving(){
-//     PImage drawnOutline = pg.get();
-//     //compare drawn and og
-//     float similar = compareOutlines(drawnOutline, ogOutline);
-
-//     //success threshold 
-//     float successfulWhen = 0.5;
-
-//     //prints statement
-//     if(similar >= successfulWhen){
-//      println("You have carved successfully! Level 2 passed!");
-//     }else{
-//       println("Level 2 Failed! Try again!");
-//     }
-//   }
-
-
-// //made a method to compare the drawnOutline with the original outline
-// float compareOutlines(PImage drawnOutline, PImage ogOutline) {
-//     float matchingPixels = 0;
-//     float totalPixels = drawnOutline.width * drawnOutline.height;
-
-//     drawnOutline.filter(GRAY); //helps compare 
-//     ogOutline.filter(GRAY); //helps compare
-
-//     // Compares each pixel
-//     for (int x = 0; x < drawnOutline.width; x++) {
-//         for (int y = 0; y < drawnOutline.height; y++) {
-//             color drawnPixel = drawnOutline.get(x, y);
-//             color ogPixel = ogOutline.get(x, y);
-
-//             if (drawnPixel == ogPixel) {
-//                 matchingPixels++;
-//             }
-//         }
-//     }
-
-//     // Calculate how similar they are
-//      float similar = (matchingPixels / totalPixels) * 100;
-//     return similar;
-// }
-
 
 //check if it's green
 public boolean isGreen(int g){
@@ -634,6 +549,7 @@ public boolean isGreen(int g){
   }
   return false;
 }
+
 
 //check if it's brown
 public boolean isBrown(int b){
