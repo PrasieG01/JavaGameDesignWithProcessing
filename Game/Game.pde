@@ -54,7 +54,8 @@ int player1Col = 0;
 Button b1 = new Button("rect", 400, 500, 100, 50, "GoToLevel2");
 AnimatedSprite enemy;
 String enemyFile = "images/x_wood.png";
-  
+AnimatedSprite popular;
+
 
 //VARIABLES: Splash 2 Screen
 Screen splash2;
@@ -92,6 +93,7 @@ private int msElapsed = 0;
 
 //Required Processing method that gets run once
 void setup() {
+  
 
   //SETUP: Match the screen size to the background image size
   size(1500,800);  //these will automatically be saved as width & height
@@ -129,6 +131,14 @@ void setup() {
   lvl1Grid.setTileSprite(new GridLocation(0, 0),player1 );
   player1.resize(200,200);
   lvl1Grid.setTileSprite(new GridLocation(5, 5),enemy);
+
+  //test
+  popular = new AnimatedSprite("sprites/obstacle.png", "sprites/obstacle.json");
+  popular.resize(100,100);
+  popular.moveTo(width-100,height-100);
+  // popular.animateHorizontal(1.0, 1.0, true);
+  lvl1Grid.addSprite(popular);
+
 
   //SETUP: level2 screen - Dalgona
   lvl2World = new World("level2", candydrawing);
@@ -178,6 +188,16 @@ void setup() {
 //(Anything drawn on the screen should be called from here)
 void draw() {
 
+
+  for(int i = 100; i <= 600; i+=100)
+  {
+    AnimatedSprite carey = new AnimatedSprite("sprites/obstacle.png", "sprites/obstacle.json");
+    carey.resize(100,100);
+    carey.moveTo(width-100,height-i);
+    carey
+  }
+  popular.animateHorizontal(-1.0, 10.0, false);
+
   updateTitleBar();
   updateScreen();
   populateSprites();
@@ -187,6 +207,10 @@ void draw() {
     // moveSprites();
   }
   msElapsed +=100;
+
+
+
+
 
   //check for end of game
   if(isGameOver()){
@@ -311,12 +335,17 @@ public void updateScreen(){
     //Display the Player1 image
     GridLocation player1Loc = new GridLocation(player1Row , player1Col);
     lvl1Grid.setTileSprite(player1Loc, player1);
-      
+
+    //animate popular
+    //popular.animate();
+
+    populateSprites();
+
     //update other screen elements
     lvl1Grid.showGridImages();
     lvl1Grid.showGridSprites();
     lvl1Grid.showWorldSprites();
-    populateSprites();
+
     
   }
 
@@ -361,16 +390,12 @@ public void updateScreen(){
 
 //----------------LEVEL 1 GRID METHODS ------------//
 
+
+
 //Method to populate enemies or other sprites on the screen
 public void populateSprites(){
 
-  int numEm = (int)(Math.random()+1*10);
-  float whichRow = (float)(Math.random()+1*6);
-  Sprite popular = new Sprite("images/zapdos.png", 0.5 , width , height-200 );
-  popular.show();
-  currentScreen.pause(100);
-  popular.moveTo(100, 200);
-  popular.show();
+
 
 
 

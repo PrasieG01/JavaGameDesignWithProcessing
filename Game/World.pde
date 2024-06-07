@@ -87,6 +87,7 @@ public class World extends Screen{
         AnimatedSprite aSprite = (AnimatedSprite) sprite;
         aSprite.animate();
         //System.out.println("aSprite: " + aSprite.getJsonFile() + "\t" + aSprite.iBucket + "\t" + aSprite.aSpeed);
+        System.out.println(aSprite.getCenterX() + "," + aSprite.getCenterY());
       } else{
         sprite.show();
       }
