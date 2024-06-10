@@ -66,6 +66,7 @@ PImage candydrawing;
 Sprite needle;
 PImage cookies;
 Button b2 = new Button("rect", 100, 100, 200, 100, "ClickMe");
+AnimatedSprite popular;
 
 //outline code test
 String outlineImg = "images/dalgona.png";
@@ -151,6 +152,9 @@ void setup() {
   cookies = loadImage("images/cookies.png");
   cookies.resize(800,800);
 
+  popular = new AnimatedSprite("sprites/pikachu.png","sprites/pikachu.json");
+  popular.resize(100,100);
+
   //lvl2 Create a graphics buffer
   pg = createGraphics(1500, 800);
   pg.beginDraw();
@@ -165,6 +169,8 @@ void setup() {
 
   println("Game started...");
 
+  popular.moveTo(width-100,height-100);
+
 } //end setup()
 
 
@@ -174,6 +180,12 @@ void draw() {
 
   updateTitleBar();
   updateScreen();
+  popular.animateHorizontal(-1.0,5.0,false);
+  System.out.println("hellllllllllllo");
+  if(popular.getCenterX() <= squidply1.getCenterX()-100 && popular.getCenterY() <= squidply1.getCenterY()-100)
+  {
+    System.out.println("touched");
+  }
 
   //simple timing handling
   if (msElapsed % 300 == 0) {
@@ -203,30 +215,26 @@ void keyPressed(){
 
   //What to do when a key is pressed?
   //set [W] key to move the player1 up & avoid Out-of-Bounds errors
-  if(keyCode == 87){
+  if(keyCode == 87 && squidply1.getCenterY() > 0){
     //testDalgona();
     currentY -=10; //W
   }
 
-  if(keyCode == 65){
+  if(keyCode == 65 && squidply1.getCenterX() > 0){
+    System.out.println("position" + squidply1.getCenterX());
   currentX -=10; //A
 
   }
-  if(keyCode == 83){
+  if(keyCode == 83 && squidply1.getCenterY() < height){
    currentY+=10;
-  } ///testttty
+  } 
 
-  if(keyCode == 68){
+  if(keyCode == 68 && squidply1.getCenterX() < width){
    currentX +=10;
   }
 
-  if(squidply1.getCenterX() < height){
- squidply1.moveTo(currentX, currentY);
-  }
+   squidply1.moveTo(currentX, currentY);
 
-  if(squidply1.getCenterX() < width){
- squidply1.moveTo(currentX, currentY);
-  }
 
 
 
@@ -366,16 +374,6 @@ int y = 60;
 //Method to populate enemies or other sprites on the screen
 public void populateSprites(){
 
-  //What is the index for the last column?
-
-
-  //Loop through all the rows in the last column
-
-    //Generate a random number
-
-
-    //10% of the time, decide to add an enemy image to a Tile
-    
 
 }
 
