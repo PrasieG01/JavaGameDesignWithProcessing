@@ -66,6 +66,15 @@ PImage candydrawing;
 Sprite needle;
 PImage cookies;
 Button dalgonaButton = new Button("rect", 100, 100, 200, 100, "ClickMe");
+AnimatedSprite popular;
+
+//outline code test
+String outlineImg = "images/dalgona.png";
+PImage ogOutline;
+
+//2D Arrays of Both drawings
+int[][] blackPixelColors; //from ogOutline
+int[][] drawnLineColors; //the drawn outline
 
 //VARIABLES: EndScreen
 Screen endScreen;
@@ -150,6 +159,9 @@ void setup() {
   cookies = loadImage("images/cookies.png");
   cookies.resize(800,800);
 
+  popular = new AnimatedSprite("sprites/pikachu.png","sprites/pikachu.json");
+  popular.resize(100,100);
+
   //lvl2 Create a graphics buffer
   pg = createGraphics(1500, 800);
   pg.beginDraw();
@@ -158,7 +170,10 @@ void setup() {
 
   println("Game started...");
 
-} 
+  popular.moveTo(width-100,height-100);
+
+} //end setup()
+
 
 //Required Processing method that automatically loops
 //(Anything drawn on the screen should be called from here)
@@ -166,6 +181,12 @@ void draw() {
 
   updateTitleBar();
   updateScreen();
+  popular.animateHorizontal(-1.0,5.0,false);
+  System.out.println("hellllllllllllo");
+  if(popular.getCenterX() <= squidply1.getCenterX()-100 && popular.getCenterY() <= squidply1.getCenterY()-100)
+  {
+    System.out.println("touched");
+  }
 
   //simple timing handling
   if (msElapsed % 300 == 0) {
@@ -195,25 +216,25 @@ void keyPressed(){
 
   //What to do when a key is pressed?
   //set [W] key to move the player1 up & avoid Out-of-Bounds errors
-  if(keyCode == 87 && squidply1.getCenterY() < 100){
-
+  if(keyCode == 87 && squidply1.getCenterY() > 0){
+    //testDalgona();
     currentY -=10; //W
   }
 
-  if(keyCode == 65 && squidply1.getCenterX() < 100){
-  
+  if(keyCode == 65 && squidply1.getCenterX() > 0){
+    System.out.println("position" + squidply1.getCenterX());
   currentX -=10; //A
 
   }
-  if(keyCode == 83 && squidply1.getCenterY() < 100){
-   
-   currentY +=10;
+  if(keyCode == 83 && squidply1.getCenterY() < height){
+   currentY+=10;
   } 
 
-  if(keyCode == 68 && squidply1.getCenterX() < 100){
-   
+  if(keyCode == 68 && squidply1.getCenterX() < width){
    currentX +=10;
   }
+
+   squidply1.moveTo(currentX, currentY);
 
 
 
