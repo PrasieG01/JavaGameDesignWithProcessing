@@ -5,8 +5,6 @@
 
 import processing.sound.*;
 PGraphics pg;
-PGraphics outlineBuffer;
-PImage mask; //extracts the image with darker pixels only
 import java.util.Scanner;
 
 //------------------ GAME VARIABLES --------------------//
@@ -15,12 +13,6 @@ import java.util.Scanner;
 String titleText = "Squid Game Simulator";
 String extraText = "Squid Character";
 
-//VARIABLES: Splash Screen
-
-//VARIABLES: scores
-int lvl1Score = 0;
-int lvl2Score = 0;
-String progressBar = "Null";
 
 //VARIABLES: Intro Screen
 Screen introScreen;
@@ -36,12 +28,19 @@ PImage splash1Bg;
 String lvl1File = "images/SquidGame01.jpg";
 PImage lvl1Bg;
 Grid lvl1Grid;
-AnimatedSprite player1;
+
+///VARIABLES: End Screen
+String endBgFileLoose = "images/loose.jpg";
+String endBgFileWin = "images/win.jpg";
+
+//AnimatedSprite player1;
 String player1File = "sprites/squid.png";
 String player1Json = "sprites/squid.json";
 int player1Row = 0;
 int player1Col = 0;
-Button b1 = new Button("rect", 400, 500, 100, 50, "GoToLevel2");
+Button updateButton = new Button("rect", 400, 500, 100, 50, "Go To Level2->");
+Button resetButton = new Button("rect", 400, 500, 100, 50, "Try Again!");
+
 AnimatedSprite enemy;
 String enemyFile = "images/x_wood.png";
 String squidgirl = "images/squidgirl.jpg";
@@ -50,7 +49,6 @@ Sprite squidply1;
 float currentX;
 float currentY;
 
-  
 
 //VARIABLES: Splash 2 Screen
 Screen splash2;
@@ -61,32 +59,26 @@ PImage splash2Bg;
 World lvl2World;
 String lvl2WorldFile = "images/SquidGame02.jpg";
 PImage lvl2WorldBg;
+
+
 //Grid world2Grid;
 PImage candydrawing;
 Sprite needle;
 PImage cookies;
-Button b2 = new Button("rect", 100, 100, 200, 100, "ClickMe");
-
-//outline code test
-String outlineImg = "images/dalgona.png";
-PImage ogOutline;
-
-//2D Arrays of Both drawings
-int[][] blackPixelColors; //from ogOutline
-int[][] drawnLineColors; //the drawn outline
+Button dalgonaButton = new Button("rect", 100, 100, 200, 100, "ClickMe");
 
 //VARIABLES: EndScreen
 Screen endScreen;
+Screen endScreen1;
 PImage endBg;
+PImage endBg1;
 String endBgFile = "images/apcsa.png";
 
-//VARIABLES: Whole Game
 //SoundFile song;
 Screen currentScreen = introScreen;
 World currentWorld;
 Grid currentGrid;
 private int msElapsed = 0;
-
 
 //------------------ REQUIRED PROCESSING METHODS --------------------//
 
@@ -103,45 +95,52 @@ void setup() {
   //SETUP: Load BG images used in all screens
   introBg = loadImage(introBgFile);
   introBg.resize(width, height);
+
   splash1Bg = loadImage(splash1BgFile);
   splash1Bg.resize(width, height);
+
   lvl1Bg = loadImage(lvl1File);
   lvl1Bg.resize(width, height);
+
   splash2Bg = loadImage(splash2BgFile);
   splash2Bg.resize(width, height);
+
   lvl2WorldBg = loadImage(lvl2WorldFile);
   lvl2WorldBg.resize(width, height);
-  endBg = loadImage(endBgFile);
+
+  endBg = loadImage(endBgFileLoose);
   endBg.resize(width, height); 
+
+  endBg1 = loadImage(endBgFileWin);
+  endBg1.resize(width, height); 
   
   //SETUP: Screens - setup splash & intro & end
   introScreen = new Screen("intro", introBg);
   splash1 = new Screen("splash1", splash1Bg);
   splash2 = new Screen("splash2", splash2Bg);
   endScreen = new Screen("end", endBg);
+  endScreen1 = new Screen("end", endBg1);
   currentScreen = introScreen;
 
   //SETUP: level1 screen - RLGL
   lvl1Grid = new Grid("levelOneGrid", lvl1Bg , 6, 8);
-  //lvl1Grid.startPrintingGridMarks();
-  player1 = new AnimatedSprite(player1File, player1Json);
-  //player1.resize(200,200);
-  lvl1Grid.setTileSprite(new GridLocation(0, 0),player1 );
-  player1.resize(200,200);
-  lvl1Grid.setTileSprite(new GridLocation(5, 5),enemy);
-
-
  squidply1 = new Sprite("sprites/chick_walk.png");
  squidply1.resize(10,10);
  currentX = squidply1.getCenterX();
  currentY =  squidply1.getCenterY();
  lvl1Grid.addSprite(squidply1);
 
+  // player1 = new AnimatedSprite(player1File, player1Json);
+  // player1.resize(200,200);
+  // lvl1Grid.setTileSprite(new GridLocation(0, 0),player1 );
+  // player1.resize(200,200);
+  // lvl1Grid.setTileSprite(new GridLocation(5, 5),enemy);
+
+
   //SETUP: level2 screen - Dalgona
   lvl2World = new World("level2", candydrawing);
-  //lvl2Grid = new Grid("level2Grid", candydrawing , 6, 8);
-  ogOutline = loadImage(outlineImg);
-  ogOutline.resize(width, height);
+ // ogOutline = loadImage(outlineImg);
+  //ogOutline.resize(width, height);
   candydrawing = loadImage("images/dalgona.png");
   candydrawing.resize(width, height);
 
@@ -156,17 +155,10 @@ void setup() {
   pg.beginDraw();
   pg.background(candydrawing);
   pg.endDraw();
-  
-  //SETUP: Other
-  // Load a soundfile from the /data folder of the sketch and play it back
-  // song = new SoundFile(this, "sounds/Magnetic.mp3");
-  // song.play();
-  
 
   println("Game started...");
 
-} //end setup()
-
+} 
 
 //Required Processing method that automatically loops
 //(Anything drawn on the screen should be called from here)
@@ -203,30 +195,26 @@ void keyPressed(){
 
   //What to do when a key is pressed?
   //set [W] key to move the player1 up & avoid Out-of-Bounds errors
-  if(keyCode == 87){
-    //testDalgona();
+  if(keyCode == 87 && squidply1.getCenterY() < 100){
+
     currentY -=10; //W
   }
 
-  if(keyCode == 65){
+  if(keyCode == 65 && squidply1.getCenterX() < 100){
+  
   currentX -=10; //A
 
   }
-  if(keyCode == 83){
-   currentY+=10;
-  } ///testttty
+  if(keyCode == 83 && squidply1.getCenterY() < 100){
+   
+   currentY +=10;
+  } 
 
-  if(keyCode == 68){
+  if(keyCode == 68 && squidply1.getCenterX() < 100){
+   
    currentX +=10;
   }
 
-  if(squidply1.getCenterX() < height){
- squidply1.moveTo(currentX, currentY);
-  }
-
-  if(squidply1.getCenterX() < width){
- squidply1.moveTo(currentX, currentY);
-  }
 
 
 
@@ -274,8 +262,6 @@ public void updateTitleBar(){
   if(!isGameOver()) {
     //set the title each loop
     surface.setTitle(titleText + "    " + extraText + " " );
-
-    //adjust the extra text as desired
   
   }
 }
@@ -286,6 +272,18 @@ public void updateScreen(){
   //UPDATE: Background of the current Screen
   if(currentScreen.getBg() != null){
     background(currentScreen.getBg());
+  }
+
+  if(currentScreen == endScreen){
+    resetButton.show();
+  }
+
+  if(currentScreen == endScreen1){
+    resetButton.show();
+  }
+
+if(currentScreen == level1Grid){
+    updateButton.show();
   }
 
   //UPDATE: introScreen
@@ -304,8 +302,8 @@ public void updateScreen(){
     currentGrid = lvl1Grid;
 
     //Display the Player1 image
-    GridLocation player1Loc = new GridLocation(player1Row , player1Col);
-    lvl1Grid.setTileSprite(player1Loc, player1);
+    // GridLocation player1Loc = new GridLocation(player1Row , player1Col);
+    // lvl1Grid.setTileSprite(player1Loc, player1);
       
     //update other screen elements
     lvl1Grid.showGridImages();
@@ -313,8 +311,6 @@ public void updateScreen(){
     lvl1Grid.showWorldSprites();
   //  squidply1.show();
   }
-
-  //UPDATE: Dalgona Level 2 Screen
 
   //wait to go to level 2
   //if(currentScreen.getScreenTime() > 1000 && currentScreen.getScreenTime() < 2000){
@@ -333,40 +329,14 @@ public void updateScreen(){
   }
 }
 
-//Level 1 wasd
-void keyPressedL(){
-
-String controls = "wasd";
-String key = "";
-int speed = 60;
-int x = 60;
-int y = 60;
-
-     //set controls for wasd
-     if(controls == "wasd"){ 
-          if(key == "w" || key == "W"){ 
-            y -= speed; //moves forward
-          }
-          if(key == "s" || key == "S"){
-            y += speed; //moves backward
-          }
-            if(key == "d"|| key == "D"){
-            x += speed; //moves right
-          }
-          if(key == "a" || key == "A"){
-            x -= speed; //moves left
-          }
-         }
-
-       
-       }
-
 //----------------LEVEL 1 GRID METHODS ------------//
 
 //Method to populate enemies or other sprites on the screen
 public void populateSprites(){
 
+//AnimatedSprite obstacle = new AnimatedSprite()
   //What is the index for the last column?
+
 
 
   //Loop through all the rows in the last column
@@ -390,9 +360,7 @@ public void moveSprites(){
       if(lvl1Grid.getTileSprite(loc) == enemy){
         //erase squid from current loc to move to next one
         lvl1Grid.clearTileSprite(loc);
-        // if(c > 1){
-        //   lvl1Grid.clearTileSprite(loc);
-        // }
+       
         GridLocation leftLoc = new GridLocation(r, c - 1);
         lvl1Grid.setTileSprite(leftLoc, enemy);
         System.out.println("moving enemies");
@@ -400,15 +368,6 @@ public void moveSprites(){
     }
   }
 }
-      //Store the current GridLocation
-      //Store the next GridLocation
-      //Check if the current tile has an image that is not player1      
-        //Get image/sprite from current location
-        //CASE 1: Collision with player1
-        //CASE 2: Move enemy over to new location
-        //Erase image/sprite from old location
-        //System.out.println(loc + " " + grid.hasTileImage(loc));
-      //CASE 3: Enemy leaves screen at first column
 
 //Method to check if there is a collision between Sprites on the Screen
 public boolean checkCollision(GridLocation loc, GridLocation nextLoc){
@@ -448,15 +407,20 @@ public void endGame(){
     System.out.println("Game Over!");
 
     //Update the title bar
+    System.out.println("Your total score in this game was " + totalScore());
+    System.out.prinln("Your level 1 Score was: " + getScorelvl1());
+    System.out.prinln("Your level 2 Score was: " + getScorelvl2());
 
+    
     //Show any end imagery
     currentScreen = endScreen;
+    currentScreen = endScreen1;
+
+    
 
 }
 
-
 //------------------ LEVEL 2 CUSTOM METHODS --------------------//
-
 void lvl2mechanics(){
   image(pg, 0, 0); 
   int needleHeight = 277;
@@ -472,43 +436,6 @@ void lvl2mechanics(){
     needle.show();
   }
 }
-
-// boolean isCarvingSuccess(){
-
-//   int matchingPixels = 0;
-//   int totalPixels = blackPixelColors.length * blackPixelColors[0].length;
-
-//   for(int x = 0; x < blackPixelColors.length; x++){
-//     for(int y = 0; y < blackPixelColors[x].length; y++){
-//       if(blackPixelColors[x][y] != 0 && blackPixelColors[x][y] == drawnLineColors[x][y]){
-//         matchingPixels++;
-//       }
-//     }
-    
-//   }
-
-//   System.out.println("Matching pixels: " + matchingPixels);
-//   System.out.println("Total pixels: " + totalPixels);
-
-//   float similar = (float) matchingPixels / totalPixels;
-//   return similar >= 0.3; // Return true if at least 80% of pixels match
-
-// }
-
-//what is black?
-// boolean isBlack(int colores){  //for some reason couldn't use just "color"
-//   float[] hsb = rgbToHSB(colores);
-//   return hsb[2] < 100; //assume brightness less than 50 is black
-
-// }
-
-// public float[] rgbToHSB(int colores){
-//   int r = (colores >> 16) & 0xFF;
-//   int g = (colores >> 8) & 0xFF;
-//   int b = colores & 0xFF;
-
-//   return java.awt.Color.RGBtoHSB(r, g, b, null);
-// }
 
 //test if statement for carving evaluation
 void testDalgona(){
