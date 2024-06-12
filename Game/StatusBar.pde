@@ -18,35 +18,22 @@ boolean whatLevel;
     }
 
  // Level 1 score tracker
-    public void addScore4Level1() {
-        if (squidply1.getTileSprite() != popular.getTileSprite()) {
-            lvl1Score++;
-        }
-    }
+    public void addScore4Level1(int numPoints) {
+        lvl1Score += numPoints;
 
-public void loseScore4Level1() {
-        if (squidply1.getTileSprite() == enemy.getTileSprite() && lvl1Score >= 0) {
-            lvl1Score--;
-        }
+
+        // if (squidply1.getSprite() != popular.getTileSprite()) {
+        //     lvl1Score++;
+        // }
     }
+    
 
 //level 2 score tracker
-    public void addScore4Level2() {
-        if (checkCollision()) {
-            lvl2Score++;
-        } else {
-            lvl2Score--;
-        }
+    public void addScore4Level2(int numPoints2) {
+        lvl2Score += numPoints2;
     }
 
 
-public void loseScore4Level2() {
-        if (checkCollision()) {
-            lvl2Score++;
-        } else {
-            lvl2Score--;
-        }
-    }
 
 public int getTotalScore() {
         return lvl1Score + lvl2Score;
