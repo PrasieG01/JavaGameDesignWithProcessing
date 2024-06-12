@@ -26,7 +26,7 @@ PImage splash1Bg;
 ///VARIABLES: Level 1 Screen
 String lvl1File = "images/start-to-finish-line-racing-track-success-concept-for-life-racing-for-bigger-goals-illustration-template-layout-from-top-view-vector.jpg";
 PImage lvl1Bg;
-Grid lvl1World;
+Grid lvl1Grid;
 AnimatedSprite player1;
 String player1File = "sprites/squid.png";
 String player1Json = "sprites/squid.json";
@@ -119,20 +119,19 @@ void setup() {
   currentScreen = introScreen;
 
   //SETUP: level1 screen - RLGL
-  lvl1World = new Grid("levelOneGrid", lvl1Bg , 6, 8);
-  //lvl1World.startPrintingGridMarks();
-  player1 = new AnimatedSprite(player1File, player1Json);
-  //player1.resize(200,200);
-  lvl1World.setTileSprite(new GridLocation(0, 0),player1 );
-  player1.resize(200,200);
-  lvl1World.setTileSprite(new GridLocation(5, 5),enemy);
-
-
+  lvl1Grid = new Grid("levelOneGrid", lvl1Bg , 6, 8);
  squidply1 = new Sprite("sprites/chick_walk.png");
  squidply1.resize(10,10);
  currentX = squidply1.getCenterX();
  currentY =  squidply1.getCenterY();
- lvl1World.addSprite(squidply1);
+ lvl1Grid.addSprite(squidply1);
+
+  // player1 = new AnimatedSprite(player1File, player1Json);
+  // player1.resize(200,200);
+  // lvl1Grid.setTileSprite(new GridLocation(0, 0),player1 );
+  // player1.resize(200,200);
+  // lvl1Grid.setTileSprite(new GridLocation(5, 5),enemy);
+
 
   //SETUP: level2 screen - Dalgona
   lvl2World = new World("level2", candydrawing);
@@ -186,7 +185,6 @@ void draw() {
 } //end draw()
 
 
-
 //------------------ USER INPUT METHODS --------------------//
 
 //Known Processing method that automatically will run whenever a key is pressed
@@ -224,6 +222,7 @@ void keyPressed(){
 
 
   //CHANGING SCREENS BASED ON KEYS
+
   //change to level1 if 1 key pressed, level2 if 2 key is pressed
   if(key == '1'){
     currentScreen = lvl1World;
@@ -288,7 +287,7 @@ public void updateScreen(){
     
     //Display the Player1 image
     GridLocation player1Loc = new GridLocation(player1Row , player1Col);
-    lvl1World.setTileSprite(player1Loc, player1);
+    lvl1Grid.setTileSprite(player1Loc, player1);
       
     //update other screen elements
     lvl1World.showWorldSprites();
@@ -313,18 +312,21 @@ public void updateScreen(){
 //Method to populate enemies or other sprites on the screen
 public void populateSprites(){
 
-//AnimatedSprite obstacle = new AnimatedSprite()
-  //What is the index for the last column?
+
+  if(pikaSpawn < totalPikaSpawn )
+  {
+    // int multipler = (int)(Math.random()+1*6);
+    totalPikaSpawn-=100;
+    lvl1World.addSpriteCopyTo(popular,width-100,height-totalPikaSpawn); 
+    // totalPikaSpawn = 800;
+  }
 
 
-
-  //Loop through all the rows in the last column
-
-    //Generate a random number
-
-
-    //10% of the time, decide to add an enemy image to a Tile
-    
+    //check collisions
+    if(popular.getCenterX() <= squidply1.getCenterX()-100 && popular.getCenterY() <= squidply1.getCenterY()-100)
+    {
+    System.out.println("touched");
+    }
 
 }
 
@@ -358,15 +360,15 @@ public void moveSprites(){
 public boolean checkCollision(GridLocation loc, GridLocation nextLoc){
 
   //check current location first
-  PImage image = lvl1World.getTileImage(loc);
-  AnimatedSprite obstacle1 = popular.getTileSprite(loc);
-  if(mainC == null && obstacle1 == null){
+  PImage image = lvl1Grid.getTileImage(loc);
+  Sprite obstacle1 = lvl1Grid.getTileSprite(loc);
+  if(image == null && obstacle1 == null){
     return false;
   }
 
   //check next location
   PImage nextImage = lvl1Grid.getTileImage(nextLoc);
-  AnimatedSprite nextSprite = popular.getTileSprite(nextLoc);
+  Sprite nextSprite = lvl1Grid.getTileSprite(nextLoc);
   if(nextImage == null && nextSprite == null){
     return false;
   }
@@ -377,7 +379,7 @@ public boolean checkCollision(GridLocation loc, GridLocation nextLoc){
     System.out.println("EnemySprite hits Squid");
 
     //clear out the enemy if it hits the player
-    lvl1World.clearTileSprite(loc);
+    lvl1Grid.clearTileSprite(loc);
 
     //lose score
     //lvl1Score--;
@@ -388,7 +390,7 @@ public boolean checkCollision(GridLocation loc, GridLocation nextLoc){
     System.out.println("EnemySprite ran into Squid!");
 
     //Remove the image at that original location using the clearTileImage() or clearTileSprite() method from the Grid class.
-    lvl1World.clearTileSprite(nextLoc);
+    lvl1Grid.clearTileSprite(nextLoc);
 
     //Lose 1 scopre
     //lvl1Score--;
