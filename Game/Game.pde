@@ -24,15 +24,10 @@ String splash1BgFile = "images/SplashOne.png";
 PImage splash1Bg;
 
 ///VARIABLES: Level 1 Screen
-String lvl1File = "images/SquidGame01.jpg";
+String lvl1File = "images/start-to-finish-line-racing-track-success-concept-for-life-racing-for-bigger-goals-illustration-template-layout-from-top-view-vector.jpg";
 PImage lvl1Bg;
 Grid lvl1Grid;
-
-///VARIABLES: End Screen
-String endBgFileLoose = "images/loose.jpg";
-String endBgFileWin = "images/win.jpg";
-
-//AnimatedSprite player1;
+AnimatedSprite player1;
 String player1File = "sprites/squid.png";
 String player1Json = "sprites/squid.json";
 int player1Row = 0;
@@ -46,8 +41,7 @@ String squidchar = "sprites/squidchar1.png";
 Sprite squidply1;
 float currentX;
 float currentY;
-boolean isPass;
-boolean isSimilar;
+
 
 //VARIABLES: Splash 2 Screen
 Screen splash2;
@@ -64,7 +58,7 @@ PImage lvl2WorldBg;
 PImage candydrawing;
 Sprite needle;
 PImage cookies;
-Button dalgonaButton = new Button("rect", 100, 100, 200, 100, "Click for results");
+Button dalgonaButton = new Button("rect", 100, 100, 200, 100, "ClickMe");
 AnimatedSprite popular;
 
 //VARIABLES: EndScreen
@@ -77,7 +71,6 @@ String endBgFile = "images/apcsa.png";
 //SoundFile song;
 Screen currentScreen = introScreen;
 World currentWorld;
-Grid currentGrid;
 private int msElapsed = 0;
 
 //------------------ REQUIRED PROCESSING METHODS --------------------//
@@ -124,13 +117,11 @@ void setup() {
 
   //SETUP: level1 screen - RLGL
   lvl1Grid = new Grid("levelOneGrid", lvl1Bg , 6, 8);
-  squidply1 = new Sprite("sprites/squidchar1.png");
-  squidply1.resize(5,5);
-  currentX = squidply1.getCenterX();
-  currentY =  squidply1.getCenterY();
-  lvl1Grid.addSprite(squidply1);
-  popular = new AnimatedSprite("sprites/pikachu.png","sprites/pikachu.json");
-  popular.resize(100,100);
+ squidply1 = new Sprite("sprites/chick_walk.png");
+ squidply1.resize(10,10);
+ currentX = squidply1.getCenterX();
+ currentY =  squidply1.getCenterY();
+ lvl1Grid.addSprite(squidply1);
 
   // player1 = new AnimatedSprite(player1File, player1Json);
   // player1.resize(200,200);
@@ -139,13 +130,12 @@ void setup() {
   // lvl1Grid.setTileSprite(new GridLocation(5, 5),enemy);
 
 
-//------------------ LEVEL TWO --------------------//
-
-
   //SETUP: level2 screen - Dalgona
   lvl2World = new World("level2", candydrawing);
   candydrawing = loadImage("images/dalgona.png");
   candydrawing.resize(width, height);
+  cutting = new SoundFile(this,"sounds/chop.mp3" );
+  delay = new Delay(this);
 
   ///lvl2 sprites
   needle = new Sprite("images/needle.png");
@@ -162,7 +152,6 @@ void setup() {
 
   println("Game started...");
 
-  popular.moveTo(width-100,height-100);
 
 } //end setup()
 
@@ -174,12 +163,7 @@ void draw() {
 
   updateTitleBar();
   updateScreen();
-  popular.animateHorizontal(-1.0,5.0,false);
-  System.out.println("hellllllllllllo");
-  if(popular.getCenterX() <= squidply1.getCenterX()-100 && popular.getCenterY() <= squidply1.getCenterY()-100)
-  {
-    System.out.println("touched");
-  }
+
 
   //simple timing handling
   if (msElapsed % 300 == 0) {
@@ -211,20 +195,25 @@ void keyPressed(){
   //set [W] key to move the player1 up & avoid Out-of-Bounds errors
   if(keyCode == 87 && squidply1.getCenterY() > 0){
     //testDalgona();
-    currentY -=10; //W
+    currentY -=5; //W
   }
 
   if(keyCode == 65 && squidply1.getCenterX() > 0){
     System.out.println("position" + squidply1.getCenterX());
-  currentX -=10; //A
+    lvl1World.moveBgXY(10,0);
+    currentX -=5; //A
 
   }
   if(keyCode == 83 && squidply1.getCenterY() < height){
-   currentY+=10;
+   currentY+=5;
   } 
 
-  if(keyCode == 68 && squidply1.getCenterX() < width){
-   currentX +=10;
+  if(keyCode == 68 && squidply1.getCenterX() < width){ //s
+    if(lvl1World.distToRightEdge() != 0)
+    {
+      lvl1World.moveBgXY(-10,0);
+    }
+    currentX +=5;
   }
 
    squidply1.moveTo(currentX, currentY);
@@ -233,7 +222,7 @@ void keyPressed(){
   //CHANGING SCREENS BASED ON KEYS
   //change to level1 if 1 key pressed, level2 if 2 key is pressed
   if(key == '1'){
-    currentScreen = lvl1Grid;
+    currentScreen = lvl1World;
   } else if(key == '2'){
     currentScreen = lvl2World;
     //System.out.println("Changing to Level2World");
@@ -246,17 +235,10 @@ void mouseClicked(){
 
   //check if click was successful
   System.out.println("\nMouse was clicked at (" + mouseX + "," + mouseY + ")");
-  if(currentGrid != null){
-    System.out.println("Grid location: " + currentGrid.getGridLocation());
-  }
 
   System.out.println( get(mouseX, mouseY));
   //what to do if clicked? (Make player1 jump back?)
 
-
-  if(currentGrid != null){
-    currentGrid.setMark("X",currentGrid.getGridLocation());
-  }
 
   //Identify when button is clicked
   if(currentScreen == lvl2World && dalgonaButton.isMouseOverButton()){
@@ -286,47 +268,34 @@ public void updateScreen(){
     background(currentScreen.getBg());
   }
 
-  if(currentScreen == endScreen){
-    resetButton.show();
-  }
-
-  if(currentScreen == endScreen1){
-    resetButton.show();
-  }
-
-if(currentScreen == splash1){
-    updateButton.show();
-  }
-
   //UPDATE: introScreen
   if(currentScreen == introScreen && introScreen.getScreenTime() > 4000 && introScreen.getScreenTime() < 5000){
     System.out.print("i");
-    currentScreen = lvl1Grid;
-    lvl1Grid.resetTime();
+    currentScreen = lvl1World;
+    lvl1World.resetTime();
     // if(song.isPlaying())
     // {
     //   song.pause();
   }
 
   //UPDATE: level1Grid Screen
-  if(currentScreen == lvl1Grid){
+  if(currentScreen == lvl1World){
     System.out.print("1");
-    currentGrid = lvl1Grid;
-
+    
     //Display the Player1 image
-    // GridLocation player1Loc = new GridLocation(player1Row , player1Col);
-    // lvl1Grid.setTileSprite(player1Loc, player1);
+    GridLocation player1Loc = new GridLocation(player1Row , player1Col);
+    lvl1Grid.setTileSprite(player1Loc, player1);
       
     //update other screen elements
     lvl1Grid.showGridImages();
     lvl1Grid.showGridSprites();
     lvl1Grid.showWorldSprites();
+  //  squidply1.show();
   }
 
   //wait to go to level 2
   //if(currentScreen.getScreenTime() > 1000 && currentScreen.getScreenTime() < 2000){
   if(currentScreen == lvl2World){
-    currentGrid = null;
     //lvl2World.resetTime();
     System.out.println("2");
     image(pg, 0, 0); 
@@ -345,9 +314,12 @@ public void populateSprites(){
 //AnimatedSprite obstacle = new AnimatedSprite()
   //What is the index for the last column?
 
+
+
   //Loop through all the rows in the last column
 
     //Generate a random number
+
 
     //10% of the time, decide to add an enemy image to a Tile
     
@@ -357,10 +329,35 @@ public void populateSprites(){
 //Method to move around the enemies/sprites on the screen
 public void moveSprites(){
 
-  //Loop through all of the rows & cols in the grid
-  for(int r = 0; r <lvl1Grid.getNumRows(); r++){
-    for(int c = 1; c <lvl1Grid.getNumCols(); c++){
-      GridLocation loc = new GridLocation(r , c);
+  for(int i = lvl1World.getSprites().size()-1; i > 0; i--)
+  {
+    if(lvl1World.getSprites().get(i) != squidply1)
+    {
+      lvl1World.getSprites().get(i).move(-15,0);
+    }
+
+    if(lvl1World.getSprites().get(i).getLeft() == 0)
+    {
+      lvl1World.removeSprite(lvl1World.getSprites().get(i));
+    }
+
+    if(lvl1World.getSprites().get(i).getLeft() == 500)
+    {
+      totalPikaSpawn = 800;
+      populateSprites();
+      System.out.println("ir RAN");
+    }
+      System.out.println("moveLEFT: " + lvl1World.getSprites().get(i).getLeft());
+
+  }
+
+
+
+
+  // //Loop through all of the rows & cols in the grid
+  // for(int r = 0; r <lvl1World.getNumRows(); r++){
+  //   for(int c = 1; c <lvl1World.getNumCols(); c++){
+  //     GridLocation loc = new GridLocation(r , c);
 
       if(lvl1Grid.getTileSprite(loc) == enemy){
         
@@ -373,6 +370,7 @@ public void moveSprites(){
         //erase squid from current loc to move to next one
         lvl1Grid.clearTileSprite(loc);
        
+        GridLocation leftLoc = new GridLocation(r, c - 1);
         lvl1Grid.setTileSprite(leftLoc, enemy);
         System.out.println("moving enemies");
       }
@@ -441,6 +439,8 @@ void lvl2mechanics(){
     pg.stroke(0,255,0);
     pg.strokeWeight(16);
     pg.line(mouseX, mouseY, pmouseX, pmouseY);
+    delay.set(10.0,0.0);
+    cutting.play();
     pg.endDraw();
     needle.show();
   }
