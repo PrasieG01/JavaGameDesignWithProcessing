@@ -195,10 +195,10 @@ void draw() {
   }
   msElapsed +=100;
 
-  //check for end of game
-  if(isGameOver()){
-    endGame();
-  }
+  // //check for end of game
+  // if(isGameOver()){
+  //   endGame();
+  // }
 
   currentScreen.pause(100);
 
@@ -268,7 +268,7 @@ void mouseClicked(){
   }
 
   //Identify when button is clicked
-  if(currentScreen == lvl2World && b2.isMouseOverButton()){
+  if(currentScreen == lvl2World && dalgonaButton.isMouseOverButton()){
     System.out.println("Clicked!");
   }
 
@@ -280,12 +280,12 @@ void mouseClicked(){
 //method to update the Title Bar of the Game
 public void updateTitleBar(){
 
-  if(!isGameOver()) {
-    //set the title each loop
-    surface.setTitle(titleText + "    " + extraText + " " );
+//   if(!isGameOver()) {
+//     //set the title each loop
+//     surface.setTitle(titleText + "    " + extraText + " " );
   
-  }
-}
+//   }
+ }
 
 //method to update what is drawn on the screen each frame
 public void updateScreen(){
@@ -303,7 +303,7 @@ public void updateScreen(){
     resetButton.show();
   }
 
-if(currentScreen == level1Grid){
+if(currentScreen == splash1){
     updateButton.show();
   }
 
@@ -341,7 +341,7 @@ if(currentScreen == level1Grid){
     System.out.println("2");
      
     image(pg, 0, 0); 
-    b2.show();
+    dalgonaButton.show();
     int needleHeight = 277;
     needle.moveTo(mouseX, mouseY - needleHeight);
 
@@ -393,53 +393,50 @@ public void moveSprites(){
 //Method to check if there is a collision between Sprites on the Screen
 public boolean checkCollision(GridLocation loc, GridLocation nextLoc){
 
-  //Check what image/sprite is stored in the CURRENT location
-  // PImage image = grid.getTileImage(loc);
-  // AnimatedSprite sprite = grid.getTileSprite(loc);
+  //check current location first
+  PImage image = lvl1Grid.getTileImage(loc);
+  AnimatedSprite obstacle1 = popular.getTileSprite(loc);
+  if(mainC == null && obstacle1 == null){
+    return false;
+  }
 
-  //if empty --> no collision
-
-  //Check what image/sprite is stored in the NEXT location
-
-  //if empty --> no collision
+  //check next location
+  PImage nextImage = lvl1Grid.getTileImage(nextLoc);
+  AnimatedSprite nextSprite = popular.getTileSprite(nextLoc);
+  if(nextImage == null && nextSprite == null){
+    return false;
+  }
 
   //check if enemy runs into player
+  if(nextSprite.equals(obstacle1) && squidply1.equals(nextImage)){
+    System.out.println("EnemySprite hits Squid");
 
-    //clear out the enemy if it hits the player (using cleartTileImage() or clearTileSprite() from Grid class)
+    //clear out the enemy if it hits the player
+    lvl1Grid.clearTileSprite(loc);
 
-    //Update status variable
+    //lose health
+    //lvl1Score--;
+  }
 
   //check if a player collides into enemy
+  if(squidply1.equals(image) && popular.equals(nextSprite)){
+    System.out.println("EnemySprite ran into Squid!");
 
-  return false; //<--default return
+    //Remove the image at that original location using the clearTileImage() or clearTileSprite() method from the Grid class.
+    lvl1Grid.clearTileSprite(nextLoc);
+
+    //Lose 1 Health from player1
+    //lvl1Score--;
+  }
+
+  return true;
 }
 
-
-//---------------------END GAME METHODS -----------------//
-
-//method to indicate when the main game is over
-public boolean isGameOver(){
-  
-  return false; //by default, the game is never over
-}
-
-//method to describe what happens after the game is over
-public void endGame(){
-    System.out.println("Game Over!");
-
-    //Update the title bar
-    System.out.println("Your total score in this game was " + totalScore());
-    System.out.prinln("Your level 1 Score was: " + getScorelvl1());
-    System.out.prinln("Your level 2 Score was: " + getScorelvl2());
+    // //Show any end imagery
+    // currentScreen = endScreen;
+    // currentScreen = endScreen1;
 
     
-    //Show any end imagery
-    currentScreen = endScreen;
-    currentScreen = endScreen1;
-
-    
-
-}
 
 //------------------ LEVEL 2 CUSTOM METHODS --------------------//
 void lvl2mechanics(){
