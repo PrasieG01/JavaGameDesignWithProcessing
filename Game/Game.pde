@@ -1,6 +1,6 @@
 /* Game Class Starter File
  * Authors: Carey & Prasie
- * Last Edit: 5/29/2024
+ * Last Edit: 06/11/2024
  */
 
 import processing.sound.*;
@@ -12,7 +12,6 @@ import java.util.Scanner;
 //VARIABLES: Title Bar
 String titleText = "Squid Game Simulator";
 String extraText = "Squid Character";
-
 
 //VARIABLES: Intro Screen
 Screen introScreen;
@@ -37,14 +36,12 @@ Button updateButton = new Button("rect", 400, 500, 100, 50, "Go To Level2->");
 Button resetButton = new Button("rect", 400, 500, 100, 50, "Try Again!");
 
 AnimatedSprite enemy;
-String enemyFile = "images/x_wood.png";
 String squidgirl = "images/squidgirl.jpg";
 String squidchar = "sprites/squidchar1.png";
 Sprite squidply1;
 float currentX;
 float currentY;
 
-  
 
 //VARIABLES: Splash 2 Screen
 Screen splash2;
@@ -61,16 +58,8 @@ PImage lvl2WorldBg;
 PImage candydrawing;
 Sprite needle;
 PImage cookies;
-Button b2 = new Button("rect", 100, 100, 200, 100, "ClickMe");
+Button dalgonaButton = new Button("rect", 100, 100, 200, 100, "ClickMe");
 AnimatedSprite popular;
-
-//outline code test
-String outlineImg = "images/dalgona.png";
-PImage ogOutline;
-
-//2D Arrays of Both drawings
-int[][] blackPixelColors; //from ogOutline
-int[][] drawnLineColors; //the drawn outline
 
 //VARIABLES: EndScreen
 Screen endScreen;
@@ -123,7 +112,7 @@ void setup() {
   splash1 = new Screen("splash1", splash1Bg);
   splash2 = new Screen("splash2", splash2Bg);
   endScreen = new Screen("end", endBg);
-  endScreen1 = new Screen("end", endBg1);
+  endScreen1 = new Screen("end2", endBg1);
   currentScreen = introScreen;
 
   //SETUP: level1 screen - RLGL
@@ -144,8 +133,6 @@ void setup() {
 
   //SETUP: level2 screen - Dalgona
   lvl2World = new World("level2", candydrawing);
- // ogOutline = loadImage(outlineImg);
-  //ogOutline.resize(width, height);
   candydrawing = loadImage("images/dalgona.png");
   candydrawing.resize(width, height);
   cutting = new SoundFile(this,"sounds/chop.mp3" );
@@ -171,6 +158,7 @@ void setup() {
 
 
 //Required Processing method that automatically loops
+
 //(Anything drawn on the screen should be called from here)
 void draw() {
 
@@ -230,8 +218,6 @@ void keyPressed(){
   }
 
    squidply1.moveTo(currentX, currentY);
-
-
 
 
   //CHANGING SCREENS BASED ON KEYS
@@ -302,12 +288,9 @@ public void updateScreen(){
     lvl1World.setTileSprite(player1Loc, player1);
       
     //update other screen elements
-    lvl1World.showWorldSprites();
-    populateSprites();
-    moveSprites();
-
-    System.out.println("Display Right edge: " + lvl1World.distToRightEdge());
-
+    lvl1Grid.showGridImages();
+    lvl1Grid.showGridSprites();
+    lvl1Grid.showWorldSprites();
   //  squidply1.show();
   }
 
@@ -316,12 +299,9 @@ public void updateScreen(){
   if(currentScreen == lvl2World){
     //lvl2World.resetTime();
     System.out.println("2");
-     
     image(pg, 0, 0); 
-    dalgonaButton.show();
     int needleHeight = 277;
     needle.moveTo(mouseX, mouseY - needleHeight);
-
     lvl2mechanics();
 
   }
@@ -332,6 +312,18 @@ public void updateScreen(){
 //Method to populate enemies or other sprites on the screen
 public void populateSprites(){
 
+//AnimatedSprite obstacle = new AnimatedSprite()
+  //What is the index for the last column?
+
+
+
+  //Loop through all the rows in the last column
+
+    //Generate a random number
+
+
+    //10% of the time, decide to add an enemy image to a Tile
+    
 
 }
 
@@ -359,9 +351,30 @@ public void moveSprites(){
       System.out.println("moveLEFT: " + lvl1World.getSprites().get(i).getLeft());
 
   }
+
+
+
+
+  // //Loop through all of the rows & cols in the grid
+  // for(int r = 0; r <lvl1World.getNumRows(); r++){
+  //   for(int c = 1; c <lvl1World.getNumCols(); c++){
+  //     GridLocation loc = new GridLocation(r , c);
+
+      if(lvl1Grid.getTileSprite(loc) == enemy){
+        //erase squid from current loc to move to next one
+        lvl1Grid.clearTileSprite(loc);
+        // if(c > 1){
+        //   lvl1Grid.clearTileSprite(loc);
+        // }
+        GridLocation leftLoc = new GridLocation(r, c - 1);
+        lvl1Grid.setTileSprite(leftLoc, enemy);
+        System.out.println("moving enemies");
+      }
+    }
+  }
 }
 
-//Method to check if there is a collision between Sprites on the Screen
+// //Method to check if there is a collision between Sprites on the Screen
 public boolean checkCollision(GridLocation loc, GridLocation nextLoc){
 
   //check current location first
@@ -372,20 +385,21 @@ public boolean checkCollision(GridLocation loc, GridLocation nextLoc){
   }
 
   //check next location
-  PImage nextImage = lvl1World.getTileImage(nextLoc);
+  PImage nextImage = lvl1Grid.getTileImage(nextLoc);
   AnimatedSprite nextSprite = popular.getTileSprite(nextLoc);
   if(nextImage == null && nextSprite == null){
     return false;
   }
 
+
   //check if enemy runs into player
-  if(nextSprite.equals(obstacle1) && squidply1.equals(nextImage)){
+  if(obstacle1.equals(popular) && squidply1.equals(nextImage)){
     System.out.println("EnemySprite hits Squid");
 
     //clear out the enemy if it hits the player
     lvl1World.clearTileSprite(loc);
 
-    //lose health
+    //lose score
     //lvl1Score--;
   }
 
@@ -396,7 +410,7 @@ public boolean checkCollision(GridLocation loc, GridLocation nextLoc){
     //Remove the image at that original location using the clearTileImage() or clearTileSprite() method from the Grid class.
     lvl1World.clearTileSprite(nextLoc);
 
-    //Lose 1 Health from player1
+    //Lose 1 scopre
     //lvl1Score--;
   }
 
@@ -408,10 +422,10 @@ public boolean checkCollision(GridLocation loc, GridLocation nextLoc){
     // currentScreen = endScreen1;
 
     
-
 //------------------ LEVEL 2 CUSTOM METHODS --------------------//
 void lvl2mechanics(){
   image(pg, 0, 0); 
+  dalgonaButton.show();
   int needleHeight = 277;
   needle.moveTo(mouseX, mouseY - needleHeight);
 
@@ -465,7 +479,6 @@ public boolean isGreen(int g){
   return false;
 }
 
-
 //check if it's brown
 public boolean isBrown(int b){
   Color l = new Color(b);
@@ -474,5 +487,3 @@ public boolean isBrown(int b){
   }
   return false;
 }
-
-
