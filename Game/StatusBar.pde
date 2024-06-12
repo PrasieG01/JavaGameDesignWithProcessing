@@ -9,24 +9,23 @@ int lvl2Score = 0;
 String plyName = " ";
 boolean whatLevel;
 
-public StatusBar(int lvl1Score, int lvl2Score, String plyName, boolean whatLevel){
+    public StatusBar(int lvl1Score, int lvl2Score, String plyName, boolean whatLevel){
 
-this.lvl1Score = lvl1Score;
-this.lvl2Score = lvl2Score;
-this.totalScore = totalScore;
-this.plyName = plyName;
-this.whatLevel = whatLevel;
-}
+    this.lvl1Score = lvl1Score;
+    this.lvl2Score = lvl2Score;
+    this.plyName = plyName;
+    this.whatLevel = whatLevel;
+    }
 
  // Level 1 score tracker
     public void addScore4Level1() {
-        if (squidply1.getGridLocation() != popular.getGridLocation()) {
+        if (squidply1.getTileSprite() != popular.getTileSprite()) {
             lvl1Score++;
         }
     }
 
 public void loseScore4Level1() {
-        if (squidply1.getGridLocation() == enemy.getGridLocation() && lvl1Score >= 0) {
+        if (squidply1.getTileSprite() == enemy.getTileSprite() && lvl1Score >= 0) {
             lvl1Score--;
         }
     }
@@ -52,7 +51,6 @@ public void loseScore4Level2() {
 public int getTotalScore() {
         return lvl1Score + lvl2Score;
     }
-
 
 
 //accessor methods
