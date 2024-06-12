@@ -53,8 +53,12 @@ public class Screen {
             //background(bg);
         }
     }
-    public PImage getBg(){
-        return bg;
+    public PImage getBgImage(){
+        if(!isMoveable){
+            return bg;
+        } else {
+            return mbg.getImage();
+        }
     }
 
 
@@ -88,7 +92,18 @@ public class Screen {
         if(isMoveable){
             mbg.show();
             //System.out.println("Showing mbg");
+        } else {
+             if(bg != null){
+                background(bg);
+             } else {
+                System.out.println("No background image loaded!");
+             }
         }
+    }
+
+    //method to return distance to right edge for a moveable background
+    public float distToRightEdge(){
+        return mbg.getW() -width +mbg.getLeft();
     }
 
 
