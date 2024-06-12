@@ -41,6 +41,8 @@ String squidchar = "sprites/squidchar1.png";
 Sprite squidply1;
 float currentX;
 float currentY;
+int totalPikaSpawn = 800;
+
 
 
 //VARIABLES: Splash 2 Screen
@@ -52,6 +54,7 @@ PImage splash2Bg;
 World lvl2World;
 String lvl2WorldFile = "images/SquidGame02.jpg";
 PImage lvl2WorldBg;
+SoundFile cutting;
 
 
 //Grid world2Grid;
@@ -101,11 +104,11 @@ void setup() {
   lvl2WorldBg = loadImage(lvl2WorldFile);
   lvl2WorldBg.resize(width, height);
 
-  endBg = loadImage(endBgFileLoose);
-  endBg.resize(width, height); 
+  // endBg = loadImage(endBgFileLoose);
+  // endBg.resize(width, height); 
 
-  endBg1 = loadImage(endBgFileWin);
-  endBg1.resize(width, height); 
+  // endBg1 = loadImage(endBgFileWin);
+  // endBg1.resize(width, height); 
   
   //SETUP: Screens - setup splash & intro & end
   introScreen = new Screen("intro", introBg);
@@ -136,7 +139,7 @@ void setup() {
   candydrawing = loadImage("images/dalgona.png");
   candydrawing.resize(width, height);
   cutting = new SoundFile(this,"sounds/chop.mp3" );
-  delay = new Delay(this);
+  // delay = new Delay(this);
 
   ///lvl2 sprites
   needle = new Sprite("images/needle.png");
@@ -265,8 +268,8 @@ public void updateTitleBar(){
 public void updateScreen(){
 
   //UPDATE: Background of the current Screen
-  if(currentScreen.getBg() != null){
-    background(currentScreen.getBg());
+  if(currentScreen.getBgImage() != null){
+    background(currentScreen.getBgImage());
   }
 
   //UPDATE: introScreen
@@ -288,9 +291,7 @@ public void updateScreen(){
     lvl1World.setTileSprite(player1Loc, player1);
       
     //update other screen elements
-    lvl1Grid.showGridImages();
-    lvl1Grid.showGridSprites();
-    lvl1Grid.showWorldSprites();
+    lvl1World.showWorldSprites();
   //  squidply1.show();
   }
 
@@ -350,27 +351,6 @@ public void moveSprites(){
     }
       System.out.println("moveLEFT: " + lvl1World.getSprites().get(i).getLeft());
 
-  }
-
-
-
-
-  // //Loop through all of the rows & cols in the grid
-  // for(int r = 0; r <lvl1World.getNumRows(); r++){
-  //   for(int c = 1; c <lvl1World.getNumCols(); c++){
-  //     GridLocation loc = new GridLocation(r , c);
-
-      if(lvl1Grid.getTileSprite(loc) == enemy){
-        //erase squid from current loc to move to next one
-        lvl1Grid.clearTileSprite(loc);
-        // if(c > 1){
-        //   lvl1Grid.clearTileSprite(loc);
-        // }
-        GridLocation leftLoc = new GridLocation(r, c - 1);
-        lvl1Grid.setTileSprite(leftLoc, enemy);
-        System.out.println("moving enemies");
-      }
-    }
   }
 }
 
