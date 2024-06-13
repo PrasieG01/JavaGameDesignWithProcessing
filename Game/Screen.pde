@@ -103,10 +103,8 @@ public class Screen {
 
     //method to return distance to right edge for a moveable background
     public float distToRightEdge(){
-        return mbg.getW() -width +mbg.getLeft();
+        return (mbg.getW() - width) + (mbg.getLeft());
     }
-
-
 
     //------------------ SCREEN TIME METHODS --------------------//
 
@@ -138,10 +136,8 @@ public class Screen {
     }
 
 
-
     public String toString(){
         return "Screen: " + screenName + " at LeftX:" + getLeftX() + " ,TopY:" + getTopY() ;
     }
-
 
 }
