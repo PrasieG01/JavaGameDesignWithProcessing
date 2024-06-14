@@ -312,26 +312,32 @@ public void updateScreen(){
   //UPDATE: Background of the current Screen
   currentScreen.show();
 
+  //UPDATE: introScreen
   if(currentScreen == introScreen){
 
-  textAlign(LEFT);
-  textSize(32);
-  fill(255);
-  text("Enter Your Name:", width / 2, height / 2 - 100);
-  textSize(24);
-  text(playerName, width / 2, height / 2);
+    textAlign(LEFT);
+    textSize(32);
+    fill(255);
+    text("Enter Your Name:", width / 2, height / 2 - 100);
+    textSize(24);
+    text(playerName, width / 2, height / 2);
 
-startButton.show();
+  startButton.show();
 
-if (startButton.isMouseOverButton() && mousePressed) {
-      currentScreen = rulesScreen;
-      rulesScreen.resetTime();
-    }
-
+  if (startButton.isMouseOverButton() && mousePressed) {
+    currentScreen = rulesScreen;
+    rulesScreen.resetTime();
+  }
 
 }
 
   //UPDATE: introScreen
+  if(currentScreen == rulesScreen){
+    
+
+
+  }
+
   // if(currentScreen == introScreen && introScreen.getScreenTime() > 4000 && introScreen.getScreenTime() < 5000){
   // if(currentScreen == introScreen){
   //   //System.out.print("i");
