@@ -429,24 +429,22 @@ public void populateSprites(int numPika){
 //Method to move around the enemies/sprites on the screen
 public void moveSpritesANDcheckCollision(){
 
-  for(int i = lvl1World.getSprites().size()-1; i > 0; i--)
+  for(int i = lvl1World.getSprites().size() - 1; i > 0; i--)
   {
     if(lvl1World.getSprites().get(i) != squidply1)
     {
       lvl1World.getSprites().get(i).move(-20,0);
     }
 
+    if(squidply1.getTop() > lvl1World.getSprites().get(i).getBottom() && squidply1.getBottom() < lvl1World.getSprites().get(i).getTop() && squidply1.getRight() < lvl1World.getSprites().get(i).getLeft() && squidply1.getLeft() < lvl1World.getSprites().get(i).getRight())
+    {
+      System.out.println("COLLISION: ");
+    }
+
     if(lvl1World.getSprites().get(i).getLeft() == 0)
     {
       lvl1World.removeSprite(lvl1World.getSprites().get(i));
     }
-
-    // if(squidply1.getTop() > lvl1World.getSprites().get(i).getBottom() && squidply1.getBottom() < lvl1World.getSprites().get(i).getTop() && squidply1.getRight() < lvl1World.getSprites().get(i).getLeft() && squidply1.getLeft() < lvl1World.getSprites().get(i).getRight())
-    // {
-    //   System.out.println("COLLISION: ");
-    // }
-
-
 
     // if(lvl1World.getSprites().get(i).getLeft() == height/2)
     // {
