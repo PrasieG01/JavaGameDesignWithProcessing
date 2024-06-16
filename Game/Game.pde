@@ -367,9 +367,9 @@ public void updateScreen(){
     lvl1World.showWorldSprites();
     lvl1GameMechanic();
 
-    System.out.println("Display Right edge: " + lvl1World.distToRightEdge());
+    //System.out.println("Display Right edge: " + lvl1World.distToRightEdge());
 
-  //  squidply1.show();
+    squidply1.show();
   }
 
   //UPDATE: Dalgona Level 2 Screen
@@ -417,9 +417,11 @@ public void populateSprites(int numPika){
   int multipler = (int)(Math.random()*8);
   int promNight = multipler*100;
 
+  System.out.println("PS: " + pikaSpawn + "\tnumPika: " + numPika);
+
   if(pikaSpawn < numPika )
   {
-    System.out.println("Location: " + promNight);
+    System.out.println("Spawning new Pika at : " + promNight);
     lvl1World.addSpriteCopyTo(popular,width-100,height-promNight); 
     pikaSpawn++;
   }
@@ -429,32 +431,42 @@ public void populateSprites(int numPika){
 //Method to move around the enemies/sprites on the screen
 public void moveSpritesANDcheckCollision(){
 
-  for(int i = lvl1World.getSprites().size()-1; i > 0; i--)
+  for(int i = lvl1World.getNumSprites()-1; i >= 0; i--)
   {
-    if(lvl1World.getSprites().get(i) != squidply1)
+
+    Sprite sprite = lvl1World.getSprite(i);
+
+    //move enemies to the left
+    if(sprite != squidply1)
     {
-      lvl1World.getSprites().get(i).move(-20,0);
+      sprite.move(-20,0);
     }
 
-    if(lvl1World.getSprites().get(i).getLeft() == 0)
+    //erase enemies once they reach the left edge
+    if(sprite.getLeft() == 0)
     {
-      lvl1World.removeSprite(lvl1World.getSprites().get(i));
+      System.out.println("Erasing Sprite");
+      lvl1World.removeSprite(i);
+      pikaSpawn--;
     }
 
-    // if(squidply1.getTop() > lvl1World.getSprites().get(i).getBottom() && squidply1.getBottom() < lvl1World.getSprites().get(i).getTop() && squidply1.getRight() < lvl1World.getSprites().get(i).getLeft() && squidply1.getLeft() < lvl1World.getSprites().get(i).getRight())
-    // {
-    //   System.out.println("COLLISION: ");
-    // }
+    //End level if there is a collision
+    if(squidply1.getTop() < sprite.getBottom() 
+      && squidply1.getBottom() > sprite.getTop() 
+      && squidply1.getRight() > sprite.getLeft() 
+      && squidply1.getLeft() < sprite.getRight())
+    {
+      System.out.println("COLLISION: ");
+    }
 
-
-
-    // if(lvl1World.getSprites().get(i).getLeft() == height/2)
+    // //add more Pikas once the original 3 have gone??
+    // if(sprite.getLeft() == height/2)
     // {
     //   pikaSpawn = 0;
     //   populateSprites(3);
     // }
     
-
+    //System.out.println("Pikaspawn: " + pikaSpawn);
   }
 }
 
