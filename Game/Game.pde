@@ -7,7 +7,6 @@ import processing.sound.*;
 PGraphics pg;
 PImage mask; 
 PFont font; //extracts the image with darker pixels only
-import java.util.Scanner;
 
 //------------------ GAME VARIABLES --------------------//
 
@@ -53,9 +52,14 @@ Sprite squidply1;
 float currentX;
 float currentY;
 
+SoundFile running;
+SoundFile squidGameTheme;
+AudioIn in;
+Delay delay;
+int time;
+
 AnimatedSprite popular;
 int pikaSpawn = 0;
-int totalPikaSpawn = 800;
 
   
 
@@ -74,13 +78,12 @@ Sprite needle;
 PImage cookies;
 Button b2 = new Button("rect", 100, 100, 200, 100, "Level 2");
 SoundFile cutting;
-Delay delay;
 
 
 //VARIABLES: EndScreen
 Screen endScreen;
 PImage endBg;
-String endBgFile = "images/apcsa.png";
+String endBgFile; //add file
 
 //VARIABLES: Whole Game
 //SoundFile song;
@@ -120,8 +123,8 @@ void setup() {
   lvl2WorldBg = loadImage(lvl2WorldFile);
   lvl2WorldBg.resize(width, height);
 
-  endBg = loadImage(endBgFile);
-  endBg.resize(width, height); 
+  // endBg = loadImage(endBgFile);
+  // endBg.resize(width, height); 
   
   //SETUP: Screens - setup splash & intro & end
   introScreen = new Screen("intro", introBg);
@@ -141,6 +144,10 @@ void setup() {
  lvl1World.addSprite(squidply1);
  popular = new AnimatedSprite("sprites/pikachu.png","sprites/pikachu.json");
  popular.resize(100,100);
+ running = new SoundFile(this,"sounds/run.mp3");
+ squidGameTheme = new SoundFile(this,"sounds/SquidGame.mp3");
+ time = millis();
+ delay = new Delay(this);
 
 
   //SETUP: level2 screen - Dalgona
@@ -148,7 +155,7 @@ void setup() {
   candydrawing = loadImage("images/dalgona.png");
   candydrawing.resize(width, height);
   cutting = new SoundFile(this,"sounds/chop.mp3" );
-  delay = new Delay(this);
+  in = new AudioIn(this, 0);
 
   ///lvl2 sprites
   needle = new Sprite("images/needle.png");
@@ -234,7 +241,10 @@ void keyPressed(){
   //check what key was pressed
   System.out.println("\nKey pressed: " + keyCode); //key gives you a character for the key pressed
 
-
+  if(!running.isPlaying())
+  {
+    running.play();
+  }
   //What to do when a key is pressed?
   //set [W] key to move the player1 up & avoid Out-of-Bounds errors
   if(keyCode == 87 && squidply1.getCenterY() > 0){
@@ -350,14 +360,12 @@ public void updateScreen(){
 
   //UPDATE: level1Grid Screen
   if(currentScreen == lvl1World){
-    System.out.print("1");
     
     //Display the Player1 image
       
     //update other screen elements
     lvl1World.showWorldSprites();
-    populateSprites();
-    moveSprites();
+    lvl1GameMechanic();
 
     System.out.println("Display Right edge: " + lvl1World.distToRightEdge());
 
@@ -384,34 +392,48 @@ public void updateScreen(){
 
 //----------------LEVEL 1 GRID METHODS ------------//
 
-//Method to populate enemies or other sprites on the screen
-public void populateSprites(){
+public void lvl1GameMechanic()
+{
+  populateSprites(3);
+  moveSpritesANDcheckCollision();
+  playAndPause();
+}
 
-  if(pikaSpawn < totalPikaSpawn )
+
+
+public void playAndPause()
+{
+  if(time % 300 == 0)
   {
-    // int multipler = (int)(Math.random()+1*6);
-    totalPikaSpawn-=100;
-    lvl1World.addSpriteCopyTo(popular,width-100,height-totalPikaSpawn); 
-    // totalPikaSpawn = 800;
+    System.out.println("ok");
   }
-
-
-    // //check collisions
-    // if(popular.getCenterX() <= squidply1.getCenterX()-100 && popular.getCenterY() <= squidply1.getCenterY()-100)
-    // {
-    // System.out.println("touched");
-    // }
 
 }
 
+
+
+//Method to populate enemies or other sprites on the screen
+public void populateSprites(int numPika){
+  int multipler = (int)(Math.random()*8);
+  int promNight = multipler*100;
+
+  if(pikaSpawn < numPika )
+  {
+    System.out.println("Location: " + promNight);
+    lvl1World.addSpriteCopyTo(popular,width-100,height-promNight); 
+    pikaSpawn++;
+  }
+}
+
+
 //Method to move around the enemies/sprites on the screen
-public void moveSprites(){
+public void moveSpritesANDcheckCollision(){
 
   for(int i = lvl1World.getSprites().size()-1; i > 0; i--)
   {
     if(lvl1World.getSprites().get(i) != squidply1)
     {
-      lvl1World.getSprites().get(i).move(-15,0);
+      lvl1World.getSprites().get(i).move(-20,0);
     }
 
     if(lvl1World.getSprites().get(i).getLeft() == 0)
@@ -419,59 +441,22 @@ public void moveSprites(){
       lvl1World.removeSprite(lvl1World.getSprites().get(i));
     }
 
-    if(lvl1World.getSprites().get(i).getLeft() == 500)
-    {
-      totalPikaSpawn = 800;
-      populateSprites();
-      System.out.println("ir RAN");
-    }
-      System.out.println("moveLEFT: " + lvl1World.getSprites().get(i).getLeft());
+    // if(squidply1.getTop() > lvl1World.getSprites().get(i).getBottom() && squidply1.getBottom() < lvl1World.getSprites().get(i).getTop() && squidply1.getRight() < lvl1World.getSprites().get(i).getLeft() && squidply1.getLeft() < lvl1World.getSprites().get(i).getRight())
+    // {
+    //   System.out.println("COLLISION: ");
+    // }
+
+
+
+    // if(lvl1World.getSprites().get(i).getLeft() == height/2)
+    // {
+    //   pikaSpawn = 0;
+    //   populateSprites(3);
+    // }
+    
 
   }
 }
-
-// //Method to check if there is a collision between Sprites on the Screen
-// public boolean checkCollision(GridLocation loc, GridLocation nextLoc){
-
-//   //check current location first
-//   PImage image = lvl1World.getTileImage(loc);
-//   Sprite obstacle1 = lvl1World.getTileSprite(loc);
-//   if(image == null && obstacle1 == null){
-//     return false;
-//   }
-
-//   //check next location
-//   PImage nextImage = lvl1World.getTileImage(nextLoc);
-//   Sprite nextSprite = lvl1World.getTileSprite(nextLoc);
-//   if(nextImage == null && nextSprite == null){
-//     return false;
-//   }  
-
-
-//   //check if enemy runs into player
-//   if(obstacle1.equals(popular) && squidply1.equals(nextImage)){
-//     System.out.println("EnemySprite hits Squid");
-
-//     //clear out the enemy if it hits the player
-//     lvl1Grid.clearTileSprite(loc);
-
-//     //lose score
-//     //lvl1Score--;
-//   }
-
-//   //check if a player collides into enemy
-//   if(squidply1.equals(image) && popular.equals(nextSprite)){
-//     System.out.println("EnemySprite ran into Squid!");
-
-//     //Remove the image at that original location using the clearTileImage() or clearTileSprite() method from the Grid class.
-//     lvl1World.clearTileSprite(nextLoc);
-
-//     //Lose 1 scopre
-//     //lvl1Score--;
-//   }
-
-//   return true;
-// }
 
 
 //---------------------END GAME METHODS -----------------//
@@ -508,7 +493,10 @@ void lvl2mechanics(){
     pg.strokeWeight(16);
     pg.line(mouseX, mouseY, pmouseX, pmouseY);
     delay.set(10.0,0.0);
-    cutting.play();
+    if(!cutting.isPlaying())
+    {
+      cutting.play();
+    }
     pg.endDraw();
     needle.show();
   }
