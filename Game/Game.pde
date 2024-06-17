@@ -11,8 +11,8 @@ PFont font; //extracts the image with darker pixels only
 //------------------ GAME VARIABLES --------------------//
 
 //VARIABLES: Title Bar
-String titleText = "Squid Game Simulator";
-String extraText = "Squid Character";
+String titleText = "";
+String extraText = "";
 
 //VARIABLES: Splash Screen
 
@@ -21,6 +21,7 @@ int lvl1Score = 0;
 int lvl2Score = 0;
 String progressBar = "Null";
 String playerName = "";
+boolean typeName = true;
 
 //VARIABLES: Intro Screen
 Screen introScreen;
@@ -32,6 +33,11 @@ Screen rulesScreen;
 String rulesBgFile = "images/rules.png";
 PImage rulesBg;
 
+//VARIABLES: Broken Cookie Screen
+Screen brokenScreen;
+String brokenBgFile = "images/brokencookie.jpg";
+PImage brokenBg;
+
 //VARIABLES: Splash 1 Screen
 Screen splash1;
 String splash1BgFile = "images/SplashOne.png";
@@ -42,9 +48,9 @@ String lvl1File = "images/start-to-finish-line-racing-track-success-concept-for-
 PImage lvl1Bg;
 World lvl1World;
 
-Button b1 = new Button("rect", 400, 500, 100, 50, "GoToLevel2");
-Button startButton = new Button("rect", 650, 300, 150, 100, "Game Rules");
-
+Button b1 = new Button("rect", 1050, 580, 200, 100, "Level 1");
+Button b11 = new Button("rect", 450, 140, 200, 100, "Level 1");
+Button startButton = new Button("rect", 650, 300, 200, 100, "Game Rules");
 
 String squidgirl = "images/squidgirl.jpg";
 String squidchar = "sprites/squidchar1.png";
@@ -72,11 +78,13 @@ PImage splash2Bg;
 World lvl2World;
 String lvl2WorldFile = "images/SquidGame02.jpg";
 PImage lvl2WorldBg;
+
 //Grid world2Grid;
 PImage candydrawing;
 Sprite needle;
 PImage cookies;
-Button b2 = new Button("rect", 100, 100, 200, 100, "Level 2");
+Button b2 = new Button("rect", 100, 560, 200, 100, "Level 2");
+Button b22 = new Button("rect", 1090, 140, 200, 100, "Level 2");
 SoundFile cutting;
 
 
@@ -111,6 +119,9 @@ void setup() {
   rulesBg = loadImage(rulesBgFile);
   rulesBg.resize(width, height);
 
+   brokenBg = loadImage(brokenBgFile);
+  brokenBg.resize(width, height);
+
   splash1Bg = loadImage(splash1BgFile);
   splash1Bg.resize(width, height);
 
@@ -129,6 +140,7 @@ void setup() {
   //SETUP: Screens - setup splash & intro & end
   introScreen = new Screen("intro", introBg);
   rulesScreen = new Screen("rules", rulesBg);
+  brokenScreen = new Screen("broken", brokenBg);
   splash1 = new Screen("splash1", splash1Bg);
   splash2 = new Screen("splash2", splash2Bg);
   endScreen = new Screen("end", endBg);
@@ -169,13 +181,7 @@ void setup() {
   pg.beginDraw();
   pg.background(candydrawing);
   pg.endDraw();
-  
-  //SETUP: User Input for Name
-  font = createFont("Arial", 16, true);
-  textFont(font);
 
-  playerName = "";
-  Button startButton = new Button("rect", 400, 500, 100, 50, "Game Rules");
   
   //SETUP: Other
   // Load a soundfile from the /data folder of the sketch and play it back
@@ -193,25 +199,38 @@ void setup() {
 //(Anything drawn on the screen should be called from here)
 void draw() {
 
-   updateTitleBar();
+  updateTitleBar();
   updateScreen();
 
 
-// if(currentScreen == introScreen){
+if (currentScreen == introScreen) {
+    
+    fill(0);
+    text("Enter Your Name:", 50, 200);
+    text(playerName, 400, 200);
 
-//   textAlign(LEFT);
-//   textSize(32);
-//   fill(255);
-//   text("Enter Your Name:", width / 2, height / 2 - 100);
-//   textSize(24);
-//   text(playerName, width / 2, height / 2);
+  } else if (currentScreen == lvl1World) {
+    
 
-// startButton.show();
+  } else if(currentScreen == lvl2World){
+    
+  }
 
-// if (startButton.isMouseOverButton() && mousePressed) {
-//       currentScreen = splash1;
-//       splash1.resetTime();
-//     }
+  // Title bar
+  fill(255);
+  rect(60, 40, width, 40);
+  fill(0);
+  textSize(20);
+  text("Lvl1 Score: 0 " + "Lvl2 Score: 0 " + " | Player: " + playerName, 200, 45);
+  
+
+if(currentScreen == lvl2World){
+  image(pg, 0, 0); 
+    b2.show();
+    int needleHeight = 277;
+    needle.moveTo(mouseX, mouseY - needleHeight);
+    lvl2mechanics();
+}
 
 
 // }
@@ -229,8 +248,8 @@ void draw() {
 
   currentScreen.pause(100);
 
-} //end draw()
-
+ //end draw()
+}
 
 
 //------------------ USER INPUT METHODS --------------------//
@@ -278,8 +297,27 @@ void keyPressed(){
   if(key == '1'){
     currentScreen = lvl1World;
   } else if(key == '2'){
+    wrongPixelsCount = 0; // Reset counter when entering level 2
     currentScreen = lvl2World;
-    //System.out.println("Changing to Level2World");
+  } else if(key == '3'){
+    currentScreen = brokenScreen;
+  }
+
+//Store User Name
+  if(typeName){
+    if(key == BACKSPACE){
+      if(playerName.length() > 0){
+        playerName = playerName.substring(0, playerName.length() - 1);
+      }
+    }
+    else if(key != ENTER || key != RETURN){
+      playerName += key;
+    }
+  }
+  else{
+    if(key == ' '){
+     // lvlScore++;
+    }
   }
 
 }
@@ -293,11 +331,40 @@ void mouseClicked(){
   System.out.println( get(mouseX, mouseY));
   //what to do if clicked? (Make player1 jump back?)
 
-
-  //Identify when button is clicked
-  if(currentScreen == lvl2World && b2.isMouseOverButton()){
-    System.out.println("Clicked!");
+//if mouse is clicked on the lvl2World
+  if(currentScreen == lvl2World) {
+    testDalgona();
   }
+  // //Identify when button is clicked
+   if(currentScreen == introScreen && b1.isMouseOverButton()){
+    System.out.println("Clicked!");
+    currentScreen = lvl1World;
+   }
+
+   // //Identify when button is clicked
+   if(currentScreen == introScreen && startButton.isMouseOverButton()){
+    System.out.println("Clicked start button");
+    currentScreen = rulesScreen;
+   }
+
+   // //Identify when button is clicked
+   if(currentScreen == introScreen && b2.isMouseOverButton()){
+    System.out.println("Clicked level 2");
+    currentScreen = lvl2World;
+   }
+
+   // //Identify when button is clicked
+   if(currentScreen == rulesScreen && b11.isMouseOverButton()){
+    System.out.println("Clicked b11 button");
+    currentScreen = lvl1World;
+   }
+
+   // //Identify when button is clicked
+   if(currentScreen == rulesScreen && b22.isMouseOverButton()){
+    System.out.println("Clicked level 2");
+    currentScreen = lvl2World;
+   }
+
 
 }
 
@@ -322,31 +389,50 @@ public void updateScreen(){
   //UPDATE: Background of the current Screen
   currentScreen.show();
 
-  //UPDATE: introScreen
-  if(currentScreen == introScreen){
-
-    textAlign(LEFT);
-    textSize(32);
-    fill(255);
-    text("Enter Your Name:", width / 2, height / 2 - 100);
-    textSize(24);
-    text(playerName, width / 2, height / 2);
-
-  startButton.show();
-
-  if (startButton.isMouseOverButton() && mousePressed) {
-    currentScreen = rulesScreen;
-    rulesScreen.resetTime();
+if(currentScreen == introScreen){
+    currentScreen.show();
+    //Show the button
+    b1.show(); //go to level 1
+    startButton.show(); //go to rules screen
+    b2.show(); //go to level 2
+  
   }
 
-}
-
-  //UPDATE: introScreen
   if(currentScreen == rulesScreen){
-    
+    currentScreen.show();
+    //Show the button
+    b11.show(); //go to level 1
+    b22.show(); //go to level 2
+  
+  }
 
+   if(currentScreen == brokenScreen){
+    currentScreen.show();
+    textSize(35);
+    textAlign(CENTER, CENTER);
+    text("You Broke the Cookie!", width/2, height/2 - 200);
+    textAlign(LEFT, BASELINE);
+
+  } 
+  
+  if(currentScreen == splash1){
+    currentScreen.show();
+    textSize(35);
+    textAlign(CENTER, CENTER);
+    text("Level 1 Complete!", width/2, height/2 - 200);
+    textAlign(LEFT, BASELINE);
 
   }
+  
+   if(currentScreen == lvl1World){
+    currentScreen.show();
+    //update other screen elements
+    lvl1World.showWorldSprites();
+    lvl1GameMechanic();
+    //System.out.println("Display Right edge: " + lvl1World.distToRightEdge());
+    squidply1.show();
+  }
+
 
   // if(currentScreen == introScreen && introScreen.getScreenTime() > 4000 && introScreen.getScreenTime() < 5000){
   // if(currentScreen == introScreen){
@@ -358,19 +444,19 @@ public void updateScreen(){
   //   //   song.pause();
   // }
 
-  //UPDATE: level1Grid Screen
-  if(currentScreen == lvl1World){
+  // //UPDATE: level1Grid Screen
+  // if(currentScreen == lvl1World){
     
-    //Display the Player1 image
+  //   //Display the Player1 image
       
-    //update other screen elements
-    lvl1World.showWorldSprites();
-    lvl1GameMechanic();
+  //   //update other screen elements
+  //   lvl1World.showWorldSprites();
+  //   lvl1GameMechanic();
 
-    //System.out.println("Display Right edge: " + lvl1World.distToRightEdge());
+  //   //System.out.println("Display Right edge: " + lvl1World.distToRightEdge());
 
-    squidply1.show();
-  }
+  //   squidply1.show();
+  // }
 
   //UPDATE: Dalgona Level 2 Screen
 
@@ -429,48 +515,45 @@ public void populateSprites(int numPika){
 
 
 //Method to move around the enemies/sprites on the screen
-public void moveSpritesANDcheckCollision(){
-
-  for(int i = lvl1World.getNumSprites()-1; i >= 0; i--)
-  for(int i = lvl1World.getSprites().size() - 1; i > 0; i--)
-  {
-
+public void moveSpritesANDcheckCollision() {
+  for (int i = lvl1World.getNumSprites() - 1; i >= 0; i--) {
     Sprite sprite = lvl1World.getSprite(i);
 
-    //move enemies to the left
-    if(sprite != squidply1)
-    {
-      sprite.move(-20,0);
+    // Move enemies to the left
+    if (sprite != squidply1) {
+      sprite.move(-20, 0);
     }
 
-    //erase enemies once they reach the left edge
-    if(sprite.getLeft() == 0)
-    {
+    // Erase enemies once they reach the left edge
+    if (sprite.getLeft() == 0) {
       System.out.println("Erasing Sprite");
       lvl1World.removeSprite(i);
       pikaSpawn--;
     }
 
-    //End level if there is a collision
-    if(squidply1.getTop() < sprite.getBottom() 
+    // Check for collision with squidply1
+    if (squidply1.getTop() < sprite.getBottom() 
       && squidply1.getBottom() > sprite.getTop() 
       && squidply1.getRight() > sprite.getLeft() 
-      && squidply1.getLeft() < sprite.getRight())
-    {
+      && squidply1.getLeft() < sprite.getRight()) {
       System.out.println("COLLISION: ");
+
+      // Restart level 1 if there is a collision
+      restartLevel1();
+      return; // Exit the loop after restarting the level
     }
-
-    // //add more Pikas once the original 3 have gone??
-    // if(sprite.getLeft() == height/2)
-
-    // if(lvl1World.getSprites().get(i).getLeft() == height/2)
-    // {
-    //   pikaSpawn = 0;
-    //   populateSprites(3);
-    // }
-    
-    //System.out.println("Pikaspawn: " + pikaSpawn);
   }
+}
+
+// Method to restart level 1
+private void restartLevel1() {
+
+  System.out.println("Restarting Level 1");
+  //  reset the player's position and re-populate sprites
+  squidply1.moveTo(currentX, currentY); // Set initial position
+  //lvl1World.removeSprite(); // Clear existing sprites
+  populateSprites(3); // Re-populate sprites
+  pikaSpawn = 3; // Reset pikaSpawn or other variables if needed
 }
 
 
@@ -515,11 +598,32 @@ void lvl2mechanics(){
     pg.endDraw();
     needle.show();
   }
+
+
+  if (wrongPixelsCount > 2) {
+    currentScreen = brokenScreen;
+    return;
+  }
 }
 
 
+
+// keep track of the number of times the user has carved outside the designated pixels
+int wrongPixelsCount = 0;
+
 //test if statement for carving evaluation
 void testDalgona(){
+
+   // Get the color of the pixel at the needle's location
+  int c = pg.get(mouseX, mouseY);
+
+  // If the pixel is not the background color, increment the counter
+  if (c != color(255, 255, 255)) {
+    wrongPixelsCount++;
+    cutting.play();
+    println("Wrong pixels: " + wrongPixelsCount);
+  }
+
   int matchingPixels = 0;
     int totalOPixels = 0;
 
@@ -542,7 +646,16 @@ void testDalgona(){
       System.out.println("Level 2 Done! Carving Successful!");
     }else{
       System.out.println("Level 2 Failed! Carving Failed!");
-    }
+      // Increment the counter if the carving failed
+    wrongPixelsCount++;
+    
+    // // Check if the counter exceeds two, and if so, go to the broken cookie screen
+    // if (wrongPixelsCount > 2) {
+    //   currentScreen = brokenScreen;
+    // }
+    // }
+}
+
 }
 
 //check if it's green
