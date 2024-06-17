@@ -165,6 +165,9 @@ public class Button {
             setHoverHighlight(false);
         }
     }
+
+
+
     public void setClickHighlight(boolean b){
         this.doesClickHighlight = b;
     }
