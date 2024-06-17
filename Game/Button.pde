@@ -79,7 +79,7 @@ public class Button {
             //     System.out.println("circle shape");
             } else if(shape.equals("rect")){
                 rectMode(CENTER);
-                rect(shapeX, shapeY, shapeW, shapeH);
+                rect(shapeX, shapeY, shapeW, shapeH, 24, 24, 24, 24);
                 // System.out.println("rect shape");
             } else {
                 System.out.println("Wrong shape String.  Type \"rect\" or \"circle\"");

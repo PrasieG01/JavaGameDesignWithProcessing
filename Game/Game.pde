@@ -91,6 +91,9 @@ Sprite needle;
 PImage cookies;
 Button b2 = new Button("rect", 100, 560, 200, 100, "Level 2");
 Button b22 = new Button("rect", 1090, 140, 200, 100, "Level 2");
+Button checkSimilar = new Button("rect", 1090, 140, 300, 90, "Click to Check");
+boolean youBrokeTheCookie;
+boolean letYouPass;
 SoundFile cutting;
 
 
@@ -125,7 +128,7 @@ void setup() {
   rulesBg = loadImage(rulesBgFile);
   rulesBg.resize(width, height);
 
-   brokenBg = loadImage(brokenBgFile);
+  brokenBg = loadImage(brokenBgFile);
   brokenBg.resize(width, height);
 
   splash1Bg = loadImage(splash1BgFile);
@@ -217,11 +220,6 @@ if (currentScreen == introScreen) {
     text("Enter Your Name:", 50, 200);
     text(playerName, 400, 200);
 
-  } else if (currentScreen == lvl1World) {
-    
-
-  } else if(currentScreen == lvl2World){
-    
   }
 
   // Title bar
@@ -232,13 +230,6 @@ if (currentScreen == introScreen) {
   text("Lvl1 Score: 0 " + "Lvl2 Score: 0 " + " | Player: " + playerName, 200, 45);
   
 
-if(currentScreen == lvl2World){
-  image(pg, 0, 0); 
-    b2.show();
-    int needleHeight = 277;
-    needle.moveTo(mouseX, mouseY - needleHeight);
-    lvl2mechanics();
-}
 
 
 // }
@@ -271,7 +262,6 @@ void keyPressed(){
   //What to do when a key is pressed?
   //set [W] key to move the player1 up & avoid Out-of-Bounds errors
   if(keyCode == 87 && squidply1.getCenterY() > 0){
-    //testDalgona();
     currentY -=5; //W
 
     if(!running.isPlaying())
@@ -358,9 +348,6 @@ void mouseClicked(){
   //what to do if clicked? (Make player1 jump back?)
 
 //if mouse is clicked on the lvl2World
-  if(currentScreen == lvl2World) {
-    testDalgona();
-  }
   // //Identify when button is clicked
    if(currentScreen == introScreen && b1.isMouseOverButton()){
     System.out.println("Clicked!");
@@ -510,14 +497,24 @@ public void updateScreen(){
   if(currentScreen == lvl2World){
     //lvl2World.resetTime();
     System.out.println("2");
-     
+
     image(pg, 0, 0); 
-    b2.show();
     int needleHeight = 277;
     needle.moveTo(mouseX, mouseY - needleHeight);
-
     lvl2mechanics();
+    checkSimilar.show();
+    if(checkSimilar.isMouseOverButton())
+    {
+      if(letYouPass)
+      {
 
+      }
+      else
+      {
+        brokenScreen.show();
+      }
+    }
+    testDalgona();
   }
 }
 
@@ -716,36 +713,41 @@ void testDalgona(){
   }
 
   int matchingPixels = 0;
-    int totalOPixels = 0;
+  int totalOPixels = 0;
+  boolean youBrokeTheCookie = false;
 
     for(int i = 0; i < candydrawing.width; i++){
       for(int y = 0; y < candydrawing.height; y++){
         if((isBrown(candydrawing.get(i,y))) && (isGreen(pg.get(i,y)))){
           matchingPixels++;
-    
         }
         if(isBrown(candydrawing.get(i,y))){
           totalOPixels++;
         }
+        if((!isBrown(candydrawing.get(i,y))) && (isGreen(pg.get(i,y)))){
+          youBrokeTheCookie = true;
+        }
       }
     }
 
+
     float similar = (float) matchingPixels / totalOPixels;
 
-    if(similar >= 0.5)
+    if(youBrokeTheCookie)
     {
+      letYouPass = false;
+      System.out.println("Level 2 Failed! Cookie Broke!");
+    }
+    else if (similar >= 0.5)
+    {
+      letYouPass = true;
       System.out.println("Level 2 Done! Carving Successful!");
-    }else{
+    }
+    else
+    {
+      letYouPass = false;
       System.out.println("Level 2 Failed! Carving Failed!");
-      // Increment the counter if the carving failed
-    wrongPixelsCount++;
-    
-    // // Check if the counter exceeds two, and if so, go to the broken cookie screen
-    // if (wrongPixelsCount > 2) {
-    //   currentScreen = brokenScreen;
-    // }
-    // }
-}
+    }
 
 }
 
