@@ -15,6 +15,11 @@ String extraText = "";
 
 //VARIABLES: Splash Screen
 
+Button menuBar;
+int targetHeighty = 1000;
+boolean openMenu;
+
+
 //VARIABLES: scores
 int lvl1Score = 0;
 int lvl2Score = 0;
@@ -71,6 +76,7 @@ float currentY;
 
 SoundFile running;
 SoundFile squidGameTheme;
+SoundFile signal;
 AudioIn in;
 Delay delay;
 int time;
@@ -147,6 +153,8 @@ void setup() {
 
   // endBg = loadImage(endBgFile);
   // endBg.resize(width, height); 
+
+  menuBar = new Button("rect", 0, height-100, 150, 100, "Menu" );
   
   //SETUP: Screens - setup splash & intro & end
   introScreen = new Screen("intro", introBg);
@@ -170,7 +178,7 @@ void setup() {
  popular.resize(100,100);
  running = new SoundFile(this,"sounds/run.mp3");
  squidGameTheme = new SoundFile(this,"sounds/SquidGame.mp3");
- time = millis();
+ signal = new SoundFile(this,"sounds/Beep.mp3");
  delay = new Delay(this);
 
 
@@ -257,25 +265,37 @@ void keyPressed(){
   //check what key was pressed
   System.out.println("\nKey pressed: " + keyCode); //key gives you a character for the key pressed
 
-  if(!running.isPlaying())
-  {
-    running.play();
-  }
   //What to do when a key is pressed?
   //set [W] key to move the player1 up & avoid Out-of-Bounds errors
   if(keyCode == 87 && squidply1.getCenterY() > 0){
     //testDalgona();
     currentY -=5; //W
+
+    if(!running.isPlaying())
+    {
+    running.play();
+    }
   }
 
   if(keyCode == 65 && squidply1.getCenterX() > 0){
     System.out.println("position" + squidply1.getCenterX());
     lvl1World.moveBgXY(10,0);
     currentX -=5; //A
+    
+    if(!running.isPlaying())
+    {
+    running.play();
+    }
 
   }
   if(keyCode == 83 && squidply1.getCenterY() < height){
    currentY+=5;
+
+    if(!running.isPlaying())
+    {
+    running.play();
+    }
+
   } 
 
   if(keyCode == 68 && squidply1.getCenterX() < width){ //s
@@ -284,6 +304,12 @@ void keyPressed(){
       lvl1World.moveBgXY(-10,0);
     }
     currentX +=5;
+
+    if(!running.isPlaying())
+    {
+    running.play();
+    }
+
   }
 
    squidply1.moveTo(currentX, currentY);
@@ -408,15 +434,34 @@ public void updateScreen(){
   //UPDATE: Background of the current Screen
   currentScreen.show();
 
-if(currentScreen == introScreen){
-    currentScreen.show();
-    //Show the button
-    b1.show(); //go to level 1
-    startButton.show(); //go to rules screen
-    b2.show(); //go to level 2
-  
+  //UPDATE: introScreen
+  if(currentScreen == introScreen){
+
+    textAlign(LEFT);
+    textSize(32);
+    fill(255);
+    text("Enter Your Name:", width / 2, height / 2 - 100);
+    textSize(24);
+    text(playerName, width / 2, height / 2);
+
+  startButton.show();
+
+  if (startButton.isMouseOverButton() && mousePressed) {
+    currentScreen = rulesScreen;
+    rulesScreen.resetTime();
   }
 
+}
+
+  menuBar.show();
+  if(menuBar.isMouseOverButton() && mousePressed)
+  {
+    openMenu = !openMenu;
+  }
+
+  menuBarScreen(openMenu);
+
+  //UPDATE: introScreen
   if(currentScreen == rulesScreen){
     currentScreen.show();
     //Show the button
@@ -504,6 +549,43 @@ if(currentScreen == introScreen){
   }
 }
 
+//------------------Menu Bar--------------------//
+public void menuBarScreen(boolean shouldOpen)
+{
+  if(shouldOpen)
+  {
+    fill(255,100);
+    rect(width/2, moveToMenu(), 1000, 500, 24, 24, 24, 24);
+    if (mousePressed)
+    {
+      // fill(100);
+      // tint(255, 126);
+    }
+
+
+  }
+
+
+
+}
+
+public int moveToMenu()
+{
+  if(targetHeighty > height/2)
+  {
+    targetHeighty-=10;
+  }
+  return targetHeighty;
+
+
+}
+
+
+
+
+
+
+
 //----------------LEVEL 1 GRID METHODS ------------//
 
 public void lvl1GameMechanic()
@@ -517,10 +599,19 @@ public void lvl1GameMechanic()
 
 public void playAndPause()
 {
-  if(time % 300 == 0)
+  time = millis();
+  System.out.println(time + " this is the time");
+
+  if(time % 10 == 0 && !squidGameTheme.isPlaying())
   {
-    System.out.println("ok");
+    signal.play();
+    squidGameTheme.play();
   }
+  if(squidGameTheme.isPlaying() && keyPressed)
+  {
+    System.out.println("DEATH SENTENCE");
+  }
+
 
 }
 
