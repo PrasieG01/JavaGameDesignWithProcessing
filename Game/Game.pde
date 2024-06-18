@@ -551,13 +551,14 @@ public void updateScreen(){
       {
         brokenScreen.show();
       }
-    }
-    testDalgona();
-    if(mousePressed)
-    {
-      if(!isBrown(candydrawing.get((int)mouseX,(int)mouseY)))
+      
+      testDalgona();
+      if(mousePressed)
       {
+        if(!isBrown(candydrawing.get((int)mouseX,(int)mouseY)))
+        {
         System.out.println("BROKEN");
+        }
       }
     }
   }
@@ -791,7 +792,7 @@ public boolean isGreen(int g){
 //check if it's brown
 public boolean isBrown(int b){
   Color l = new Color(b);
-  if((l.getRed() >= 110 && l.getRed() <= 139) && (l.getGreen() >= 53 && l.getGreen() <= 78) && (l.getBlue() >= 13 && l.getBlue() <= 14)){
+  if((l.getRed() >= 100 && l.getRed() <= 140) && (l.getGreen() >= 50 && l.getGreen() <= 80) && (l.getBlue() >= 0 && l.getBlue() <= 30)){
     return true;
   }
   return false;
