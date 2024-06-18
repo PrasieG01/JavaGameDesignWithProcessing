@@ -14,11 +14,9 @@ String titleText = "";
 String extraText = "";
 
 //VARIABLES: Splash Screen
-
 Button menuBar;
 int targetHeighty = 1000;
 boolean openMenu;
-
 
 //VARIABLES: scores
 StatusBar lana;
@@ -27,7 +25,7 @@ String playerName = "";
 boolean typeName = true;
 boolean nameEntered = false;
 boolean isPass;
-float isSimiliar;
+float isSimilar;
 
 //VARIABLES: Intro Screen
 Screen introScreen;
@@ -59,15 +57,12 @@ Screen dalgonaWinScreen;
 String dalgonaWinBgFile = "images/windalgona.png";
 PImage dalgonaWinBg;
 
-
 Button b1 = new Button("rect", 1080, 580, 200, 100, "Level 1");
 Button b11 = new Button("rect", 450, 140, 200, 100, "Level 1");
 Button startButton = new Button("rect", 620, 260, 200, 80, "Game Rules");
 Button checkButton = new Button("rect", 120, 300, 200, 100, "Check");
-// Button resetButton = new Button("rect", 120, 300, 200, 100, "Reset");
-// Button resetLvl2Button = new Button("rect", 120, 300, 200, 100, "Reset Lvl1");
-Button restartButton = new Button("rect", 980, 440, 200, 100, "Try Again!");
-Button tryAgainButton = new Button("rect", 30, 660, 200, 100, "Try Again!");
+Button restartButton = new Button("rect", 30, 660, 400, 100, "Restart Game");
+Button tryAgainButton = new Button("rect", 980, 440, 200, 100, "Try Again!");
 
 String squidgirl = "images/squidgirl.jpg";
 String squidchar = "sprites/squidchar1.png";
@@ -85,7 +80,6 @@ int time;
 AnimatedSprite popular;
 int pikaSpawn = 0;
 
-  
 
 //VARIABLES: Splash 2 Screen
 Screen splash2;
@@ -103,10 +97,9 @@ Sprite needle;
 PImage cookies;
 Button b2 = new Button("rect", 100, 580, 200, 100, "Level 2");
 Button b22 = new Button("rect", 1090, 140, 200, 100, "Level 2");
-Button checkSimilar = new Button("rect", 1090, 140, 300, 90, "Click to Check");
+Button checkSimilarButton = new Button("rect", 1090, 140, 300, 90, "Click to Check");
 boolean youBrokeTheCookie;
 SoundFile cutting;
-
 
 
 //VARIABLES: EndScreen
@@ -154,9 +147,6 @@ void setup() {
 
   lvl2WorldBg = loadImage(lvl2WorldFile);
   lvl2WorldBg.resize(width, height);
-
-  // endBg = loadImage(endBgFile);
-  // endBg.resize(width, height); 
 
   dalgonaWinBg = loadImage(dalgonaWinBgFile);
   dalgonaWinBg.resize(width, height);
@@ -209,15 +199,46 @@ void setup() {
   pg.background(candydrawing);
   pg.endDraw();
 
-  
+
+  //SETUP: Buttons
+  color DARK_YELLOW = color(255,165,0);
+  color LIGHT_ORANGE = color(255,191,0);
+  color DARK_BROWN = color(25,87, 51);
+
+  startButton.setButtonColor(DARK_YELLOW);
+  startButton.setHoverColor(LIGHT_ORANGE);
+  startButton.setClickColor(DARK_BROWN);
+  b1.setButtonColor(DARK_YELLOW);
+  b1.setHoverColor(LIGHT_ORANGE);
+  b1.setClickColor(DARK_BROWN);
+  b11.setButtonColor(DARK_YELLOW);
+  b11.setHoverColor(LIGHT_ORANGE);
+  b11.setClickColor(DARK_BROWN);
+  b2.setButtonColor(DARK_YELLOW);
+  b2.setHoverColor(LIGHT_ORANGE);
+  b2.setClickColor(DARK_BROWN);
+  b22.setButtonColor(DARK_YELLOW);
+  b22.setHoverColor(LIGHT_ORANGE);
+  b22.setClickColor(DARK_BROWN);
+  restartButton.setButtonColor(DARK_YELLOW);
+  restartButton.setHoverColor(LIGHT_ORANGE);
+  restartButton.setClickColor(DARK_BROWN);
+  tryAgainButton.setButtonColor(DARK_YELLOW);
+  tryAgainButton.setHoverColor(LIGHT_ORANGE);
+  tryAgainButton.setClickColor(DARK_BROWN);
+  checkButton.setButtonColor(DARK_YELLOW);
+  checkButton.setHoverColor(LIGHT_ORANGE);
+  checkButton.setClickColor(DARK_BROWN);
+  checkSimilarButton.setButtonColor(DARK_YELLOW);
+  checkSimilarButton.setHoverColor(LIGHT_ORANGE);
+  checkSimilarButton.setClickColor(DARK_BROWN);
+
   //SETUP: Other
   // Load a soundfile from the /data folder of the sketch and play it back
   // song = new SoundFile(this, "sounds/Magnetic.mp3");
   // song.play();
-  
 
   println("Game started...");
-
 
 } //end setup()
 
@@ -230,18 +251,18 @@ void draw() {
   updateScreen();
 
   //simple timing handling
-  if (msElapsed % 300 == 0) {
+  if (msElapsed % 150 == 0) {
     // populateSprites();
     // moveSprites();
   }
-  msElapsed +=100;
+  msElapsed +=50;
 
   //check for end of game
   if(isGameOver()){
     endGame();
   }
 
-  currentScreen.pause(100);
+  currentScreen.pause(50);
 
  //end draw()
 }
@@ -315,26 +336,26 @@ void keyPressed(){
   }
 
 //Store User Name
-  if(typeName && !nameEntered){
-    if(key == BACKSPACE){
-      if(playerName.length() > 0){
-        playerName = playerName.substring(0, playerName.length() - 1);
-      }
-    }
-    else if(key != ENTER && key != RETURN){
-      playerName += key;
-    }
-    else if(key == ENTER || key == RETURN){
-      nameEntered = true;
-      typeName = false; //disable typing after they enter their name
+  // if(typeName && !nameEntered){
+  //   if(key == BACKSPACE){
+  //     if(playerName.length() > 0){
+  //       playerName = playerName.substring(0, playerName.length() - 1);
+  //     }
+  //   }
+  //   else if(key != ENTER && key != RETURN){
+  //     playerName += key;
+  //   }
+  //   else if(key == ENTER || key == RETURN){
+  //     nameEntered = true;
+  //     typeName = false; //disable typing after they enter their name
 
-    }
+  //   }
       
-    } else{
-    if(key == ' '){
-     // lvlScore++;
-    }
-  }
+  //   } else{
+  //   if(key == ' '){
+  //    // lvlScore++;
+  // //   }
+  // }
 
 }
 
@@ -343,8 +364,11 @@ void mouseClicked(){
 
   //check if click was successful
   System.out.println("\nMouse was clicked at (" + mouseX + "," + mouseY + ")");
+  // color c = get(mouseX, mouseY);
+  // System.out.println("\n(R:"+red(c)+",G:"+green(c)+",B:"+blue(c)+")");
+  // Color c = new Color(get(mouseX, mouseY));
+  // System.out.println("("+c.getRed()+","+c.getGreen()+","+c.getBlue()+")");
 
-  System.out.println( get(mouseX, mouseY));
   //what to do if clicked? (Make player1 jump back?)
 
 //if mouse is clicked on the lvl2World
@@ -377,19 +401,6 @@ void mouseClicked(){
     System.out.println("Clicked level 2");
     currentScreen = lvl2World;
    }
-
-  //   //Identify when button is clicked
-  //  if(currentScreen == dalgonaWinScreen && resetLvl2Button.isMouseOverButton()){
-  //   System.out.println("Restarting level 2");
-  //   currentScreen = lvl2World;
-
-  //  }
-
-  //  //Identify when button is clicked
-  //  if(currentScreen == dalgonaWinScreen && resetButton.isMouseOverButton()){
-  //   System.out.println("Restarting the game");
-  //   currentScreen = introScreen;
-  //  }
   
   //Restart game on Level 2 Win
   if(currentScreen == dalgonaWinScreen && restartButton.isMouseOverButton()){
@@ -406,9 +417,9 @@ void mouseClicked(){
   }
 
    //Restart game on Level 2 Broken
-   if(currentScreen == brokenScreen && tryAgainButton.isMouseOverButton()){
+   if(currentScreen == brokenScreen && restartButton.isMouseOverButton()){
     System.out.println("resetting to introscreen");
-    currentScreen = lvl2World;
+    currentScreen = rulesScreen;
     resetScores();
    }
 
@@ -453,40 +464,38 @@ public void updateScreen(){
   //UPDATE: introScreen
   if(currentScreen == introScreen){
 
-  //Prasie code to display name of player
-  // textAlign(LEFT);
-  // textSize(32);
-  // fill(255);
-  // text("Enter Your Name:", width / 2, height / 2 - 100);
-  // textSize(24);
-  // text(playerName, width / 2, height / 2);
+    startButton.show();
 
-  startButton.show();
+    if (startButton.isMouseOverButton() && mousePressed) {
+      currentScreen = rulesScreen;
+      rulesScreen.resetTime();
+    }
 
-  if (startButton.isMouseOverButton() && mousePressed) {
-    currentScreen = rulesScreen;
-    rulesScreen.resetTime();
+    //Prasie code to display name of player
+    // textSize(32);
+    // fill(255);
+    // text("Enter Your Name:", width / 2, height / 2 - 100);
+    // textSize(24);
+    // text(playerName, width / 2, height / 2);
+    
+    //Prasie code to display name
+    // if (currentScreen == introScreen && typeName) {  
+    //   fill(255,20,147);
+    //   textSize(40);
+    //   text("Enter Your Name: ", 50, 200);
+    //   text(playerName, 400, 200);
+    // } 
+
+    //Prasie code to display Menu Bar
+    // menuBar.show();
+    // if(menuBar.isMouseOverButton() && mousePressed)
+    // {
+    //   openMenu = !openMenu;
+    // }
+    // menuBarScreen(openMenu);
+
   }
 
-  // if (currentScreen == introScreen && typeName) {  
-  //   fill(255,20,147);
-  //   textSize(40);
-  //   text("Enter Your Name: ", 50, 200);
-  //   text(playerName, 400, 200);
-  // } 
-
-
-}
-
-
-
-  // menuBar.show();
-  // if(menuBar.isMouseOverButton() && mousePressed)
-  // {
-  //   openMenu = !openMenu;
-  // }
-
-  // menuBarScreen(openMenu);
 
   //UPDATE: introScreen
   if(currentScreen == rulesScreen){
@@ -499,9 +508,9 @@ public void updateScreen(){
 
    if(currentScreen == brokenScreen){
     currentScreen.show();
-    textSize(35);
-    textAlign(CENTER, CENTER);
-    text("You Broke the Cookie!", width/2, height/2 - 200);
+    textSize(60);
+    fill(255,0,0);
+    text("You Broke the Cookie!", width/2, height/2 - 350);
     
     tryAgainButton.show();
     restartButton.show();
@@ -511,10 +520,7 @@ public void updateScreen(){
   if(currentScreen == splash1){
     currentScreen.show();
     textSize(35);
-    textAlign(CENTER, CENTER);
     text("Level 1 Complete!", width/2, height/2 - 200);
-    textAlign(LEFT, BASELINE);
-
   }
   
    if(currentScreen == lvl1World){
@@ -542,24 +548,30 @@ public void updateScreen(){
   //   //   song.pause();
   // }
 
-  // //UPDATE: level1Grid Screen
-  // if(currentScreen == lvl1World){
+  //UPDATE: level1Grid Screen
+  if(currentScreen == lvl1World){
     
-  //   //Display the Player1 image
+    //Display the Player1 image
+    squidply1.show();
       
-  //   //update other screen elements
-  //   lvl1World.showWorldSprites();
-  //   lvl1GameMechanic();
+    //update other screen elements
+    lvl1World.showWorldSprites();
+    lvl1GameMechanic();
 
-  //   //System.out.println("Display Right edge: " + lvl1World.distToRightEdge());
+    //end level1 if reach right edge
+    if(squidply1.getRight() > (width-50)){
+      currentScreen = rulesScreen;
+    }
 
-  //   squidply1.show();
-  // }
+    //System.out.println("Display Right edge: " + lvl1World.distToRightEdge());
+
+  }
 
   //UPDATE: Dalgona Level 2 Screen
 
   //wait to go to level 2
   //if(currentScreen.getScreenTime() > 1000 && currentScreen.getScreenTime() < 2000){
+  
   if(currentScreen == lvl2World){
 
     lvl2mechanics();
@@ -572,41 +584,59 @@ public void updateScreen(){
     image(pg, 0, 0); 
     int needleHeight = 277;
     needle.moveTo(mouseX, mouseY - needleHeight);
-    lvl2mechanics();
-
+    //lvl2mechanics();
+    
 
 
     
     //if button is pushed, check if the whole cookie is cutout (or most of it)
-    checkSimilar.show();
-    if(checkSimilar.isClicked()) {
-      testDalgona();
+    checkSimilarButton.show();
 
-      if(isSimiliar >= 0.5){
+    testDalgona();
+
+    if(checkSimilarButton.isClicked()) {
+
+      if(isSimilar >= 0.5){
         currentScreen = dalgonaWinScreen;
       } else {
         //Prasie code for an update on the screen
-        fill(255);
-        rect(60, 40, width, 40);
+        fill(127);
+        rect(200, 40, 200, 40);
         fill(0);
         textSize(20);
-        text("Not quite there" + playerName, 200, 45);
+        text((int)(isSimilar*100.0) + "%, Not quite there " + playerName, 200, 45);
 
 
       }
     }
 
     //Test if click of needle is hitting the groove
-    if(mousePressed)
+    else if(mousePressed)
     {
-      if(!isBrown(candydrawing.get((int)mouseX,(int)mouseY)))
+      color c = candydrawing.get((int)mouseX, (int)mouseY);
+      System.out.println("\n(R:"+red(c)+",G:"+green(c)+",B:"+blue(c)+")");
+
+      if(!isBrown(c))
       {
         System.out.println("BROKEN");
         currentScreen = brokenScreen;
       }
+    } 
+
+    //otherwise just display the %
+    else{
+      fill(255);
+      rect(200, 40, 200, 40);
+      fill(0);
+      textSize(20);
+      text((int)(isSimilar*100.0)+"% of cookie cut", 200, 45);
+
     }
-  }
-}
+
+
+  } //end Level2 update
+
+} //end updateScreen()
 
 //------------------Menu Bar--------------------//
 public void menuBarScreen(boolean shouldOpen)
@@ -620,12 +650,7 @@ public void menuBarScreen(boolean shouldOpen)
       // fill(100);
       // tint(255, 126);
     }
-
-
   }
-
-
-
 }
 
 public int moveToMenu()
@@ -635,8 +660,6 @@ public int moveToMenu()
     targetHeighty-=10;
   }
   return targetHeighty;
-
-
 }
 
 
@@ -755,7 +778,7 @@ public void endGame(){
 }
   public void printResult(boolean success)
   {
-  Float percentage = new Float(isSimiliar);
+  Float percentage = new Float(isSimilar);
   String intToStringPER = percentage.toString();
   if(success)
   {
@@ -777,6 +800,10 @@ void lvl2mechanics(){
 
   if(mousePressed)
   {
+
+    // color c = get(mouseX, mouseY);
+    // System.out.println("\n(R:"+red(c)+",G:"+green(c)+",B:"+blue(c)+")");
+
     pg.beginDraw();
     pg.stroke(0,255,0);
     pg.strokeWeight(15);
@@ -810,9 +837,9 @@ void testDalgona(){
 
 
 
-    isSimiliar = (float) matchingPixels / totalOPixels;
+    isSimilar = (float) matchingPixels / totalOPixels;
   
-    if (isSimiliar >= 0.5)
+    if (isSimilar >= 0.5)
     {
       System.out.println("Level 2 Done! Carving Successful!");
     }else{
@@ -836,7 +863,7 @@ public boolean isGreen(int g){
 //check if it's brown
 public boolean isBrown(int b){
   Color l = new Color(b);
-  if((l.getRed() >= 100 && l.getRed() <= 140) && (l.getGreen() >= 50 && l.getGreen() <= 80) && (l.getBlue() >= 0 && l.getBlue() <= 30)){
+  if((l.getRed() >= 90 && l.getRed() <= 140) && (l.getGreen() >= 40 && l.getGreen() <= 80) && (l.getBlue() >= 0 && l.getBlue() <= 30)){
     return true;
   }
   return false;

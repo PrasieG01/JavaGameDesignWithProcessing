@@ -140,11 +140,6 @@ public class World extends Screen{
   }
 
 
-   
-   
-
-
-
   //------------------ WORLD MUTATOR METHODS --------------------//
   
   //method to update all sprites in the world each cycle
