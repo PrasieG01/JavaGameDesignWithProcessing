@@ -64,8 +64,10 @@ Button b1 = new Button("rect", 1080, 580, 200, 100, "Level 1");
 Button b11 = new Button("rect", 450, 140, 200, 100, "Level 1");
 Button startButton = new Button("rect", 620, 260, 200, 80, "Game Rules");
 Button checkButton = new Button("rect", 120, 300, 200, 100, "Check");
-Button resetButton = new Button("rect", 120, 300, 200, 100, "Reset");
-Button resetLvl2Button = new Button("rect", 120, 300, 200, 100, "Reset Lvl1");
+// Button resetButton = new Button("rect", 120, 300, 200, 100, "Reset");
+// Button resetLvl2Button = new Button("rect", 120, 300, 200, 100, "Reset Lvl1");
+Button restartButton = new Button("rect", 980, 440, 200, 100, "Try Again!");
+Button tryAgainButton = new Button("rect", 30, 660, 200, 100, "Try Again!");
 
 String squidgirl = "images/squidgirl.jpg";
 String squidchar = "sprites/squidchar1.png";
@@ -158,8 +160,8 @@ void setup() {
 
   dalgonaWinBg = loadImage(dalgonaWinBgFile);
   dalgonaWinBg.resize(width, height);
-  menuBar = new Button("rect", 0, height-100, 150, 100, "Menu" );
-  lana = new StatusBar(0, 0, playerName, false);
+  // menuBar = new Button("rect", 0, height-100, 150, 100, "Menu" );
+  // lana = new StatusBar(0, 0, playerName, false);
   
   //SETUP: Screens - setup splash & intro & end
   introScreen = new Screen("intro", introBg);
@@ -388,10 +390,40 @@ void mouseClicked(){
   //   System.out.println("Restarting the game");
   //   currentScreen = introScreen;
   //  }
+  
+  //Restart game on Level 2 Win
+  if(currentScreen == dalgonaWinScreen && restartButton.isMouseOverButton()){
+    System.out.println("resetting to introscreen");
+    currentScreen = introScreen;
+    resetScores();
+  }
 
+  //Try again on Level 2 Broken
+  if(currentScreen == brokenScreen && tryAgainButton.isMouseOverButton()){
+    System.out.println("resetting to lvl2");
+    currentScreen = lvl2World;
+    resetScores();
+  }
 
+   //Restart game on Level 2 Broken
+   if(currentScreen == brokenScreen && tryAgainButton.isMouseOverButton()){
+    System.out.println("resetting to introscreen");
+    currentScreen = lvl2World;
+    resetScores();
+   }
 
 }
+
+public void resetScores() {
+  // statusBar.lvl1Score = 0;
+  // statusBar.lvl2Score = 0;
+
+  pg = createGraphics(1500, 800);
+  pg.beginDraw();
+  pg.background(candydrawing);
+  pg.endDraw();
+}
+
 
 
 //------------------ CUSTOM  GAME METHODS --------------------//
@@ -421,12 +453,13 @@ public void updateScreen(){
   //UPDATE: introScreen
   if(currentScreen == introScreen){
 
-    textAlign(LEFT);
-    textSize(32);
-    fill(255);
-    text("Enter Your Name:", width / 2, height / 2 - 100);
-    textSize(24);
-    text(playerName, width / 2, height / 2);
+  //Prasie code to display name of player
+  // textAlign(LEFT);
+  // textSize(32);
+  // fill(255);
+  // text("Enter Your Name:", width / 2, height / 2 - 100);
+  // textSize(24);
+  // text(playerName, width / 2, height / 2);
 
   startButton.show();
 
@@ -447,13 +480,13 @@ public void updateScreen(){
 
 
 
-  menuBar.show();
-  if(menuBar.isMouseOverButton() && mousePressed)
-  {
-    openMenu = !openMenu;
-  }
+  // menuBar.show();
+  // if(menuBar.isMouseOverButton() && mousePressed)
+  // {
+  //   openMenu = !openMenu;
+  // }
 
-  menuBarScreen(openMenu);
+  // menuBarScreen(openMenu);
 
   //UPDATE: introScreen
   if(currentScreen == rulesScreen){
@@ -469,7 +502,9 @@ public void updateScreen(){
     textSize(35);
     textAlign(CENTER, CENTER);
     text("You Broke the Cookie!", width/2, height/2 - 200);
-    textAlign(LEFT, BASELINE);
+    
+    tryAgainButton.show();
+    restartButton.show();
   } 
 
   
@@ -491,11 +526,10 @@ public void updateScreen(){
     squidply1.show();
   }
 
-  // if(currentScreen == dalgonaWinScreen){
-  //   currentScreen.show();
-  //   // resetLvl2Button.show();
-  //   // resetButton.show();
-  // }
+  if(currentScreen == dalgonaWinScreen){
+    tryAgainButton.show();
+    restartButton.show();
+  }
 
 
   // if(currentScreen == introScreen && introScreen.getScreenTime() > 4000 && introScreen.getScreenTime() < 5000){
@@ -533,7 +567,7 @@ public void updateScreen(){
     printResult(isPass);
 
     //lvl2World.resetTime();
-    System.out.println("2");
+    System.out.print("2");
 
     image(pg, 0, 0); 
     int needleHeight = 277;
@@ -551,8 +585,6 @@ public void updateScreen(){
       if(isSimiliar >= 0.5){
         currentScreen = dalgonaWinScreen;
       } else {
-        //currentScreen = brokenScreen;
-
         //Prasie code for an update on the screen
         fill(255);
         rect(60, 40, width, 40);
@@ -570,6 +602,7 @@ public void updateScreen(){
       if(!isBrown(candydrawing.get((int)mouseX,(int)mouseY)))
       {
         System.out.println("BROKEN");
+        currentScreen = brokenScreen;
       }
     }
   }
