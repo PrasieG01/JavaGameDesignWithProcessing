@@ -21,8 +21,7 @@ boolean openMenu;
 
 
 //VARIABLES: scores
-int lvl1Score = 0;
-int lvl2Score = 0;
+StatusBar lana;
 String progressBar = "Null";
 String playerName = "";
 boolean typeName = true;
@@ -104,8 +103,8 @@ Button b2 = new Button("rect", 100, 580, 200, 100, "Level 2");
 Button b22 = new Button("rect", 1090, 140, 200, 100, "Level 2");
 Button checkSimilar = new Button("rect", 1090, 140, 300, 90, "Click to Check");
 boolean youBrokeTheCookie;
-boolean letYouPass;
 SoundFile cutting;
+
 
 
 //VARIABLES: EndScreen
@@ -157,7 +156,10 @@ void setup() {
   // endBg = loadImage(endBgFile);
   // endBg.resize(width, height); 
 
+  dalgonaWinBg = loadImage(dalgonaWinBgFile);
+  dalgonaWinBg.resize(width, height);
   menuBar = new Button("rect", 0, height-100, 150, 100, "Menu" );
+  lana = new StatusBar(0, 0, playerName, false);
   
   //SETUP: Screens - setup splash & intro & end
   introScreen = new Screen("intro", introBg);
@@ -469,8 +471,8 @@ public void updateScreen(){
     textAlign(CENTER, CENTER);
     text("You Broke the Cookie!", width/2, height/2 - 200);
     textAlign(LEFT, BASELINE);
-
   } 
+
   
   if(currentScreen == splash1){
     currentScreen.show();
@@ -541,9 +543,9 @@ public void updateScreen(){
     checkSimilar.show();
     if(checkSimilar.isMouseOverButton())
     {
-      if(letYouPass)
+      if(isSimiliar >= 0.5)
       {
-
+        dalgonaWinScreen.show();
       }
       else
       {
@@ -551,6 +553,13 @@ public void updateScreen(){
       }
     }
     testDalgona();
+    if(mousePressed)
+    {
+      if(!isBrown(candydrawing.get((int)mouseX,(int)mouseY)))
+      {
+        System.out.println("BROKEN");
+      }
+    }
   }
 }
 
@@ -725,7 +734,7 @@ void lvl2mechanics(){
   {
     pg.beginDraw();
     pg.stroke(0,255,0);
-    pg.strokeWeight(16);
+    pg.strokeWeight(15);
     pg.line(mouseX, mouseY, pmouseX, pmouseY);
     delay.set(10.0,0.0);
     if(!cutting.isPlaying())
@@ -742,7 +751,6 @@ void lvl2mechanics(){
 void testDalgona(){
   int matchingPixels = 0;
   int totalOPixels = 0;
-  boolean youBrokeTheCookie = false;
 
     for(int i = 0; i < candydrawing.width; i++){
       for(int y = 0; y < candydrawing.height; y++){
@@ -752,24 +760,15 @@ void testDalgona(){
         if(isBrown(candydrawing.get(i,y))){
           totalOPixels++;
         }
-        if((!isBrown(candydrawing.get(i,y))) && (isGreen(pg.get(i,y)))){
-          youBrokeTheCookie = true;
-        }
       }
     }
 
 
 
     isSimiliar = (float) matchingPixels / totalOPixels;
-
-    if(youBrokeTheCookie)
+  
+    if (isSimiliar >= 0.5)
     {
-      letYouPass = false;
-      System.out.println("Level 2 Failed! Cookie Broke!");
-    }
-    else if (similar >= 0.5)
-    {
-      letYouPass = true;
       System.out.println("Level 2 Done! Carving Successful!");
     }else{
       System.out.println("Level 2 Failed! Carving Failed!");
