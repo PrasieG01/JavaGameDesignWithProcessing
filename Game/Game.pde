@@ -558,7 +558,7 @@ public void updateScreen(){
         rect(60, 40, width, 40);
         fill(0);
         textSize(20);
-        text("Lvl1 Score: 0 " + "Lvl2 Score: 0 " + " | Player: " + playerName, 200, 45);
+        text("Not quite there" + playerName, 200, 45);
 
 
       }
