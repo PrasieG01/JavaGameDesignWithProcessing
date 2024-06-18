@@ -395,12 +395,13 @@ void mouseClicked(){
    if(currentScreen == dalgonaWinScreen && tryButton.isMouseOverButton()){
     System.out.println("resetting to introscreen");
     currentScreen = introScreen;
+    resetScores();
 
    }
 
    if(currentScreen == brokenScreen && tryButton1.isMouseOverButton()){
     System.out.println("resetting to lvl2");
-    currentScreen = lvl2World;
+    currentScreen = introScreen;
     resetScores();
   }
 
@@ -472,6 +473,7 @@ if(currentScreen == introScreen){
     currentScreen.show();
     //Show the button
    tryButton.show();
+   printResult(isPass);
   
   }
   
@@ -492,7 +494,6 @@ if(currentScreen == introScreen){
 
     lvl2mechanics();
     checkButton.show();
-    printResult(isPass);
 
   }
 }
