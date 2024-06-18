@@ -36,11 +36,11 @@ public class Button {
         
         this.caption = txt;
         this.fontFactor = 0.9;
-        this.baseColor = color(255, 255, 0);   //yellow
+        this.baseColor = color(255, 165, 0);   //yellow
         this.doesHoverHighlight = true;
-        this.hoverColor = color(0,0,255); //blue
+        this.hoverColor = color(255,191,0); //blue
         this.doesClickHighlight = true;
-        this.clickColor = color(255,0,0); //red
+        this.clickColor = color(255,87,51); //red
         this.currentColor = baseColor;
         this.isVisible = true;
 

@@ -3,6 +3,11 @@
  * Last Edit: 5/29/2024
  */
 
+/* Game Class Starter File
+ * Authors: Carey & Prasie
+ * Last Edit: 5/29/2024
+ */
+
 import processing.sound.*;
 PGraphics pg;
 PImage mask; 
@@ -12,13 +17,6 @@ PImage mask;
 //VARIABLES: Title Bar
 String titleText = "";
 String extraText = "";
-
-//VARIABLES: Splash Screen
-
-Button menuBar;
-int targetHeighty = 1000;
-boolean openMenu;
-
 
 //VARIABLES: scores
 StatusBar lana;
@@ -64,7 +62,8 @@ Button b1 = new Button("rect", 1080, 580, 200, 100, "Level 1");
 Button b11 = new Button("rect", 450, 140, 200, 100, "Level 1");
 Button startButton = new Button("rect", 620, 260, 200, 80, "Game Rules");
 Button checkButton = new Button("rect", 120, 300, 200, 100, "Check");
-Button resetButton = new Button("rect", 120, 300, 200, 100, "Reset");
+Button tryButton = new Button("rect", 980, 440, 200, 100, "Try Again!");
+Button tryButton1 = new Button("rect", 30, 660, 200, 100, "Try Again!");
 Button resetLvl2Button = new Button("rect", 120, 300, 200, 100, "Reset Lvl1");
 
 String squidgirl = "images/squidgirl.jpg";
@@ -75,7 +74,6 @@ float currentY;
 
 SoundFile running;
 SoundFile squidGameTheme;
-SoundFile signal;
 AudioIn in;
 Delay delay;
 int time;
@@ -101,8 +99,6 @@ Sprite needle;
 PImage cookies;
 Button b2 = new Button("rect", 100, 580, 200, 100, "Level 2");
 Button b22 = new Button("rect", 1090, 140, 200, 100, "Level 2");
-Button checkSimilar = new Button("rect", 1090, 140, 300, 90, "Click to Check");
-boolean youBrokeTheCookie;
 SoundFile cutting;
 
 
@@ -119,6 +115,7 @@ World currentWorld;
 private int msElapsed = 0;
 
 
+StatusBar statusBar;
 //------------------ REQUIRED PROCESSING METHODS --------------------//
 
 //Required Processing method that gets run once
@@ -131,6 +128,8 @@ void setup() {
   //SETUP: Set the title on the title bar
   surface.setTitle(titleText);
 
+   statusBar = new StatusBar(0, 0, "", true);
+
   //SETUP: Load BG images used in all screens
   introBg = loadImage(introBgFile);
   introBg.resize(width, height);
@@ -138,7 +137,7 @@ void setup() {
   rulesBg = loadImage(rulesBgFile);
   rulesBg.resize(width, height);
 
-  brokenBg = loadImage(brokenBgFile);
+   brokenBg = loadImage(brokenBgFile);
   brokenBg.resize(width, height);
 
   splash1Bg = loadImage(splash1BgFile);
@@ -153,13 +152,11 @@ void setup() {
   lvl2WorldBg = loadImage(lvl2WorldFile);
   lvl2WorldBg.resize(width, height);
 
+   dalgonaWinBg = loadImage(dalgonaWinBgFile);
+   dalgonaWinBg.resize(width, height);
+
   // endBg = loadImage(endBgFile);
   // endBg.resize(width, height); 
-
-  dalgonaWinBg = loadImage(dalgonaWinBgFile);
-  dalgonaWinBg.resize(width, height);
-  menuBar = new Button("rect", 0, height-100, 150, 100, "Menu" );
-  lana = new StatusBar(0, 0, playerName, false);
   
   //SETUP: Screens - setup splash & intro & end
   introScreen = new Screen("intro", introBg);
@@ -183,7 +180,7 @@ void setup() {
  popular.resize(100,100);
  running = new SoundFile(this,"sounds/run.mp3");
  squidGameTheme = new SoundFile(this,"sounds/SquidGame.mp3");
- signal = new SoundFile(this,"sounds/Beep.mp3");
+ time = millis();
  delay = new Delay(this);
 
 
@@ -242,7 +239,7 @@ if (currentScreen == introScreen && typeName) {
   rect(60, 40, width, 40);
   fill(0);
   textSize(20);
-  text("Lvl1 Score: 0 " + "Lvl2 Score: 0 " + " | Player: " + playerName, 200, 45);
+  text("Lvl1 Score: " + statusBar.lvl1Score + "Lvl2 Score:" + statusBar.lvl2Score + " | Player: " + playerName, 200, 45);
 
   //simple timing handling
   if (msElapsed % 300 == 0) {
@@ -255,6 +252,15 @@ if (currentScreen == introScreen && typeName) {
   if(isGameOver()){
     endGame();
   }
+
+
+if (currentScreen == lvl2World) {
+    
+    fill(255,20,147);
+    textSize(25);
+    text("Click after done with \n all four cookies! ", 120, 260);
+
+  } 
 
   currentScreen.pause(100);
 
@@ -270,36 +276,25 @@ void keyPressed(){
   //check what key was pressed
   System.out.println("\nKey pressed: " + keyCode); //key gives you a character for the key pressed
 
+  if(!running.isPlaying())
+  {
+    running.play();
+  }
   //What to do when a key is pressed?
   //set [W] key to move the player1 up & avoid Out-of-Bounds errors
   if(keyCode == 87 && squidply1.getCenterY() > 0){
+    //testDalgona();
     currentY -=5; //W
-
-    if(!running.isPlaying())
-    {
-    running.play();
-    }
   }
 
   if(keyCode == 65 && squidply1.getCenterX() > 0){
     System.out.println("position" + squidply1.getCenterX());
     lvl1World.moveBgXY(10,0);
     currentX -=5; //A
-    
-    if(!running.isPlaying())
-    {
-    running.play();
-    }
 
   }
   if(keyCode == 83 && squidply1.getCenterY() < height){
    currentY+=5;
-
-    if(!running.isPlaying())
-    {
-    running.play();
-    }
-
   } 
 
   if(keyCode == 68 && squidply1.getCenterX() < width){ //s
@@ -308,12 +303,6 @@ void keyPressed(){
       lvl1World.moveBgXY(-10,0);
     }
     currentX +=5;
-
-    if(!running.isPlaying())
-    {
-    running.play();
-    }
-
   }
 
    squidply1.moveTo(currentX, currentY);
@@ -363,6 +352,15 @@ void mouseClicked(){
   //what to do if clicked? (Make player1 jump back?)
 
 //if mouse is clicked on the lvl2World
+  if(currentScreen == lvl2World) {
+    //testDalgona();
+  }
+
+  //Identify when button is clicked
+  if(currentScreen == lvl2World && checkButton.isMouseOverButton()){
+    testDalgona();
+    isPass = true;
+  }
   // //Identify when button is clicked
    if(currentScreen == introScreen && b1.isMouseOverButton()){
     System.out.println("Clicked!");
@@ -394,21 +392,34 @@ void mouseClicked(){
    }
 
   //   //Identify when button is clicked
-  //  if(currentScreen == dalgonaWinScreen && resetLvl2Button.isMouseOverButton()){
-  //   System.out.println("Restarting level 2");
-  //   currentScreen = lvl2World;
+   if(currentScreen == dalgonaWinScreen && tryButton.isMouseOverButton()){
+    System.out.println("resetting to introscreen");
+    currentScreen = introScreen;
 
-  //  }
+   }
 
-  //  //Identify when button is clicked
-  //  if(currentScreen == dalgonaWinScreen && resetButton.isMouseOverButton()){
-  //   System.out.println("Restarting the game");
-  //   currentScreen = introScreen;
-  //  }
+   if(currentScreen == brokenScreen && tryButton1.isMouseOverButton()){
+    System.out.println("resetting to lvl2");
+    currentScreen = lvl2World;
+    resetScores();
+  }
 
 
+   //   //Identify when button is clicked
+   if(currentScreen == brokenScreen && tryButton1.isMouseOverButton()){
+    System.out.println("resetting to introscreen");
+    currentScreen = lvl2World;
+
+   }
 
 }
+
+public void resetScores() {
+  statusBar.lvl1Score = 0;
+  statusBar.lvl2Score = 0;
+}
+
+
 
 
 //------------------ CUSTOM  GAME METHODS --------------------//
@@ -429,34 +440,15 @@ public void updateScreen(){
   //UPDATE: Background of the current Screen
   currentScreen.show();
 
-  //UPDATE: introScreen
-  if(currentScreen == introScreen){
-
-    textAlign(LEFT);
-    textSize(32);
-    fill(255);
-    text("Enter Your Name:", width / 2, height / 2 - 100);
-    textSize(24);
-    text(playerName, width / 2, height / 2);
-
-  startButton.show();
-
-  if (startButton.isMouseOverButton() && mousePressed) {
-    currentScreen = rulesScreen;
-    rulesScreen.resetTime();
+if(currentScreen == introScreen){
+    currentScreen.show();
+    //Show the button
+    b1.show(); //go to level 1
+    startButton.show(); //go to rules screen
+    b2.show(); //go to level 2
+  
   }
 
-}
-
-  menuBar.show();
-  if(menuBar.isMouseOverButton() && mousePressed)
-  {
-    openMenu = !openMenu;
-  }
-
-  menuBarScreen(openMenu);
-
-  //UPDATE: introScreen
   if(currentScreen == rulesScreen){
     currentScreen.show();
     //Show the button
@@ -467,20 +459,20 @@ public void updateScreen(){
 
    if(currentScreen == brokenScreen){
     currentScreen.show();
-    textSize(35);
+    fill(255,87,51);
+    textSize(60);
     textAlign(CENTER, CENTER);
-    text("You Broke the Cookie!", width/2, height/2 - 200);
+    text("You Broke the Cookie!", 1090, 80);
     textAlign(LEFT, BASELINE);
+    tryButton1.show();
+
   } 
 
-  
-  if(currentScreen == splash1){
+  if(currentScreen == dalgonaWinScreen){
     currentScreen.show();
-    textSize(35);
-    textAlign(CENTER, CENTER);
-    text("Level 1 Complete!", width/2, height/2 - 200);
-    textAlign(LEFT, BASELINE);
-
+    //Show the button
+   tryButton.show();
+  
   }
   
    if(currentScreen == lvl1World){
@@ -492,37 +484,6 @@ public void updateScreen(){
     squidply1.show();
   }
 
-  // if(currentScreen == dalgonaWinScreen){
-  //   currentScreen.show();
-  //   // resetLvl2Button.show();
-  //   // resetButton.show();
-  // }
-
-
-  // if(currentScreen == introScreen && introScreen.getScreenTime() > 4000 && introScreen.getScreenTime() < 5000){
-  // if(currentScreen == introScreen){
-  //   //System.out.print("i");
-  //   currentScreen = lvl1World;
-  //   lvl1World.resetTime();
-  //   // if(song.isPlaying())
-  //   // {
-  //   //   song.pause();
-  // }
-
-  // //UPDATE: level1Grid Screen
-  // if(currentScreen == lvl1World){
-    
-  //   //Display the Player1 image
-      
-  //   //update other screen elements
-  //   lvl1World.showWorldSprites();
-  //   lvl1GameMechanic();
-
-  //   //System.out.println("Display Right edge: " + lvl1World.distToRightEdge());
-
-  //   squidply1.show();
-  // }
-
   //UPDATE: Dalgona Level 2 Screen
 
   //wait to go to level 2
@@ -533,72 +494,8 @@ public void updateScreen(){
     checkButton.show();
     printResult(isPass);
 
-    //lvl2World.resetTime();
-    System.out.println("2");
-
-    image(pg, 0, 0); 
-    int needleHeight = 277;
-    needle.moveTo(mouseX, mouseY - needleHeight);
-    lvl2mechanics();
-    checkSimilar.show();
-    if(checkSimilar.isMouseOverButton())
-    {
-      if(isSimiliar >= 0.5)
-      {
-        dalgonaWinScreen.show();
-      }
-      else
-      {
-        brokenScreen.show();
-      }
-    }
-    testDalgona();
-    if(mousePressed)
-    {
-      if(!isBrown(candydrawing.get((int)mouseX,(int)mouseY)))
-      {
-        System.out.println("BROKEN");
-      }
-    }
   }
 }
-
-//------------------Menu Bar--------------------//
-public void menuBarScreen(boolean shouldOpen)
-{
-  if(shouldOpen)
-  {
-    fill(255,100);
-    rect(width/2, moveToMenu(), 1000, 500, 24, 24, 24, 24);
-    if (mousePressed)
-    {
-      // fill(100);
-      // tint(255, 126);
-    }
-
-
-  }
-
-
-
-}
-
-public int moveToMenu()
-{
-  if(targetHeighty > height/2)
-  {
-    targetHeighty-=10;
-  }
-  return targetHeighty;
-
-
-}
-
-
-
-
-
-
 
 //----------------LEVEL 1 GRID METHODS ------------//
 
@@ -613,19 +510,10 @@ public void lvl1GameMechanic()
 
 public void playAndPause()
 {
-  time = millis();
-  System.out.println(time + " this is the time");
-
-  if(time % 10 == 0 && !squidGameTheme.isPlaying())
+  if(time % 300 == 0)
   {
-    signal.play();
-    squidGameTheme.play();
+    System.out.println("ok");
   }
-  if(squidGameTheme.isPlaying() && keyPressed)
-  {
-    System.out.println("DEATH SENTENCE");
-  }
-
 
 }
 
@@ -756,6 +644,7 @@ void testDalgona(){
       for(int y = 0; y < candydrawing.height; y++){
         if((isBrown(candydrawing.get(i,y))) && (isGreen(pg.get(i,y)))){
           matchingPixels++;
+    
         }
         if(isBrown(candydrawing.get(i,y))){
           totalOPixels++;
@@ -763,15 +652,22 @@ void testDalgona(){
       }
     }
 
-
-
     isSimiliar = (float) matchingPixels / totalOPixels;
-  
-    if (isSimiliar >= 0.5)
+
+    if(youBrokeTheCookie)
+    {
+      letYouPass = false;
+      System.out.println("Level 2 Failed! Cookie Broke!");
+    }
+    else if (similar >= 0.5)
     {
       System.out.println("Level 2 Done! Carving Successful!");
+     statusBar.addScore4Level2(10);  // Increment level 2 score
+       currentScreen = dalgonaWinScreen;
     }else{
       System.out.println("Level 2 Failed! Carving Failed!");
+      currentScreen = brokenScreen;
+      statusBar.addScore4Level2(-10);  // Increment level 2 score
     }
 
 }
