@@ -540,25 +540,28 @@ public void updateScreen(){
     int needleHeight = 277;
     needle.moveTo(mouseX, mouseY - needleHeight);
     lvl2mechanics();
+
+
+
+    
+    //if button is pushed, check if the whole cookie is cutout (or most of it)
     checkSimilar.show();
-    if(checkSimilar.isMouseOverButton())
-    {
-      if(isSimiliar >= 0.5)
-      {
-        dalgonaWinScreen.show();
-      }
-      else
-      {
-        brokenScreen.show();
-      }
-      
+    if(checkSimilar.isClicked()) {
       testDalgona();
-      if(mousePressed)
+
+      if(isSimiliar >= 0.5){
+        currentScreen = dalgonaWinScreen;
+      } else {
+        currentScreen = brokenScreen;
+      }
+    }
+
+    //Test if click of needle is hitting the groove
+    if(mousePressed)
+    {
+      if(!isBrown(candydrawing.get((int)mouseX,(int)mouseY)))
       {
-        if(!isBrown(candydrawing.get((int)mouseX,(int)mouseY)))
-        {
         System.out.println("BROKEN");
-        }
       }
     }
   }
