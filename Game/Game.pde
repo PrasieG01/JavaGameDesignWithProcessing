@@ -3,6 +3,11 @@
  * Last Edit: 5/29/2024
  */
 
+/* Game Class Starter File
+ * Authors: Carey & Prasie
+ * Last Edit: 5/29/2024
+ */
+
 import processing.sound.*;
 PGraphics pg;
 PImage mask; 
@@ -95,9 +100,6 @@ Sprite needle;
 PImage cookies;
 Button b2 = new Button("rect", 100, 580, 200, 100, "Level 2");
 Button b22 = new Button("rect", 1090, 140, 200, 100, "Level 2");
-Button checkSimilar = new Button("rect", 1090, 140, 300, 90, "Click to Check");
-boolean youBrokeTheCookie;
-boolean letYouPass;
 SoundFile cutting;
 
 
@@ -135,7 +137,7 @@ void setup() {
   rulesBg = loadImage(rulesBgFile);
   rulesBg.resize(width, height);
 
-  brokenBg = loadImage(brokenBgFile);
+   brokenBg = loadImage(brokenBgFile);
   brokenBg.resize(width, height);
 
   splash1Bg = loadImage(splash1BgFile);
@@ -281,6 +283,7 @@ void keyPressed(){
   //What to do when a key is pressed?
   //set [W] key to move the player1 up & avoid Out-of-Bounds errors
   if(keyCode == 87 && squidply1.getCenterY() > 0){
+    //testDalgona();
     currentY -=5; //W
   }
 
@@ -349,6 +352,15 @@ void mouseClicked(){
   //what to do if clicked? (Make player1 jump back?)
 
 //if mouse is clicked on the lvl2World
+  if(currentScreen == lvl2World) {
+    //testDalgona();
+  }
+
+  //Identify when button is clicked
+  if(currentScreen == lvl2World && checkButton.isMouseOverButton()){
+    testDalgona();
+    isPass = true;
+  }
   // //Identify when button is clicked
    if(currentScreen == introScreen && b1.isMouseOverButton()){
     System.out.println("Clicked!");
@@ -626,35 +638,25 @@ void lvl2mechanics(){
 //test if statement for carving evaluation
 void testDalgona(){
   int matchingPixels = 0;
-  int totalOPixels = 0;
-  boolean youBrokeTheCookie = false;
+    int totalOPixels = 0;
+    int wrongPixels = totalOPixels - matchingPixels;
 
     for(int i = 0; i < candydrawing.width; i++){
       for(int y = 0; y < candydrawing.height; y++){
         if((isBrown(candydrawing.get(i,y))) && (isGreen(pg.get(i,y)))){
           matchingPixels++;
+    
         }
         if(isBrown(candydrawing.get(i,y))){
           totalOPixels++;
         }
-        if((!isBrown(candydrawing.get(i,y))) && (isGreen(pg.get(i,y)))){
-          youBrokeTheCookie = true;
-        }
       }
     }
 
-
-
     isSimiliar = (float) matchingPixels / totalOPixels;
 
-    if(youBrokeTheCookie)
+    if(isSimiliar >= 0.5)
     {
-      letYouPass = false;
-      System.out.println("Level 2 Failed! Cookie Broke!");
-    }
-    else if (similar >= 0.5)
-    {
-      letYouPass = true;
       System.out.println("Level 2 Done! Carving Successful!");
      statusBar.addScore4Level2(10);  // Increment level 2 score
        currentScreen = dalgonaWinScreen;
