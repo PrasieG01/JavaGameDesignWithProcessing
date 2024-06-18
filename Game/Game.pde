@@ -552,7 +552,7 @@ public void updateScreen(){
       if(isSimiliar >= 0.5){
         currentScreen = dalgonaWinScreen;
       } else {
-        currentScreen = brokenScreen;
+        text(isSimiliar,48, 180, -120);
       }
     }
 
@@ -562,6 +562,7 @@ public void updateScreen(){
       if(!isBrown(candydrawing.get((int)mouseX,(int)mouseY)))
       {
         System.out.println("BROKEN");
+        currentScreen = brokenScreen;
       }
     }
   }
