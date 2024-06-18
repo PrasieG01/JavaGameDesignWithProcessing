@@ -227,23 +227,6 @@ void draw() {
   updateTitleBar();
   updateScreen();
 
-
-if (currentScreen == introScreen && typeName) {
-    
-    fill(255,20,147);
-    textSize(40);
-    text("Enter Your Name: ", 50, 200);
-    text(playerName, 400, 200);
-
-  } 
-
-  // Title bar
-  fill(255);
-  rect(60, 40, width, 40);
-  fill(0);
-  textSize(20);
-  text("Lvl1 Score: 0 " + "Lvl2 Score: 0 " + " | Player: " + playerName, 200, 45);
-
   //simple timing handling
   if (msElapsed % 300 == 0) {
     // populateSprites();
@@ -419,6 +402,12 @@ public void updateTitleBar(){
   if(!isGameOver()) {
     //set the title each loop
     surface.setTitle(titleText + "    " + extraText + " " );
+
+    // fill(255);
+    // rect(60, 40, width, 40);
+    // fill(0);
+    // textSize(20);
+    // text("Lvl1 Score: 0 " + "Lvl2 Score: 0 " + " | Player: " + playerName, 200, 45);
   
   }
 }
@@ -446,7 +435,17 @@ public void updateScreen(){
     rulesScreen.resetTime();
   }
 
+  // if (currentScreen == introScreen && typeName) {  
+  //   fill(255,20,147);
+  //   textSize(40);
+  //   text("Enter Your Name: ", 50, 200);
+  //   text(playerName, 400, 200);
+  // } 
+
+
 }
+
+
 
   menuBar.show();
   if(menuBar.isMouseOverButton() && mousePressed)
@@ -552,7 +551,16 @@ public void updateScreen(){
       if(isSimiliar >= 0.5){
         currentScreen = dalgonaWinScreen;
       } else {
-        currentScreen = brokenScreen;
+        //currentScreen = brokenScreen;
+
+        //Prasie code for an update on the screen
+        fill(255);
+        rect(60, 40, width, 40);
+        fill(0);
+        textSize(20);
+        text("Lvl1 Score: 0 " + "Lvl2 Score: 0 " + " | Player: " + playerName, 200, 45);
+
+
       }
     }
 
