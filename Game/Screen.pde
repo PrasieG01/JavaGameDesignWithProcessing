@@ -96,7 +96,7 @@ public class Screen {
              if(bg != null){
                 background(bg);
              } else {
-                System.out.println("No background image loaded!");
+                //System.out.println("No background image loaded!");
              }
         }
     }
