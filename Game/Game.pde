@@ -13,13 +13,13 @@ PImage mask;
 String titleText = "";
 String extraText = "";
 
-//VARIABLES: Splash Screen
-Button menuBar;
-int targetHeighty = 1000;
-boolean openMenu;
+// //VARIABLES: Splash Screen
+// Button menuBar;
+// int targetHeighty = 1000;
+// boolean openMenu;
 
 //VARIABLES: scores
-StatusBar lana;
+StatusBar statusbar;
 String progressBar = "Null";
 String playerName = "";
 boolean typeName = true;
