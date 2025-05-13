@@ -1,8 +1,9 @@
 /* GridLocation class - helper class to store coordinates more easily
  * Author: Joel Bianchi
- * Last Edit: 5/22/2023
- * Added .equals() method, Renamed getRow() & getCol()
+ * Last Edit: 5/10/25
+ * Modified toString
  */
+
 
 public class GridLocation{
  
@@ -23,7 +24,7 @@ public class GridLocation{
   }
   
   public String toString(){
-    return row + "," + col;
+    return "[" + row + "," + col + "]";
   }
   
   public int getYCoord() {
