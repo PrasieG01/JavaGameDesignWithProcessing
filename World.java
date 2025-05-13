@@ -1,63 +1,59 @@
 /* World Class - Used to describe the screen of a pixel-based game
  * Subclass of a Screen, includes an ArrayList of Sprite objects
  * Authors: Joel Bianchi, Nathan Santos, Clive Sherwood, Vanessa Balbuena
- * Last Edit: 6/15/2024
- * methods to make looping through the Sprites easier:
- *   int getNumSprites()
- *   Sprite getSprite(int index)
- *   Sprite removeSprite(int index)
- *   void removeSprite(Sprite sprite)
- * Method to clear all sprites for a restart
- * Fixed Bug where Sprite added twice when animated
+ * Last Edit: 5/10/25
+ * Comment Revisions
  */
 
 import java.util.ArrayList;
+import processing.core.PApplet;
+import processing.core.PImage;
 
 public class World extends Screen{
 
   //------------------ WORLD FIELDS --------------------//
-  //private static World currentWorld = null; //static variable to track the current world
   private ArrayList<Sprite> sprites = new ArrayList<Sprite>();
   long lastSpriteUpdateTime = 0;
 
   //------------------ WORLD CONSTRUCTORS --------------------//
-  //World Constructor #1
-  public World(String name, PImage bgImg) {
-    super(name, bgImg);
-  }
-  //World Constructor #2
-  public World(String name) {
-    this(name, null);
-  }
-    //World Constructor #3
-  public World() {
-    this("default world", null);
+  // World Constructor #1: Creates a World with the specificed background image
+  public World(PApplet p, String name, PImage bgImg) {
+    super(p, name, bgImg);
   }
 
-  //World Constructor #4 for Moveable Backgrounds
-  public World(String name, String movingBgFile, float scale, float x, float y) {
-     super(name, movingBgFile, scale, x, y);
+  // World Constructor #2: Creates a World with no background image
+  public World(PApplet p, String name) {
+    this(p, name, null);
+  }
+  
+  // World Constructor #3: Creates a default World
+  public World(PApplet p) {
+    this(p, "default world", null);
+  }
+
+  // World Constructor #4 for Moveable Backgrounds (not working!)
+  // public World(PApplet p, String name, String movingBgFile, float scale, float x, float y) {
+  //    super(p, name, movingBgFile, scale, x, y);
+  // }
+
+  // World Constructor #5: Creates a World with a moving background.  Image can be scaled to be bigger so the background doesn't run out too quickly!
+  public World(PApplet p, String name, PImage movingBg, float scale, float x, float y) {
+    super(p, name, movingBg, scale, x, y);
+    System.out.println("World " + name + " constructed with " + Util.toStringPImage(movingBg));
   }
 
 
   //------------------ WORLD SPRITE METHODS --------------------//
+  
+  // Returns an ArrayList of all Sprites in the World
   public ArrayList<Sprite> getSprites(){
       return sprites;
   }
 
-  //method to add a sprite to the world
+  // Adds a Sprite to the World
   public void addSprite(Sprite sprite) {
     if (!sprites.contains(sprite)) {
       sprites.add(sprite);
-    }
-  }
-
-  //method to add a copy of a sprite to a specific coordinate in the world
-  public void addSpriteCopyTo(Sprite sprite, float x, float y) {
-    if(sprite.getIsAnimated()){
-      sprites.add( ((AnimatedSprite)sprite).copyTo(x,y));
-    } else {
-      sprites.add(sprite.copyTo(x,y));
     }
   }
 
@@ -70,7 +66,16 @@ public class World extends Screen{
     }
   }
 
-  //method to add a copy of a sprite to a specific coordinate in the world
+  // Adds a copy of a Sprite to a specific coordinate in the World
+  public void addSpriteCopyTo(Sprite sprite, float x, float y) {
+    if(sprite.getIsAnimated()){
+      sprites.add( ((AnimatedSprite)sprite).copyTo(x,y));
+    } else {
+      sprites.add(sprite.copyTo(x,y));
+    }
+  }
+
+  // Adds a copy of an Animated Sprite to a specific coordinate in the World
   public void addSpriteCopyTo(Sprite sprite, float x, float y, float aSpeed) {
     if(sprite.getIsAnimated()){
       sprites.add( ((AnimatedSprite)sprite).copyTo(x, y, aSpeed));
@@ -79,36 +84,36 @@ public class World extends Screen{
     }
   }
   
-    //method to remove return the number of sprites in a World
+  // Returns the number of Sprites in a World
   public int getNumSprites(){
     return sprites.size();
   }
 
-  //method to get a specific Sprite based on its index
+  // Gets a specific Sprite based on its index
   public Sprite getSprite(int index){
     return sprites.get(index);
   }
 
-  //method to remove a sprite from the world
+  // Removes a Sprite from the world
   public void removeSprite(Sprite sprite) {
     if (sprites.contains(sprite)) {
       sprites.remove(sprite);
     }
   }
 
-  //method to remove a sprite from the world based on its index in the ArrayList
+  // Removes a sprite from the World based on its index in the ArrayList
   public Sprite removeSprite(int index) {
       return sprites.remove(index);
   }
 
-  //Remove all current Sprites from World (useful for restarting a level) -Vanessa Balbuena 2024
+  // Removes all current Sprites from World (useful for restarting a level) -Vanessa Balbuena 2024
   public void clearAllSprites(){
     for(int i = 0; i < sprites.size(); i++){
       removeSprite(i);
     }
   }
 
-  //method to display all the sprites on the screen
+  // Displays all the Sprites on the screen
   public void showWorldSprites(){
     //System.out.println("showing sprites...");
     //Loop through all the sprites
@@ -128,7 +133,7 @@ public class World extends Screen{
     showWorldSprites();
   }
 
-  //method to print out list of sprites
+  // Prints out list of Sprites
   public void printWorldSprites(){
       for(Sprite sprite: sprites){
           System.out.println(sprite);
@@ -142,7 +147,7 @@ public class World extends Screen{
 
   //------------------ WORLD MUTATOR METHODS --------------------//
   
-  //method to update all sprites in the world each cycle
+  // Updates all Sprites in the World each cycle
   public void update() {
     long deltaTime = getTimeSince(lastSpriteUpdateTime);
     for (Sprite sprite : sprites) {

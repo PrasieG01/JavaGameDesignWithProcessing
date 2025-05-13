@@ -3,11 +3,11 @@
 
 public class StatusBar{
 
-//score variables
-int lvl1Score = 0;
-int lvl2Score = 0;
-String plyName = " ";
-boolean whatLevel;
+    //score variables
+    int lvl1Score = 0;
+    int lvl2Score = 0;
+    String plyName = " ";
+    boolean whatLevel;
 
     public StatusBar(int lvl1Score, int lvl2Score, String plyName, boolean whatLevel){
 
