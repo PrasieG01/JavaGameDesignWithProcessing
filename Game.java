@@ -1,68 +1,126 @@
 /* Game Class Starter File
- * Authors: Joel A. Bianchi
+ * Authors: Carey & Prasie
  * Last Edit: 5/13/25
- * using new Screen show method
+ * Updated to Java only version
  */
 
-//import processing.sound.*;
+// import processing.sound.*;
 import processing.core.PApplet;
+import processing.core.PGraphics;
 import processing.core.PImage;
 
 public class Game extends PApplet{
 
+  // VARIABLES: Processing variable to do Processing things
+  PApplet p = this;
+  PGraphics pg;
+  PImage mask; 
+
   //------------------ GAME VARIABLES --------------------//
 
-  // VARIABLES: Processing variable to do Processing things
-  PApplet p;
 
-  // VARIABLES: Title Bar
-  String titleText = "PeanutChessSkyHorse2";
-  String extraText = "CurrentLevel?";
-  String name = "";
+  ///VARIABLES: Title Bar
+  String titleText = "";
+  String extraText = "";
 
-  // VARIABLES: Whole Game
-  AnimatedSprite runningHorse;
-  boolean doAnimation;
+  // //VARIABLES: Splash Screen
+  Button menuBar;
+  int targetHeighty = 1000;
+  boolean openMenu;
 
-  // VARIABLES: Splash Screen
-  Screen splashScreen;
-  PImage splashBg;
-  String splashBgFile = "images/apcsa.png";
-  //SoundFile song;
+  //VARIABLES: scores
+  StatusBar statusbar;
+  String progressBar = "Null";
+  String playerName = "";
+  boolean typeName = true;
+  boolean nameEntered = false;
+  boolean isPass;
+  float isSimilar;
 
-  // VARIABLES: Level1Grid Screen
-  Grid level1Grid;
-  String level1BgFile = "images/chess.jpg";
-  PImage level1Bg;
-  String player1File = "images/x_wood.png";
-  PImage player1;   // Use PImage to display the image in a GridLocation
-  int player1Row = 3;
-  int player1Col = 0;
-  int player2Row = 5;
-  int player2Col = 5;
-  int health = 3;
-  AnimatedSprite player2;
+  //VARIABLES: Intro Screen
+  Screen introScreen;
+  String introBgFile = "images/SquidGameIntro.jpg";
+  PImage introBg;
+
+  //VARIABLES: Rules Screen
+  Screen rulesScreen;
+  String rulesBgFile = "images/rules.png";
+  PImage rulesBg;
+
+  //VARIABLES: Broken Cookie Screen
+  Screen brokenScreen;
+  String brokenBgFile = "images/brokencookie.jpg";
+  PImage brokenBg;
+
+  //VARIABLES: Splash 1 Screen
+  Screen splash1;
+  String splash1BgFile = "images/SplashOne.png";
+  PImage splash1Bg;
+
+  ///VARIABLES: Level 1 Screen
+  String lvl1File = "images/finishLine.jpg";
+  PImage lvl1Bg;
+  World lvl1World;
+
+  ///VARIABLES: Win Dalgona Screen
+  Screen dalgonaWinScreen;
+  String dalgonaWinBgFile = "images/windalgona.png";
+  PImage dalgonaWinBg;
+
   Button b1;
+  Button b11;
+  Button startButton;
+  Button checkButton;
+  Button restartButton;
+  Button tryAgainButton;
 
-  // VARIABLES: Level2World Pixel-based Screen
-  World level2World;
-  String level2BgFile = "images/sky.png";
-  PImage level2Bg;
-  String player3File = "images/zapdos.png";
-  Sprite player3; //Use Sprite for a pixel-based Location
-  int player3startX = 50;
-  int player3startY = 300;
+  String squidgirl = "images/squidgirl.jpg";
+  String squidchar = "sprites/squidchar1.png";
+  Sprite squidply1;
+  float currentX;
+  float currentY;
 
-  // VARIABLES: EndScreen
-  World endScreen;
-  String endBgFile = "images/youwin.png";
+  // SoundFile running;
+  // SoundFile squidGameTheme;
+  // SoundFile signal;
+  // AudioIn in;
+  // Delay delay;
+  int time;
+
+  AnimatedSprite popular;
+  int pikaSpawn = 0;
+
+
+  //VARIABLES: Splash 2 Screen
+  Screen splash2;
+  String splash2BgFile = "images/SplashTwo.png";
+  PImage splash2Bg;
+
+  //VARIABLES: Level 2 Screen: Dalgona
+  World lvl2World;
+  String lvl2WorldFile = "images/SquidGame02.jpg";
+  PImage lvl2WorldBg;
+
+  //Grid world2Grid;
+  PImage candydrawing;
+  Sprite needle;
+  PImage cookies;
+  Button b2;
+  Button b22;
+  Button checkSimilarButton;
+  boolean youBrokeTheCookie;
+  // SoundFile cutting;
+
+
+  //VARIABLES: EndScreen
+  Screen endScreen;
   PImage endBg;
+  String endBgFile = "images/win.jpg"; //add file
 
-
-  // VARIABLES: Tracking the current Screen being displayed
-  Screen currentScreen;
+  //VARIABLES: Whole Game
+  //SoundFile song;
+  Screen currentScreen = introScreen;
   World currentWorld;
-  Grid currentGrid;
   private int msElapsed = 0;
 
   boolean start = true;
@@ -73,7 +131,7 @@ public class Game extends PApplet{
   // Processing method that runs once for screen resolution settings
   public void settings() {
     //SETUP: Match the screen size to the background image size
-    size(800,600);  //these will automatically be saved as width & height
+    size(1500,800);  //these will automatically be saved as width & height
 
     // Allows p variable to be used by other classes to access PApplet methods
     p = this;
@@ -85,63 +143,134 @@ public class Game extends PApplet{
 
     p.imageMode(p.CORNER);    //Set Images to read coordinates at corners
     //fullScreen();   //only use if not using a specfic bg image
-    
+      
     //SETUP: Set the title on the title bar
     surface.setTitle(titleText);
 
     //SETUP: Load BG images used in all screens
-    splashBg = p.loadImage(splashBgFile);
-    splashBg.resize(p.width, p.height);
-    level1Bg = p.loadImage(level1BgFile);
-    level1Bg.resize(p.width, p.height);
-    level2Bg = p.loadImage(level2BgFile);
-    //level2Bg.resize(p.width, p.height);
-    endBg = p.loadImage(endBgFile);
+    introBg = loadImage(introBgFile);
+    introBg.resize(p.width, p.height);
+
+    rulesBg = loadImage(rulesBgFile);
+    rulesBg.resize(p.width, p.height);
+
+    brokenBg = loadImage(brokenBgFile);
+    brokenBg.resize(p.width, p.height);
+
+    splash1Bg = loadImage(splash1BgFile);
+    splash1Bg.resize(p.width, p.height);
+
+    lvl1Bg = loadImage(lvl1File);
+    lvl1Bg.resize(p.width, p.height);
+
+    splash2Bg = loadImage(splash2BgFile);
+    splash2Bg.resize(p.width, p.height);
+
+    lvl2WorldBg = loadImage(lvl2WorldFile);
+    lvl2WorldBg.resize(p.width, p.height);
+
+    dalgonaWinBg = loadImage(dalgonaWinBgFile);
+    dalgonaWinBg.resize(p.width, p.height);
+
+    endBg = loadImage(endBgFile);
     endBg.resize(p.width, p.height);
-
-    //SETUP: Screens, Worlds, Grids
-    splashScreen = new Screen(this, "splash", splashBg);
-    level1Grid = new Grid(this, "chessBoard", level1Bg, 6, 8);
-    //level1Grid.startPrintingGridMarks();
-    level2World = new World(p, "sky", level2Bg, 4.0f, 0.0f, -800.0f); //moveable World constructor --> defines center & scale (x, scale, y)???
-    System.out.println( "World constructed: " + Util.toStringPImage(level2World.getBgImage()));
-       
-    // level2World = new World("sky", level2Bg);   //non-moving World construtor
-    endScreen = new World(this, "end", endBg);
-    currentScreen = splashScreen;
-
-    //SETUP: All Game objects
-    runningHorse = new AnimatedSprite(this, "sprites/horse_run.png", "sprites/horse_run.json", 50.0f, 75.0f, 10.0f);
-
-    //SETUP: Level 1
-    player1 = p.loadImage(player1File);
-    player1.resize(level1Grid.getTileWidth(),level1Grid.getTileHeight());
-    player2 = new AnimatedSprite(this, "sprites/chick_walk.png", "sprites/chick_walk.json", 0.0f, 0.0f, 5.0f);
-    level1Grid.setTileSprite(new GridLocation (player2Row, player2Col), player2);
-
-    b1 = new Button(this, "rect", 625, 525, 150, 50, "GoTo Level 2");
-    // b1.setFontStyle("fonts/spidermanFont.ttf");
-    // b1.setFontStyle("Helvetica");
-    b1.setTextColor(PColor.WHITE);
-    b1.setButtonColor(PColor.BLACK);
-    b1.setHoverColor(PColor.get(100,50,200));
-    b1.setOutlineColor(PColor.WHITE);
-
-    System.out.println("Done loading Level 1 ...");
+    // menuBar = new Button("rect", 0, height-100, 150, 100, "Menu" );
+    // lana = new StatusBar(0, 0, playerName, false);
     
-    //SETUP: Level 2
-    player3 = new Sprite(this, player3File, 0.25f);
-    player3.moveTo(player3startX, player3startY);
-    level2World.addSpriteCopyTo(runningHorse, 100, 200);  //example Sprite added to a World at a location, with a speed
-    level2World.printWorldSprites();
-    System.out.println("Done loading Level 2 ...");
-    
-    //SETUP: Sound
-    // Load a soundfile from the sounds folder of the sketch and play it back
-     //song = new SoundFile(this, "sounds/Lenny_Kravitz_Fly_Away.mp3");
-     //song.play();
-    
-    System.out.println("Game started...");
+    //SETUP: Screens - setup splash & intro & end
+    introScreen = new Screen(p, "intro", introBg);
+    rulesScreen = new Screen(p, "rules", rulesBg);
+    brokenScreen = new Screen(p, "broken", brokenBg);
+    dalgonaWinScreen = new Screen(p, "win", dalgonaWinBg);
+    splash1 = new Screen(p, "splash1", splash1Bg);
+    splash2 = new Screen(p, "splash2", splash2Bg);
+    endScreen = new Screen(p, "end", endBg);
+    currentScreen = introScreen;
+
+    //SETUP: level1 screen - RLGL
+    lvl1World = new World(p, "levelOneGrid", lvl1Bg , 9.0f, 0f, 0f);
+    squidply1 = new Sprite(p, "sprites/squidchar1.png");
+    squidply1.resize(100,100);
+    currentX = squidply1.getCenterX();
+    currentY =  squidply1.getCenterY();
+    lvl1World.addSprite(squidply1);
+    popular = new AnimatedSprite(p, "sprites/pikachu.png","sprites/pikachu.json");
+    popular.resize(100,100);
+    //  running = new SoundFile(this,"sounds/run.mp3");
+    //  squidGameTheme = new SoundFile(this,"sounds/SquidGame.mp3");
+    //  signal = new SoundFile(this,"sounds/Beep.mp3");
+    //  delay = new Delay(this);
+
+    //SETUP: level2 screen - Dalgona
+    lvl2World = new World(p, "level2", candydrawing);
+    candydrawing = loadImage("images/dalgona.png");
+    candydrawing.resize(width, height);
+    // cutting = new SoundFile(this,"sounds/chop.mp3" );
+    // in = new AudioIn(this, 0);
+
+    ///lvl2 sprites
+    needle = new Sprite(p, "images/needle.png");
+    needle.resize(100,100);
+    cookies = loadImage("images/cookies.png");
+    cookies.resize(800,800);
+
+
+    //lvl2 Create a graphics buffer
+    pg = createGraphics(1500, 800);
+    pg.beginDraw();
+    pg.background(candydrawing);
+    pg.endDraw();
+
+
+    //SETUP: Buttons
+    b1 = new Button(p, "RECT", 1080, 580, 200, 100, "Level 1");
+    b11 = new Button(p, "RECT", 450, 140, 200, 100, "Level 1");
+    startButton = new Button(p, "RECT", 620, 260, 200, 80, "Game Rules");
+    checkButton = new Button(p, "RECT", 120, 300, 200, 100, "Check");
+    restartButton = new Button(p, "RECT", 30, 660, 400, 100, "Restart Game");
+    tryAgainButton = new Button(p, "RECT", 980, 440, 200, 100, "Try Again!");
+    b2 = new Button(p, "RECT", 100, 580, 200, 100, "Level 2");
+    b22 = new Button(p, "RECT", 1090, 140, 200, 100, "Level 2");
+    checkSimilarButton = new Button(p, "rect", 1090, 140, 300, 90, "Click to Check");
+
+    int DARK_YELLOW = color(255,165,0);
+    int LIGHT_ORANGE = color(255,191,0);
+    int DARK_BROWN = color(25,87, 51);
+
+    startButton.setButtonColor(DARK_YELLOW);
+    startButton.setHoverColor(LIGHT_ORANGE);
+    startButton.setClickColor(DARK_BROWN);
+    b1.setButtonColor(DARK_YELLOW);
+    b1.setHoverColor(LIGHT_ORANGE);
+    b1.setClickColor(DARK_BROWN);
+    b11.setButtonColor(DARK_YELLOW);
+    b11.setHoverColor(LIGHT_ORANGE);
+    b11.setClickColor(DARK_BROWN);
+    b2.setButtonColor(DARK_YELLOW);
+    b2.setHoverColor(LIGHT_ORANGE);
+    b2.setClickColor(DARK_BROWN);
+    b22.setButtonColor(DARK_YELLOW);
+    b22.setHoverColor(LIGHT_ORANGE);
+    b22.setClickColor(DARK_BROWN);
+    restartButton.setButtonColor(DARK_YELLOW);
+    restartButton.setHoverColor(LIGHT_ORANGE);
+    restartButton.setClickColor(DARK_BROWN);
+    tryAgainButton.setButtonColor(DARK_YELLOW);
+    tryAgainButton.setHoverColor(LIGHT_ORANGE);
+    tryAgainButton.setClickColor(DARK_BROWN);
+    checkButton.setButtonColor(DARK_YELLOW);
+    checkButton.setHoverColor(LIGHT_ORANGE);
+    checkButton.setClickColor(DARK_BROWN);
+    checkSimilarButton.setButtonColor(DARK_YELLOW);
+    checkSimilarButton.setHoverColor(LIGHT_ORANGE);
+    checkSimilarButton.setClickColor(DARK_BROWN);
+
+    //SETUP: Other
+    // Load a soundfile from the /data folder of the sketch and play it back
+    // song = new SoundFile(this, "sounds/Magnetic.mp3");
+    // song.play();
+
+    println("Game started...");
 
   } //end setup()
 
@@ -155,17 +284,18 @@ public class Game extends PApplet{
 
     //simple timing handling
     if (msElapsed % 300 == 0) {
-      //sprite handling
-      populateSprites();
-      moveSprites();
+      // sprite handling
+      // populateSprites();
+      // moveSprites();
     }
-    msElapsed +=100;
-    currentScreen.pause(100);
+    msElapsed +=500;
 
     //check for end of game
     if(isGameOver()){
       endGame();
     }
+
+    currentScreen.pause(50);
 
   } //end draw()
 
@@ -181,35 +311,54 @@ public class Game extends PApplet{
     //What to do when a key is pressed?
     
     //KEYS FOR LEVEL1
-    if(currentScreen == level1Grid){
+    if(currentScreen == lvl1World){
 
       //set [W] key to move the player1 up & avoid Out-of-Bounds errors
-      if(p.keyCode == 87){
-      
-        //Store old GridLocation
-        GridLocation oldLoc = new GridLocation(player2Row, player2Col);
-        
-        //Erase image from previous location
-        
+      if(keyCode == 87 && squidply1.getCenterY() > 0){
+        currentY -=5; //W
 
-        //change the field for player2Row
-        player2Row--;
+        // if(!running.isPlaying())
+        // {
+        // running.play();
+        // }
       }
 
-      // if the 'n' key is pressed, ask for their name
-      if(p.key == 'n'){
-        name = Input.getString("What is your name?");
-      }
+      if(keyCode == 65 && squidply1.getCenterX() > 0){
+        System.out.println("position" + squidply1.getCenterX());
+        lvl1World.moveBgXY(10,0);
+        currentX -=5; //A
+        
+        // if(!running.isPlaying())
+        // {
+        // running.play();
+        // }
 
-      // if the 't' key is pressed, then toggle the animation on/off
-      if(p.key == 't'){
-        //Toggle the animation on & off
-        doAnimation = !doAnimation;
-        System.out.println("doAnimation: " + doAnimation);
-        if(currentGrid != null){
-          currentGrid.setMark("X",currentGrid.getGridLocation());
+      }
+      if(keyCode == 83 && squidply1.getCenterY() < height){
+      currentY+=5;
+
+        // if(!running.isPlaying())
+        // {
+        // running.play();
+        // }
+
+      } 
+
+      if(keyCode == 68 && squidply1.getCenterX() < width){ //s
+        if(lvl1World.distToRightEdge() != 0)
+        {
+          lvl1World.moveBgXY(-10,0);
         }
+        currentX +=5;
+
+        // if(!running.isPlaying())
+        // {
+        // running.play();
+        // }
+
       }
+
+      squidply1.moveTo(currentX, currentY);
 
 
 
@@ -217,11 +366,35 @@ public class Game extends PApplet{
 
     //CHANGING SCREENS BASED ON KEYS
     //change to level1 if 1 key pressed, level2 if 2 key is pressed
-    if(p.key == '1'){
-      currentScreen = level1Grid;
-    } else if(p.key == '2'){
-      currentScreen = level2World;
+    if(key == '1'){
+      currentScreen = lvl1World;
+    } else if(key == '2'){
+      currentScreen = lvl2World;
+    } else if(key == '3'){
+      currentScreen = brokenScreen;
     }
+
+    // Store User Name
+    // if(typeName && !nameEntered){
+    //   if(key == BACKSPACE){
+    //     if(playerName.length() > 0){
+    //       playerName = playerName.substring(0, playerName.length() - 1);
+    //     }
+    //   }
+    //   else if(key != ENTER && key != RETURN){
+    //     playerName += key;
+    //   }
+    //   else if(key == ENTER || key == RETURN){
+    //     nameEntered = true;
+    //     typeName = false; //disable typing after they enter their name
+
+    //   }
+        
+    //   } else{
+    //   if(key == ' '){
+    //    // lvlScore++;
+    // //   }
+    // }
 
 
   }
@@ -233,34 +406,82 @@ public class Game extends PApplet{
     System.out.println("\nMouse was clicked at (" + p.mouseX + "," + p.mouseY + ")");
 
     // Display color of pixel clicked
-    int color = p.get(p.mouseX, p.mouseY);
-    PColor.printPColor(p, color);
+    // int color = p.get(p.mouseX, p.mouseY);
+    // PColor.printPColor(p, color);
 
-    // Print grid coordinate clicked
-    if(currentGrid != null){
-      System.out.println("Grid location --> " + currentGrid.getGridLocation());
-    }
+    //if mouse is clicked on the lvl2World
+    // //Identify when button is clicked
+   if(currentScreen == introScreen && b1.isMouseOverButton()){
+    System.out.println("Clicked!");
+    currentScreen = lvl1World;
+   }
 
-    // what to do if clicked? (ex. assign a new location to player1)
-    if(currentScreen == level1Grid){
-      player1Row = currentGrid.getGridLocation().getRow();
-      player1Col = currentGrid.getGridLocation().getCol();
-    }
-    
+   // //Identify when button is clicked
+   if(currentScreen == introScreen && startButton.isMouseOverButton()){
+    System.out.println("Clicked start button");
+    currentScreen = rulesScreen;
+   }
 
+   // //Identify when button is clicked
+   if(currentScreen == introScreen && b2.isMouseOverButton()){
+    System.out.println("Clicked level 2");
+    currentScreen = lvl2World;
+   }
 
+   // //Identify when button is clicked
+   if(currentScreen == rulesScreen && b11.isMouseOverButton()){
+    System.out.println("Clicked b11 button");
+    currentScreen = lvl1World;
+   }
+
+   // //Identify when button is clicked
+   if(currentScreen == rulesScreen && b22.isMouseOverButton()){
+    System.out.println("Clicked level 2");
+    currentScreen = lvl2World;
+   }
+  
+  //Restart game on Level 2 Win
+  if(currentScreen == dalgonaWinScreen && restartButton.isMouseOverButton()){
+    System.out.println("resetting to introscreen");
+    currentScreen = introScreen;
+    resetScores();
   }
 
+  //Try again on Level 2 Broken
+  if(currentScreen == brokenScreen && tryAgainButton.isMouseOverButton()){
+    System.out.println("resetting to lvl2");
+    currentScreen = introScreen;
+    resetScores();
+  }
+
+   //Restart game on Level 2 Broken
+   if(currentScreen == brokenScreen && restartButton.isMouseOverButton()){
+    System.out.println("resetting to introscreen");
+    currentScreen = rulesScreen;
+    resetScores();
+   }
+
+  } // close mouseClicked
 
 
   //------------------ CUSTOM  GAME METHODS --------------------//
+
+  public void resetScores() {
+    // statusBar.lvl1Score = 0;
+    // statusBar.lvl2Score = 0;
+
+    pg = createGraphics(1500, 800);
+    pg.beginDraw();
+    pg.background(candydrawing);
+    pg.endDraw();
+  }
 
   // Updates the title bar of the Game
   public void updateTitleBar(){
 
     if(!isGameOver()) {
       //set the title each loop
-      // p.surface.setTitle(titleText + "    " + extraText + " " + name + ": " + health);
+      surface.setTitle(titleText + "    " + extraText);
 
       //adjust the extra text as desired
     
@@ -270,154 +491,423 @@ public class Game extends PApplet{
   // Updates what is drawn on the screen each frame
   public void updateScreen(){
 
-    // UPDATE: Background of the current Screen
+
+    //UPDATE: Background of the current Screen
     currentScreen.show();
 
-    // UPDATE: splashScreen
-    if(currentScreen == splashScreen && splashScreen.getScreenTime() > 3000 && splashScreen.getScreenTime() < 5000){
-      System.out.print("s");
-      currentScreen = level1Grid;
-    }
-
-    // UPDATE: level1Grid Screen
-    if(currentScreen == level1Grid){
-      System.out.print("1");
-      currentGrid = level1Grid;
-
-      // Displays the player1 image
-      GridLocation player1Loc = new GridLocation(player1Row,player1Col);
-      level1Grid.setTileImage(player1Loc, player1);
-
-      // Displays the player2 image
-      GridLocation player2Loc = new GridLocation(player2Row, player2Col);
-      level1Grid.setTileSprite(player2Loc, player2);
-      
-      // Updates other screen elements
-      level1Grid.showGridImages();
-      level1Grid.showGridSprites();
-      level1Grid.showWorldSprites();
-
-      // Moves to next level based on a button click
-      b1.show();
-      if(b1.isClicked()){
-        System.out.println("\nButton Clicked");
-        currentScreen = level2World;
-      }
-    
-    }
-    
-    // UPDATE: level2World Screen
-    if(currentScreen == level2World){
-      System.out.print("2");
-      currentWorld = level2World;
-      // currentGrid = null;
-
-      level2World.moveBgXY(-3.0f, 0f);
-      level2World.show();
-      player3.show();
-      level2World.showWorldSprites();
-
-    }
-
-    // UPDATE: End Screen
-    // if(currentScreen == endScreen){
-
+    // UPDATE: Background of the current Screen
+    // if(!currentScreen.getIsMoveable() ){
+    //   p.background(currentScreen.getBgImage());
     // }
 
-    // UPDATE: Any Screen
-    if(doAnimation){
-      runningHorse.animateHorizontal(5.0f, 10.0f, true);
+    //UPDATE: introScreen
+    if(currentScreen == introScreen){
+
+      startButton.show();
+
+      if (startButton.isMouseOverButton() && mousePressed) {
+        currentScreen = rulesScreen;
+        rulesScreen.resetTime();
+      }
+
+      //Prasie code to display name of player
+      // textSize(32);
+      // fill(255);
+      // text("Enter Your Name:", width / 2, height / 2 - 100);
+      // textSize(24);
+      // text(playerName, width / 2, height / 2);
+      
+      //Prasie code to display name
+      // if (currentScreen == introScreen && typeName) {  
+      //   fill(255,20,147);
+      //   textSize(40);
+      //   text("Enter Your Name: ", 50, 200);
+      //   text(playerName, 400, 200);
+      // } 
+
+      //Prasie code to display Menu Bar
+      // menuBar.show();
+      // if(menuBar.isMouseOverButton() && mousePressed)
+      // {
+      //   openMenu = !openMenu;
+      // }
+      // menuBarScreen(openMenu);
+
     }
 
 
-  }
-
-  // Populates enemies or other sprites on the Screen
-  public void populateSprites(){
-
-    //What is the index for the last column?
+    //UPDATE: introScreen
+    if(currentScreen == rulesScreen){
+      currentScreen.show();
+      //Show the button
+      b11.show(); //go to level 1
+      b22.show(); //go to level 2
     
+    }
 
-    //Loop through all the rows in the last column
+    if(currentScreen == brokenScreen){
+      currentScreen.show();
+      textSize(60);
+      fill(255,0,0);
+      text("You Broke the Cookie!", width/2, height/2 - 350);
+      
+      tryAgainButton.show();
+      restartButton.show();
+    } 
 
-      //Generate a random number
+    
+    if(currentScreen == splash1){
+      currentScreen.show();
+      textSize(35);
+      text("Level 1 Complete!", width/2, height/2 - 200);
+    }
+    
+    if(currentScreen == lvl1World){
+      currentScreen.show();
+      //update other screen elements
+      lvl1World.showWorldSprites();
+      lvl1GameMechanic();
+      //System.out.println("Display Right edge: " + lvl1World.distToRightEdge());
+      squidply1.show();
+    }
+
+    if(currentScreen == dalgonaWinScreen){
+      tryAgainButton.show();
+      restartButton.show();
+    }
 
 
-      //10% of the time, decide to add an enemy image to a Tile
+    // if(currentScreen == introScreen && introScreen.getScreenTime() > 4000 && introScreen.getScreenTime() < 5000){
+    // if(currentScreen == introScreen){
+    //   //System.out.print("i");
+    //   currentScreen = lvl1World;
+    //   lvl1World.resetTime();
+    //   // if(song.isPlaying())
+    //   // {
+    //   //   song.pause();
+    // }
+
+    //UPDATE: level1Grid Screen
+    if(currentScreen == lvl1World){
+      
+      //Display the Player1 image
+      squidply1.show();
+        
+      //update other screen elements
+      lvl1World.showWorldSprites();
+      lvl1GameMechanic();
+
+      //end level1 if reach right edge
+      if(squidply1.getRight() > (width-50)){
+        currentScreen = rulesScreen;
+      }
+
+      //System.out.println("Display Right edge: " + lvl1World.distToRightEdge());
+
+    }
+
+    //UPDATE: Dalgona Level 2 Screen
+
+    //wait to go to level 2
+    //if(currentScreen.getScreenTime() > 1000 && currentScreen.getScreenTime() < 2000){
+    
+    if(currentScreen == lvl2World){
+
+      lvl2mechanics();
+      checkButton.show();
+      printResult(isPass);
+
+      //lvl2World.resetTime();
+      System.out.print("2");
+
+      image(pg, 0, 0); 
+      int needleHeight = 277;
+      needle.moveTo(mouseX, mouseY - needleHeight);
+      //lvl2mechanics();
       
 
+
+      
+      //if button is pushed, check if the whole cookie is cutout (or most of it)
+      checkSimilarButton.show();
+
+      testDalgona();
+
+      if(checkSimilarButton.isClicked()) {
+
+        if(isSimilar >= 0.5){
+          currentScreen = dalgonaWinScreen;
+        } else {
+          //Prasie code for an update on the screen
+          fill(127);
+          rect(200, 40, 200, 40);
+          fill(0);
+          textSize(20);
+          text((int)(isSimilar*100.0) + "%, Not quite there " + playerName, 200, 45);
+
+
+        }
+      }
+
+      //Test if click of needle is hitting the groove
+      else if(mousePressed)
+      {
+        int c = candydrawing.get((int)mouseX, (int)mouseY);
+        PColor.printPColor(p, c);
+
+        if(!isBrown(c))
+        {
+          System.out.println("BROKEN");
+          currentScreen = brokenScreen;
+        }
+      } 
+
+      //otherwise just display the %
+      else{
+        fill(255);
+        rect(200, 40, 200, 40);
+        fill(0);
+        textSize(20);
+        text((int)(isSimilar*100.0)+"% of cookie cut", 200, 45);
+
+      }
+
+
+    } //end Level2 update
+
+  } //end updateScreen()
+
+  
+  //------------------Menu Bar--------------------//
+  public void menuBarScreen(boolean shouldOpen)
+  {
+    if(shouldOpen)
+    {
+      fill(255,100);
+      rect(width/2, moveToMenu(), 1000, 500, 24, 24, 24, 24);
+      if (mousePressed)
+      {
+        // fill(100);
+        // tint(255, 126);
+      }
+    }
   }
 
-  // Moves around the enemies/sprites on the Screen
-  public void moveSprites(){
-
-    //Loop through all of the rows & cols in the grid
-
-        //Store the current GridLocation
-
-        //Store the next GridLocation
-
-        //Check if the current tile has an image that is not player1      
-
-
-          //Get image/sprite from current location
-            
-
-          //CASE 1: Collision with player1
-
-
-          //CASE 2: Move enemy over to new location
-
-
-          //Erase image/sprite from old location
-
-          //System.out.println(loc + " " + grid.hasTileImage(loc));
-
-            
-        //CASE 3: Enemy leaves screen at first column
-
+  public int moveToMenu()
+  {
+    if(targetHeighty > height/2)
+    {
+      targetHeighty-=10;
+    }
+    return targetHeighty;
   }
 
-  // Checks if there is a collision between Sprites on the Screen
-  public boolean checkCollision(GridLocation loc, GridLocation nextLoc){
 
-    //Check what image/sprite is stored in the CURRENT location
-    // PImage image = grid.getTileImage(loc);
-    // AnimatedSprite sprite = grid.getTileSprite(loc);
 
-    //if empty --> no collision
 
-    //Check what image/sprite is stored in the NEXT location
 
-    //if empty --> no collision
 
-    //check if enemy runs into player
 
-      //clear out the enemy if it hits the player (using cleartTileImage() or clearTileSprite() from Grid class)
+  //----------------LEVEL 1 GRID METHODS ------------//
 
-      //Update status variable
-
-    //check if a player collides into enemy
-
-    return false; //<--default return
+  public void lvl1GameMechanic()
+  {
+    populateSprites(3);
+    moveSpritesANDcheckCollision();
+    // playAndPause();
   }
 
-  // Indicates when the main game is over
+
+
+  // public void playAndPause()
+  // {
+  //   time = millis();
+  //   System.out.println(time + " this is the time");
+
+  //   if(time % 10 == 0 && !squidGameTheme.isPlaying())
+  //   {
+  //     signal.play();
+  //     squidGameTheme.play();
+  //   }
+  //   if(squidGameTheme.isPlaying() && keyPressed)
+  //   {
+  //     System.out.println("DEATH SENTENCE");
+  //   }
+
+
+  // }
+
+
+
+  //Method to populate enemies or other sprites on the screen
+  public void populateSprites(int numPika){
+    int multipler = (int)(Math.random()*8);
+    int promNight = multipler*100;
+
+    System.out.println("PS: " + pikaSpawn + "\tnumPika: " + numPika);
+
+    if(pikaSpawn < numPika )
+    {
+      System.out.println("Spawning new Pika at : " + promNight);
+      lvl1World.addSpriteCopyTo(popular,width-100, height-promNight); 
+      pikaSpawn++;
+    }
+  }
+
+
+  //Method to move around the enemies/sprites on the screen
+  public void moveSpritesANDcheckCollision() {
+    for (int i = lvl1World.getNumSprites() - 1; i >= 0; i--) {
+      Sprite sprite = lvl1World.getSprite(i);
+
+      // Move enemies to the left
+      if (sprite != squidply1) {
+        sprite.move(-20, 0);
+      }
+
+      // Erase enemies once they reach the left edge
+      if (sprite.getLeft() == 0) {
+        System.out.println("Erasing Sprite");
+        lvl1World.removeSprite(i);
+        pikaSpawn--;
+      }
+
+      // Check for collision with squidply1
+      if (squidply1.getTop() < sprite.getBottom() 
+        && squidply1.getBottom() > sprite.getTop() 
+        && squidply1.getRight() > sprite.getLeft() 
+        && squidply1.getLeft() < sprite.getRight()) {
+        System.out.println("COLLISION: ");
+
+        // Restart level 1 if there is a collision
+        restartLevel1();
+        return; // Exit the loop after restarting the level
+      }
+    }
+  }
+
+  // Method to restart level 1
+  private void restartLevel1() {
+
+    System.out.println("Restarting Level 1");
+    //  reset the player's position and re-populate sprites
+    squidply1.moveTo(currentX, currentY); // Set initial position
+    //lvl1World.removeSprite(); // Clear existing sprites
+    populateSprites(3); // Re-populate sprites
+    pikaSpawn = 3; // Reset pikaSpawn or other variables if needed
+  }
+
+
+  //---------------------END GAME METHODS -----------------//
+
+  //method to indicate when the main game is over
   public boolean isGameOver(){
     
     return false; //by default, the game is never over
   }
 
-  // Describes what happens after the game is over
+  //method to describe what happens after the game is over
   public void endGame(){
       System.out.println("Game Over!");
 
-      // Update the title bar
+      //Update the title bar
 
-      // Show any end imagery
+      //Show any end imagery
       currentScreen = endScreen;
 
   }
+    public void printResult(boolean success)
+    {
+    Float percentage = new Float(isSimilar);
+    String intToStringPER = percentage.toString();
+    if(success)
+    {
+      textSize(60);
+      fill(0, 0, 0);
+      text(intToStringPER+ " % ", 48, 180, -120);
+    }
+    success = !success;
+  }
+
+
+
+  //------------------ LEVEL 2 CUSTOM METHODS --------------------//
+
+  void lvl2mechanics(){
+    image(pg, 0, 0); 
+    int needleHeight = 277;
+    needle.moveTo(mouseX, mouseY - needleHeight);
+
+    if(mousePressed)
+    {
+
+      // color c = get(mouseX, mouseY);
+      // System.out.println("\n(R:"+red(c)+",G:"+green(c)+",B:"+blue(c)+")");
+
+      pg.beginDraw();
+      pg.stroke(0,255,0);
+      pg.strokeWeight(15);
+      pg.line(mouseX, mouseY, pmouseX, pmouseY);
+      // delay.set(10.0,0.0);
+      // if(!cutting.isPlaying())
+      // {
+      //   cutting.play();
+      // }
+      pg.endDraw();
+      needle.show();
+    }
+  }
+
+
+  //test if statement for carving evaluation
+  void testDalgona(){
+    int matchingPixels = 0;
+    int totalOPixels = 0;
+
+      for(int i = 0; i < candydrawing.width; i++){
+        for(int y = 0; y < candydrawing.height; y++){
+          if((isBrown(candydrawing.get(i,y))) && (isGreen(pg.get(i,y)))){
+            matchingPixels++;
+          }
+          if(isBrown(candydrawing.get(i,y))){
+            totalOPixels++;
+          }
+        }
+      }
+
+
+
+      isSimilar = (float) matchingPixels / totalOPixels;
+    
+      if (isSimilar >= 0.5)
+      {
+        System.out.println("Level 2 Done! Carving Successful!");
+      }else{
+        System.out.println("Level 2 Failed! Carving Failed!");
+      }
+
+  }
+
+
+  //check if it's green
+  public boolean isGreen(int g){
+    // if((o.getGreen() == 255) && (o.getRed() == 0) && (o.getBlue() == 0)){
+    if(g == PColor.GREEN){
+      return true;
+    }
+    return false;
+  }
+
+
+  //check if it's brown
+  public boolean isBrown(int b){
+    
+    if((p.red(b) >= 90 && p.red(b) <= 140) && (p.green(b) >= 40 && p.green(b) <= 80) && (p.blue(b) >= 0 && p.blue(b) <= 30)){
+      return true;
+    }
+    return false;
+  }
+
 
 
 } //close class
