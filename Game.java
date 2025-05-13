@@ -67,12 +67,12 @@ public class Game extends PApplet{
   String dalgonaWinBgFile = "images/windalgona.png";
   PImage dalgonaWinBg;
 
-  Button b1 = new Button(p, "rect", 1080, 580, 200, 100, "Level 1");
-  Button b11 = new Button(p, "rect", 450, 140, 200, 100, "Level 1");
-  Button startButton = new Button(p, "rect", 620, 260, 200, 80, "Game Rules");
-  Button checkButton = new Button(p, "rect", 120, 300, 200, 100, "Check");
-  Button restartButton = new Button(p, "rect", 30, 660, 400, 100, "Restart Game");
-  Button tryAgainButton = new Button(p, "rect", 980, 440, 200, 100, "Try Again!");
+  Button b1;
+  Button b11;
+  Button startButton;
+  Button checkButton;
+  Button restartButton;
+  Button tryAgainButton;
 
   String squidgirl = "images/squidgirl.jpg";
   String squidchar = "sprites/squidchar1.png";
@@ -105,9 +105,9 @@ public class Game extends PApplet{
   PImage candydrawing;
   Sprite needle;
   PImage cookies;
-  Button b2 = new Button(p, "rect", 100, 580, 200, 100, "Level 2");
-  Button b22 = new Button(p, "rect", 1090, 140, 200, 100, "Level 2");
-  Button checkSimilarButton = new Button(p, "rect", 1090, 140, 300, 90, "Click to Check");
+  Button b2;
+  Button b22;
+  Button checkSimilarButton;
   boolean youBrokeTheCookie;
   // SoundFile cutting;
 
@@ -149,28 +149,28 @@ public class Game extends PApplet{
 
     //SETUP: Load BG images used in all screens
     introBg = loadImage(introBgFile);
-    introBg.resize(width, height);
+    introBg.resize(p.width, p.height);
 
     rulesBg = loadImage(rulesBgFile);
-    rulesBg.resize(width, height);
+    rulesBg.resize(p.width, p.height);
 
     brokenBg = loadImage(brokenBgFile);
-    brokenBg.resize(width, height);
+    brokenBg.resize(p.width, p.height);
 
     splash1Bg = loadImage(splash1BgFile);
-    splash1Bg.resize(width, height);
+    splash1Bg.resize(p.width, p.height);
 
     lvl1Bg = loadImage(lvl1File);
-    lvl1Bg.resize(width, height);
+    lvl1Bg.resize(p.width, p.height);
 
     splash2Bg = loadImage(splash2BgFile);
-    splash2Bg.resize(width, height);
+    splash2Bg.resize(p.width, p.height);
 
     lvl2WorldBg = loadImage(lvl2WorldFile);
-    lvl2WorldBg.resize(width, height);
+    lvl2WorldBg.resize(p.width, p.height);
 
     dalgonaWinBg = loadImage(dalgonaWinBgFile);
-    dalgonaWinBg.resize(width, height);
+    dalgonaWinBg.resize(p.width, p.height);
 
     endBg = loadImage(endBgFile);
     endBg.resize(p.width, p.height);
@@ -189,81 +189,90 @@ public class Game extends PApplet{
 
     //SETUP: level1 screen - RLGL
     lvl1World = new World(p, "levelOneGrid", lvl1Bg , 9.0f, 0f, 0f);
+    squidply1 = new Sprite(p, "sprites/squidchar1.png");
+    squidply1.resize(100,100);
+    currentX = squidply1.getCenterX();
+    currentY =  squidply1.getCenterY();
+    lvl1World.addSprite(squidply1);
+    popular = new AnimatedSprite(p, "sprites/pikachu.png","sprites/pikachu.json");
+    popular.resize(100,100);
+    //  running = new SoundFile(this,"sounds/run.mp3");
+    //  squidGameTheme = new SoundFile(this,"sounds/SquidGame.mp3");
+    //  signal = new SoundFile(this,"sounds/Beep.mp3");
+    //  delay = new Delay(this);
 
-  squidply1 = new Sprite(p, "sprites/squidchar1.png");
-  squidply1.resize(100,100);
-  currentX = squidply1.getCenterX();
-  currentY =  squidply1.getCenterY();
-  lvl1World.addSprite(squidply1);
-  popular = new AnimatedSprite(p, "sprites/pikachu.png","sprites/pikachu.json");
-  popular.resize(100,100);
-  //  running = new SoundFile(this,"sounds/run.mp3");
-  //  squidGameTheme = new SoundFile(this,"sounds/SquidGame.mp3");
-  //  signal = new SoundFile(this,"sounds/Beep.mp3");
-  //  delay = new Delay(this);
+    //SETUP: level2 screen - Dalgona
+    lvl2World = new World(p, "level2", candydrawing);
+    candydrawing = loadImage("images/dalgona.png");
+    candydrawing.resize(width, height);
+    // cutting = new SoundFile(this,"sounds/chop.mp3" );
+    // in = new AudioIn(this, 0);
 
-  //SETUP: level2 screen - Dalgona
-  lvl2World = new World(p, "level2", candydrawing);
-  candydrawing = loadImage("images/dalgona.png");
-  candydrawing.resize(width, height);
-  // cutting = new SoundFile(this,"sounds/chop.mp3" );
-  // in = new AudioIn(this, 0);
-
-  ///lvl2 sprites
-  needle = new Sprite(p, "images/needle.png");
-  needle.resize(100,100);
-  cookies = loadImage("images/cookies.png");
-  cookies.resize(800,800);
-
-
-  //lvl2 Create a graphics buffer
-  pg = createGraphics(1500, 800);
-  pg.beginDraw();
-  pg.background(candydrawing);
-  pg.endDraw();
+    ///lvl2 sprites
+    needle = new Sprite(p, "images/needle.png");
+    needle.resize(100,100);
+    cookies = loadImage("images/cookies.png");
+    cookies.resize(800,800);
 
 
-  //SETUP: Buttons
-  int DARK_YELLOW = color(255,165,0);
-  int LIGHT_ORANGE = color(255,191,0);
-  int DARK_BROWN = color(25,87, 51);
+    //lvl2 Create a graphics buffer
+    pg = createGraphics(1500, 800);
+    pg.beginDraw();
+    pg.background(candydrawing);
+    pg.endDraw();
 
-  startButton.setButtonColor(DARK_YELLOW);
-  startButton.setHoverColor(LIGHT_ORANGE);
-  startButton.setClickColor(DARK_BROWN);
-  b1.setButtonColor(DARK_YELLOW);
-  b1.setHoverColor(LIGHT_ORANGE);
-  b1.setClickColor(DARK_BROWN);
-  b11.setButtonColor(DARK_YELLOW);
-  b11.setHoverColor(LIGHT_ORANGE);
-  b11.setClickColor(DARK_BROWN);
-  b2.setButtonColor(DARK_YELLOW);
-  b2.setHoverColor(LIGHT_ORANGE);
-  b2.setClickColor(DARK_BROWN);
-  b22.setButtonColor(DARK_YELLOW);
-  b22.setHoverColor(LIGHT_ORANGE);
-  b22.setClickColor(DARK_BROWN);
-  restartButton.setButtonColor(DARK_YELLOW);
-  restartButton.setHoverColor(LIGHT_ORANGE);
-  restartButton.setClickColor(DARK_BROWN);
-  tryAgainButton.setButtonColor(DARK_YELLOW);
-  tryAgainButton.setHoverColor(LIGHT_ORANGE);
-  tryAgainButton.setClickColor(DARK_BROWN);
-  checkButton.setButtonColor(DARK_YELLOW);
-  checkButton.setHoverColor(LIGHT_ORANGE);
-  checkButton.setClickColor(DARK_BROWN);
-  checkSimilarButton.setButtonColor(DARK_YELLOW);
-  checkSimilarButton.setHoverColor(LIGHT_ORANGE);
-  checkSimilarButton.setClickColor(DARK_BROWN);
 
-  //SETUP: Other
-  // Load a soundfile from the /data folder of the sketch and play it back
-  // song = new SoundFile(this, "sounds/Magnetic.mp3");
-  // song.play();
+    //SETUP: Buttons
+    b1 = new Button(p, "RECT", 1080, 580, 200, 100, "Level 1");
+    b11 = new Button(p, "RECT", 450, 140, 200, 100, "Level 1");
+    startButton = new Button(p, "RECT", 620, 260, 200, 80, "Game Rules");
+    checkButton = new Button(p, "RECT", 120, 300, 200, 100, "Check");
+    restartButton = new Button(p, "RECT", 30, 660, 400, 100, "Restart Game");
+    tryAgainButton = new Button(p, "RECT", 980, 440, 200, 100, "Try Again!");
+    b2 = new Button(p, "RECT", 100, 580, 200, 100, "Level 2");
+    b22 = new Button(p, "RECT", 1090, 140, 200, 100, "Level 2");
+    checkSimilarButton = new Button(p, "rect", 1090, 140, 300, 90, "Click to Check");
 
-  println("Game started...");
+    int DARK_YELLOW = color(255,165,0);
+    int LIGHT_ORANGE = color(255,191,0);
+    int DARK_BROWN = color(25,87, 51);
 
-} //end setup()
+    startButton.setButtonColor(DARK_YELLOW);
+    startButton.setHoverColor(LIGHT_ORANGE);
+    startButton.setClickColor(DARK_BROWN);
+    b1.setButtonColor(DARK_YELLOW);
+    b1.setHoverColor(LIGHT_ORANGE);
+    b1.setClickColor(DARK_BROWN);
+    b11.setButtonColor(DARK_YELLOW);
+    b11.setHoverColor(LIGHT_ORANGE);
+    b11.setClickColor(DARK_BROWN);
+    b2.setButtonColor(DARK_YELLOW);
+    b2.setHoverColor(LIGHT_ORANGE);
+    b2.setClickColor(DARK_BROWN);
+    b22.setButtonColor(DARK_YELLOW);
+    b22.setHoverColor(LIGHT_ORANGE);
+    b22.setClickColor(DARK_BROWN);
+    restartButton.setButtonColor(DARK_YELLOW);
+    restartButton.setHoverColor(LIGHT_ORANGE);
+    restartButton.setClickColor(DARK_BROWN);
+    tryAgainButton.setButtonColor(DARK_YELLOW);
+    tryAgainButton.setHoverColor(LIGHT_ORANGE);
+    tryAgainButton.setClickColor(DARK_BROWN);
+    checkButton.setButtonColor(DARK_YELLOW);
+    checkButton.setHoverColor(LIGHT_ORANGE);
+    checkButton.setClickColor(DARK_BROWN);
+    checkSimilarButton.setButtonColor(DARK_YELLOW);
+    checkSimilarButton.setHoverColor(LIGHT_ORANGE);
+    checkSimilarButton.setClickColor(DARK_BROWN);
+
+    //SETUP: Other
+    // Load a soundfile from the /data folder of the sketch and play it back
+    // song = new SoundFile(this, "sounds/Magnetic.mp3");
+    // song.play();
+
+    println("Game started...");
+
+  } //end setup()
 
 
   //Required Processing method that automatically loops
