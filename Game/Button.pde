@@ -5,6 +5,7 @@
  * Ability to turn highlights on/off
  * Ability to adjust font size
  * Center justify of button text
+ * Accessor for rounding buttons
  * TODO: Add default colors for all constructed Buttons
  */
 
@@ -15,6 +16,7 @@ public class Button {
     private String shape;
     private float shapeX, shapeY;     //coordinates of CENTER of button shape
     private float shapeW, shapeH;     //size of shape in pixels
+    private float shapeRounding;
     private String text;
     private color textColor;
     private float fontFactor;
@@ -48,7 +50,7 @@ public class Button {
         this.shapeH = h;
         this.shapeX = x + (shapeW/2);
         this.shapeY = y + (shapeH/2);
-        
+        this.shapeRounding = 24;
         this.text = txt;
         this.textColor = BLACK;
         this.fontFactor = 0.9;
@@ -94,7 +96,7 @@ public class Button {
             //     System.out.println("circle shape");
             } else if(shape.equals("rect")){
                 rectMode(CENTER);
-                rect(shapeX, shapeY, shapeW, shapeH, 24, 24, 24, 24);
+                rect(shapeX, shapeY, shapeW, shapeH, shapeRounding, shapeRounding, shapeRounding, shapeRounding);
                 // System.out.println("rect shape");
             } else {
                 System.out.println("Wrong shape String.  Type \"rect\" or \"circle\"");
@@ -103,12 +105,10 @@ public class Button {
 
             //Set Text inside Button
             textAlign(CENTER, CENTER);
-            fill(0); //set font color to black
+            fill(textColor);
             float fontSize = shapeH/2 * fontFactor;
             textSize(fontSize);
-            float tx = shapeX;
-            float ty = shapeY;
-            text(text, tx, ty);
+            text(text, shapeX, shapeY);
 
         }
     }
@@ -184,8 +184,6 @@ public class Button {
         }
     }
 
-
-
     public void setClickHighlight(boolean b){
         this.doesClickHighlight = b;
     }
@@ -204,6 +202,10 @@ public class Button {
         this.isVisible = b;
     }
 
+
+    public void setShapeRounding(float shapeRounding){
+        this.shapeRounding =  shapeRounding;
+    }
 
     public String toString(){
         return "Button shape " + this.shape + " with text \"" + this.text + "\" @loc " + this.shapeX +","+this.shapeY + " w:"+this.shapeW+" h:"+this.shapeH;
